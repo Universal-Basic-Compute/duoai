@@ -827,10 +827,6 @@ document.addEventListener('DOMContentLoaded', () => {
     async function testElevenLabsTTS() {
         try {
             console.log('Testing ElevenLabs TTS...');
-            // Skip actual testing since we're using browser TTS
-            console.log('Using browser TTS instead of ElevenLabs');
-            
-            /* Disabled ElevenLabs testing temporarily
             const isAvailable = await speechManager.initElevenLabs();
             console.log('ElevenLabs available:', isAvailable);
             
@@ -842,7 +838,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.warn('ElevenLabs is not available, will use browser TTS');
             }
-            */
         } catch (error) {
             console.error('Error testing ElevenLabs TTS:', error);
         }

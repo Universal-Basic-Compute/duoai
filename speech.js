@@ -23,11 +23,6 @@ class SpeechManager {
      * @returns {Promise<boolean>} - True if initialization was successful
      */
     async initElevenLabs() {
-        // Skip initialization and return false to use browser TTS
-        console.log('Skipping ElevenLabs initialization, using browser TTS');
-        return false;
-        
-        /* Disabled ElevenLabs initialization temporarily
         try {
             console.log(`Checking for ElevenLabs API key at ${this.serverUrl}/api/elevenlabs/key`);
             
@@ -61,7 +56,6 @@ class SpeechManager {
             }
             return false;
         }
-        */
     }
     
     /**
@@ -180,11 +174,6 @@ class SpeechManager {
         this.audioElement.pause();
         this.audioElement.currentTime = 0;
         
-        // Always use browser TTS for now due to ElevenLabs API issues
-        console.log('Using browser TTS instead of ElevenLabs');
-        return this.fallbackSpeak(text);
-        
-        /* Disabled ElevenLabs integration temporarily
         if (!this.elevenLabsClient) {
             console.warn('ElevenLabs client not initialized, attempting to initialize now...');
             await this.initElevenLabs();
@@ -212,7 +201,6 @@ class SpeechManager {
                 responseType: 'arraybuffer',
                 timeout: 30000 // 30 second timeout
             });
-                
                 
             console.log('Received TTS response, size:', response.data.byteLength);
             
@@ -256,7 +244,6 @@ class SpeechManager {
             // Fall back to browser's built-in TTS
             return this.fallbackSpeak(text);
         }
-        */
     }
     
     /**
