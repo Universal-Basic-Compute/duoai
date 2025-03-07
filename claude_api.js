@@ -66,27 +66,22 @@ class ClaudeAPI {
                 throw new Error(`Screenshot file not found at path: ${screenshotPath}`);
             }
 
-            console.log('Creating form data with screenshot:', screenshotPath);
+            console.log('Reading screenshot file:', screenshotPath);
             
-            // Create a FormData object
-            const formData = new FormData();
-            formData.append('systemPrompt', systemPrompt || '');
-            formData.append('userMessage', userMessage || '');
+            // Read the file as base64
+            const imageBuffer = fs.readFileSync(screenshotPath);
+            const base64Image = imageBuffer.toString('base64');
             
-            // Use createReadStream instead of readFileSync for better handling of large files
-            const fileStream = fs.createReadStream(screenshotPath);
-            formData.append('screenshot', fileStream, {
-                filename: path.basename(screenshotPath),
-                contentType: 'image/png'
-            });
-
             console.log('Sending request to backend server...');
             
-            // Send the request to the backend server
-            const response = await axios.post(this.apiUrl, formData, {
+            // Send the request to the backend server using the base64 endpoint
+            const response = await axios.post('http://localhost:3000/api/claude-base64', {
+                systemPrompt: systemPrompt || '',
+                userMessage: userMessage || '',
+                base64Image: base64Image
+            }, {
                 headers: {
-                    ...formData.getHeaders()
-                    // Don't manually set Content-Type, let FormData set it with the boundary
+                    'Content-Type': 'application/json'
                 },
                 maxContentLength: Infinity,
                 maxBodyLength: Infinity

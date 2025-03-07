@@ -42,6 +42,64 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
+// Claude API endpoint that accepts base64 images directly
+app.post('/api/claude-base64', express.json({ limit: '50mb' }), async (req, res) => {
+    try {
+        console.log('Received request to /api/claude-base64');
+        
+        const { systemPrompt, userMessage, base64Image } = req.body;
+
+        if (!base64Image) {
+            console.error('No base64 image in request');
+            return res.status(400).json({ error: 'No image provided' });
+        }
+
+        // Prepare the request payload for Claude API
+        const payload = {
+            model: 'claude-3-7-sonnet-latest',
+            system: systemPrompt || '',
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'image',
+                            source: {
+                                type: 'base64',
+                                media_type: 'image/png',
+                                data: base64Image
+                            }
+                        },
+                        {
+                            type: 'text',
+                            text: userMessage || "What do you see in this screenshot? Can you provide any gaming advice based on what you see?"
+                        }
+                    ]
+                }
+            ],
+            max_tokens: 4000
+        };
+
+        // Call Claude API
+        const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': process.env.ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            }
+        });
+
+        // Return Claude's response
+        res.json({ response: response.data.content[0].text });
+    } catch (error) {
+        console.error('Error calling Claude API:', error);
+        res.status(500).json({ 
+            error: 'Error processing request',
+            details: error.response ? error.response.data : error.message
+        });
+    }
+});
+
 // Claude API endpoint
 app.post('/api/claude', upload.single('screenshot'), async (req, res) => {
     try {
