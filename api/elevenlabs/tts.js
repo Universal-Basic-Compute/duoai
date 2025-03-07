@@ -9,6 +9,11 @@ module.exports = async (req, res) => {
     
     const { text, voiceId, modelId } = req.body;
     
+    console.log('ElevenLabs TTS request received:');
+    console.log('- Text length:', text ? text.length : 0);
+    console.log('- Voice ID:', voiceId || 'default');
+    console.log('- Model ID:', modelId || 'default');
+    
     // Validate input
     if (!text || text.length < 2) {
       return res.status(400).json({ error: 'No text or text too short provided' });
@@ -16,8 +21,12 @@ module.exports = async (req, res) => {
     
     // Check if API key is available
     if (!process.env.ELEVENLABS_API_KEY) {
+      console.error('ElevenLabs API key is missing');
       return res.status(500).json({ error: 'API key configuration error' });
     }
+    
+    console.log('Initializing ElevenLabs client with API key:', 
+                process.env.ELEVENLABS_API_KEY ? process.env.ELEVENLABS_API_KEY.substring(0, 4) + '...' : 'undefined');
     
     // Initialize ElevenLabs client
     const client = new ElevenLabsClient({
@@ -28,6 +37,10 @@ module.exports = async (req, res) => {
     const finalVoiceId = voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default to Rachel voice
     const finalModelId = modelId || "eleven_flash_v2_5";
     
+    console.log('Converting text to speech with ElevenLabs:');
+    console.log('- Final Voice ID:', finalVoiceId);
+    console.log('- Final Model ID:', finalModelId);
+    
     // Convert text to speech with proper error handling and retries
     let retries = 0;
     const maxRetries = 2;
@@ -35,6 +48,8 @@ module.exports = async (req, res) => {
     
     while (retries <= maxRetries && !audio) {
       try {
+        console.log(`Attempt ${retries + 1} to convert text to speech`);
+        
         audio = await client.textToSpeech.convert(
           finalVoiceId,
           {
@@ -44,29 +59,45 @@ module.exports = async (req, res) => {
           }
         );
         
+        console.log('Received audio from ElevenLabs, size:', audio ? audio.length : 0);
+        
         if (!audio || audio.length < 1000) {
+          console.error('Received invalid or empty audio from ElevenLabs');
           throw new Error('Received invalid or empty audio from ElevenLabs');
         }
       } catch (elevenlabsError) {
+        console.error('ElevenLabs API error:', elevenlabsError);
+        
         retries++;
         
         if (retries > maxRetries) {
+          console.error(`Failed after ${maxRetries + 1} attempts`);
           throw new Error(`ElevenLabs API error after ${maxRetries + 1} attempts: ${elevenlabsError.message}`);
         }
         
+        console.log(`Retrying (${retries}/${maxRetries})...`);
         // Wait before retrying
         await new Promise(resolve => setTimeout(resolve, 1000 * retries));
       }
     }
+    
+    console.log('Setting response headers');
     
     // Set response headers
     res.setHeader('Content-Type', 'audio/mpeg');
     res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
     res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
     
+    console.log('Sending audio data to client');
+    
     // Send the audio data
     res.send(Buffer.from(audio));
+    
+    console.log('Audio sent successfully');
   } catch (error) {
+    console.error('Error in ElevenLabs TTS endpoint:', error);
+    console.error('Error stack:', error.stack);
+    
     // Send a proper error response
     res.status(500).json({ 
       error: 'Error processing text-to-speech',

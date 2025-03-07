@@ -174,12 +174,18 @@ class SpeechManager {
         this.audioElement.pause();
         this.audioElement.currentTime = 0;
         
+        // For very short text, use browser TTS to avoid API overhead
+        if (text.length < 10) {
+            console.log('Text is very short, using browser TTS for efficiency');
+            return this.fallbackSpeak(text);
+        }
+        
         if (!this.elevenLabsClient) {
             console.warn('ElevenLabs client not initialized, attempting to initialize now...');
-            await this.initElevenLabs();
+            const initialized = await this.initElevenLabs();
             
             // Check again after initialization attempt
-            if (!this.elevenLabsClient) {
+            if (!initialized) {
                 console.warn('ElevenLabs client still not initialized, falling back to browser TTS');
                 return this.fallbackSpeak(text);
             }
@@ -241,6 +247,7 @@ class SpeechManager {
                 console.error('Response headers:', error.response.headers);
             }
             
+            console.log('Falling back to browser TTS due to ElevenLabs error');
             // Fall back to browser's built-in TTS
             return this.fallbackSpeak(text);
         }
