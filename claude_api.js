@@ -3,12 +3,14 @@ let axios;
 let fs;
 let FormData;
 let path;
+let sharp; // Add sharp module
 
 try {
     axios = require('axios');
     fs = require('fs');
     FormData = require('form-data');
     path = require('path');
+    sharp = require('sharp'); // Import sharp module
 } catch (error) {
     console.error('Error loading modules:', error);
     // Provide fallback implementations to prevent further errors
@@ -23,6 +25,10 @@ try {
             append: () => {},
             getHeaders: () => ({})
         };
+    };
+    // Add fallback for sharp
+    sharp = {
+        resize: () => ({ jpeg: () => ({ toFile: () => Promise.resolve() }) })
     };
 }
 
