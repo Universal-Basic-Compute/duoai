@@ -56,17 +56,19 @@ body {
     padding: 15px 5px;
     border-radius: 8px 0 0 8px;
     cursor: pointer;
-    z-index: 1002; /* Ensure this is higher than other elements */
+    z-index: 1010; /* Increase z-index to be higher than everything */
     transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: -2px 0 15px var(--glow-color);
     animation: pulse 2s infinite;
     pointer-events: auto !important; /* Force pointer events to be enabled */
+    user-select: none; /* Prevent text selection */
 }
 
 .tab-handle {
     writing-mode: vertical-rl;
     text-orientation: mixed;
     font-size: 20px;
+    pointer-events: none; /* Make sure events pass through to parent */
 }
 
 .side-menu {

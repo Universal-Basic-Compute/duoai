@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeChatButton = document.getElementById('closeChatButton');
     const selectedCharacter = document.getElementById('selectedCharacter');
     
+    console.log('Menu tab found:', menuTab !== null);
+    if (menuTab === null) {
+        console.error('Menu tab element not found!');
+    }
+    
     console.log('Menu tab element:', menuTab);
     menuTab.style.pointerEvents = 'auto';
     
@@ -35,23 +40,24 @@ document.addEventListener('DOMContentLoaded', () => {
         
         console.log('Menu tab clicked, current state:', menuOpen);
         
-        // First, ensure chat container is hidden if we're opening the menu
-        if (!menuOpen) {
-            chatContainer.style.right = '-350px';
-        }
+        // Toggle menu state
+        menuOpen = !menuOpen;
         
         if (menuOpen) {
+            // Show menu
+            sideMenu.style.right = '0';
+            menuTab.style.right = '300px';
+            // Hide chat if it's open
+            chatContainer.style.right = '-350px';
+            // Resize window to accommodate the open menu
+            ipcRenderer.send('resize-window', { width: 350, height: 600 });
+        } else {
+            // Hide menu
             sideMenu.style.right = '-300px';
             menuTab.style.right = '0';
             // Resize window to be narrow when menu is closed
             ipcRenderer.send('resize-window', { width: 50, height: 600 });
-        } else {
-            sideMenu.style.right = '0';
-            menuTab.style.right = '300px';
-            // Resize window to accommodate the open menu
-            ipcRenderer.send('resize-window', { width: 350, height: 600 });
         }
-        menuOpen = !menuOpen;
         
         console.log('Menu state after click:', menuOpen);
     });
