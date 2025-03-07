@@ -13,6 +13,7 @@ module.exports = async (req, res) => {
     console.log('- Text length:', text ? text.length : 0);
     console.log('- Voice ID:', voiceId || 'default');
     console.log('- Model ID:', modelId || 'default');
+    console.log('- Text (first 50 chars):', text ? text.substring(0, 50) + '...' : 'undefined');
     
     // Validate input
     if (!text || text.length < 2) {
@@ -35,7 +36,7 @@ module.exports = async (req, res) => {
     
     // Set default values
     const finalVoiceId = voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default to Rachel voice
-    const finalModelId = modelId || "eleven_flash_v2_5";
+    const finalModelId = modelId || "eleven_monolingual_v1";  // Use a more stable model
     
     console.log('Converting text to speech with ElevenLabs:');
     console.log('- Final Voice ID:', finalVoiceId);
@@ -50,10 +51,13 @@ module.exports = async (req, res) => {
       try {
         console.log(`Attempt ${retries + 1} to convert text to speech`);
         
+        // Trim text if it's too long (ElevenLabs has character limits)
+        const trimmedText = text.length > 5000 ? text.substring(0, 5000) + "..." : text;
+        
         audio = await client.textToSpeech.convert(
           finalVoiceId,
           {
-            text: text,
+            text: trimmedText,
             model_id: finalModelId,
             output_format: "mp3_44100_128"
           }

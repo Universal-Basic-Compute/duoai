@@ -36,15 +36,23 @@ class SpeechManager {
             if (response.data && response.data.key) {
                 console.log('Initializing ElevenLabs client with key:', response.data.maskedKey);
                 
-                this.elevenLabsClient = new ElevenLabsClient({
-                    apiKey: response.data.key
-                });
-                
-                console.log('ElevenLabs client initialized successfully');
-                
-                // Get available voices
-                this.loadVoices();
-                return true;
+                try {
+                    this.elevenLabsClient = new ElevenLabsClient({
+                        apiKey: response.data.key
+                    });
+                    
+                    console.log('ElevenLabs client initialized successfully');
+                    
+                    // Set default model to a more stable one
+                    this.modelId = "eleven_monolingual_v1";
+                    
+                    // Get available voices
+                    this.loadVoices();
+                    return true;
+                } catch (clientError) {
+                    console.error('Error creating ElevenLabs client:', clientError);
+                    return false;
+                }
             } else {
                 console.error('No ElevenLabs API key received from server');
                 return false;
@@ -175,9 +183,9 @@ class SpeechManager {
         this.audioElement.currentTime = 0;
         
         // For very short text, use browser TTS to avoid API overhead
-        if (text.length < 10) {
-            console.log('Text is very short, using browser TTS for efficiency');
-            return this.fallbackSpeak(text);
+        if (!text || text.length < 10) {
+            console.log('Text is very short or empty, using browser TTS for efficiency');
+            return this.fallbackSpeak(text || "");
         }
         
         if (!this.elevenLabsClient) {
@@ -192,7 +200,7 @@ class SpeechManager {
         }
         
         try {
-            console.log('Converting text to speech with ElevenLabs:', text);
+            console.log('Converting text to speech with ElevenLabs:', text.substring(0, 50) + '...');
             console.log('Using voice ID:', this.voiceId);
             console.log('Using model ID:', this.modelId);
             
@@ -260,8 +268,8 @@ class SpeechManager {
      */
     fallbackSpeak(text) {
         return new Promise((resolve) => {
-            if (!window.speechSynthesis) {
-                console.warn('Speech synthesis is not supported');
+            if (!text || !window.speechSynthesis) {
+                console.warn('Empty text or speech synthesis not supported');
                 resolve();
                 return;
             }
