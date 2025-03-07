@@ -235,11 +235,13 @@ class SpeechManager {
                     timeout: 60000 // 60 second timeout for longer texts
                 });
                     
-                console.log('Received TTS response, size:', response.data.byteLength);
+                // Log the response size properly
+                const responseSize = response.data ? (response.data.byteLength || response.data.length || 0) : 0;
+                console.log('Received TTS response, size:', responseSize);
                 
                 // Check if we received valid audio data
-                if (!response.data || response.data.byteLength < 100) {
-                    console.error('Received invalid or empty audio data');
+                if (!response.data || responseSize < 100) {
+                    console.error('Received invalid or empty audio data (size:', responseSize, 'bytes)');
                     return this.fallbackSpeak(text);
                 }
                 
@@ -256,6 +258,9 @@ class SpeechManager {
                     this.audioElement = new Audio();
                     this.audioElement.volume = this.volume;
                     
+                    // Log audio element creation
+                    console.log('Created new Audio element for playback');
+                    
                     this.audioElement.oncanplaythrough = () => {
                         console.log('Audio can play through, starting playback');
                         this.audioElement.play().catch(error => {
@@ -265,6 +270,13 @@ class SpeechManager {
                             this.fallbackSpeak(text);
                             resolve();
                         });
+                    };
+                    
+                    // Add loadedmetadata event to log audio duration
+                    this.audioElement.onloadedmetadata = () => {
+                        console.log('Audio metadata loaded, duration:', 
+                                   this.audioElement.duration, 
+                                   'seconds, volume:', this.volume);
                     };
                     
                     this.audioElement.onended = () => {

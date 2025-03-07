@@ -61,21 +61,40 @@ module.exports = async (req, res) => {
             console.log(`Calling ElevenLabs API with voice ID: ${finalVoiceId}`);
             console.log(`Using model ID: ${finalModelId}`);
             
-            // Get audio directly as a buffer
-            audio = await client.textToSpeech.convert(
-              finalVoiceId,
-              {
-                text: trimmedText,
-                model_id: finalModelId,
-                output_format: "mp3_44100"
+            try {
+              // Get audio directly as a buffer
+              audio = await client.textToSpeech.convert(
+                finalVoiceId,
+                {
+                  text: trimmedText,
+                  model_id: finalModelId,
+                  output_format: "mp3_44100"
+                }
+              );
+            
+              // Log successful conversion
+              console.log(`Successfully converted ${trimmedText.length} characters to speech`);
+            } catch (conversionError) {
+              console.error('Error in ElevenLabs conversion:', conversionError.message);
+              if (conversionError.response) {
+                console.error('ElevenLabs response status:', conversionError.response.status);
+                console.error('ElevenLabs response data:', JSON.stringify(conversionError.response.data, null, 2));
               }
-            );
+              throw conversionError;
+            }
             
-            console.log('Received audio from ElevenLabs, size:', audio ? audio.length : 0);
+            // Check if audio is valid and log its size
+            if (!audio) {
+              console.error('Received empty audio from ElevenLabs');
+              throw new Error('Received empty audio from ElevenLabs');
+            }
             
-            if (!audio || audio.length < 1000) {
-              console.error('Received invalid or empty audio from ElevenLabs');
-              throw new Error('Received invalid or empty audio from ElevenLabs');
+            const audioSize = audio.length || audio.byteLength || 0;
+            console.log('Received audio from ElevenLabs, size:', audioSize);
+            
+            if (audioSize < 1000) {
+              console.error('Received too small audio from ElevenLabs (size:', audioSize, 'bytes)');
+              throw new Error('Received invalid or too small audio from ElevenLabs');
             }
           } catch (apiCallError) {
             console.error('Error in ElevenLabs API call:', apiCallError);
