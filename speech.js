@@ -392,7 +392,9 @@ class SpeechManager {
      */
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
-        this.audioElement.volume = this.volume;
+        if (this.audioElement) {
+            this.audioElement.volume = this.volume;
+        }
     }
     
     /**
@@ -400,7 +402,9 @@ class SpeechManager {
      * @param {string} voiceId - ElevenLabs voice ID
      */
     setVoice(voiceId) {
-        this.voiceId = voiceId;
+        if (voiceId) {
+            this.voiceId = voiceId;
+        }
     }
 
     /**
@@ -408,7 +412,12 @@ class SpeechManager {
      * @returns {boolean} - True if supported, false otherwise
      */
     isSpeechRecognitionSupported() {
-        return !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+        try {
+            return !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+        } catch (error) {
+            console.error('Error checking speech recognition support:', error);
+            return false;
+        }
     }
 
     /**
@@ -416,29 +425,73 @@ class SpeechManager {
      * @returns {boolean} - True if available, false otherwise
      */
     isElevenLabsAvailable() {
-        return !!this.elevenLabsClient;
+        try {
+            return !!this.elevenLabsClient;
+        } catch (error) {
+            console.error('Error checking ElevenLabs availability:', error);
+            return false;
+        }
     }
     
     /**
      * Clean up resources
      */
     cleanup() {
-        if (this.audioElement) {
-            this.audioElement.pause();
-            this.audioElement.currentTime = 0;
-            
-            if (this.audioElement.src) {
-                URL.revokeObjectURL(this.audioElement.src);
-                this.audioElement.src = '';
+        try {
+            if (this.audioElement) {
+                // Pause and reset
+                this.audioElement.pause();
+                this.audioElement.currentTime = 0;
+                
+                // Clear source if it exists
+                if (this.audioElement.src) {
+                    try {
+                        URL.revokeObjectURL(this.audioElement.src);
+                    } catch (e) {
+                        console.warn('Error revoking object URL:', e);
+                    }
+                    this.audioElement.src = '';
+                }
+                
+                // Remove event listeners
+                this.audioElement.oncanplaythrough = null;
+                this.audioElement.onloadedmetadata = null;
+                this.audioElement.onended = null;
+                this.audioElement.onerror = null;
             }
             
-            // Remove event listeners
-            this.audioElement.oncanplaythrough = null;
-            this.audioElement.onloadedmetadata = null;
-            this.audioElement.onended = null;
-            this.audioElement.onerror = null;
+            // Also clean up any recording resources
+            if (this.isListening && this.mediaRecorder) {
+                try {
+                    this.stopListening();
+                } catch (e) {
+                    console.warn('Error stopping listening during cleanup:', e);
+                }
+            }
+        } catch (error) {
+            console.error('Error during cleanup:', error);
         }
     }
 }
 
-module.exports = new SpeechManager();
+// Create a singleton instance with error handling
+let instance;
+try {
+    instance = new SpeechManager();
+} catch (error) {
+    console.error('Error creating SpeechManager instance:', error);
+    // Provide a minimal fallback implementation
+    instance = {
+        speak: () => Promise.resolve(),
+        setVolume: () => {},
+        setVoice: () => {},
+        cleanup: () => {},
+        isElevenLabsAvailable: () => false,
+        isSpeechRecognitionSupported: () => false,
+        startListening: () => {},
+        stopListening: () => {},
+        initElevenLabs: () => Promise.resolve(false)
+    };
+}
+
+module.exports = instance;
