@@ -375,8 +375,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = userInput.value.trim();
         if (!message) return;
         
+        // Sanitize input
+        const sanitizedMessage = sanitizeInput(message);
+        
         // Add user message to chat
-        addMessage(message, 'user');
+        addMessage(sanitizedMessage, 'user');
         
         // Clear input
         userInput.value = '';
@@ -386,6 +389,25 @@ document.addEventListener('DOMContentLoaded', () => {
         addLoadingIndicator();
         
         try {
+            // Check if we're online
+            if (!isOnline()) {
+                console.log('Device is offline, using cached responses if available');
+                
+                // Try to get a cached response
+                const cachedResponse = getCachedResponse(`message_${sanitizedMessage.substring(0, 50)}`);
+                
+                if (cachedResponse) {
+                    // Remove loading indicator
+                    removeLoadingIndicator();
+                    
+                    // Add cached AI message to chat
+                    addMessage(cachedResponse, 'ai', true);
+                    return;
+                } else {
+                    throw new Error('You are currently offline and no cached response is available.');
+                }
+            }
+            
             // Capture screenshot
             const screenshotPath = await screenshotUtil.captureScreenshot();
             
@@ -395,9 +417,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Call Claude API
             const response = await claudeAPI.sendMessageWithScreenshot(
                 systemPrompt,
-                message,
+                sanitizedMessage,
                 screenshotPath
             );
+            
+            // Cache the response for offline use
+            cacheResponse(`message_${sanitizedMessage.substring(0, 50)}`, response);
             
             // Remove loading indicator
             removeLoadingIndicator();
@@ -413,16 +438,40 @@ document.addEventListener('DOMContentLoaded', () => {
             // Remove loading indicator
             removeLoadingIndicator();
             
-            // Show error message
-            addMessage("I'm sorry, I encountered an error. Please try again later.", 'ai');
+            // Show specific error message based on error type
+            if (error.message.includes('offline')) {
+                addMessage("You're currently offline. Please check your internet connection and try again.", 'ai');
+            } else if (error.message.includes('server')) {
+                addMessage("I'm having trouble connecting to the server. Please try again in a moment.", 'ai');
+            } else {
+                addMessage("I'm sorry, I encountered an error. Please try again later.", 'ai');
+            }
         }
     }
     
+    // Function to sanitize user input
+    function sanitizeInput(input) {
+        // Basic sanitization - remove HTML tags
+        return input.replace(/<[^>]*>?/gm, '');
+    }
+    
     // Function to add a message to the chat
-    function addMessage(text, sender) {
+    function addMessage(text, sender, isCached = false) {
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', `${sender}-message`);
-        messageElement.textContent = text;
+        
+        // For cached responses, add an indicator
+        if (isCached && sender === 'ai') {
+            const cachedIndicator = document.createElement('div');
+            cachedIndicator.classList.add('cached-indicator');
+            cachedIndicator.textContent = 'Offline response';
+            messageElement.appendChild(cachedIndicator);
+        }
+        
+        const textElement = document.createElement('div');
+        textElement.textContent = text;
+        messageElement.appendChild(textElement);
+        
         chatMessages.appendChild(messageElement);
         
         // Scroll to bottom
@@ -641,6 +690,35 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Test ElevenLabs TTS
     testElevenLabsTTS();
+    
+    // Monitor network status
+    const networkStatus = document.getElementById('networkStatus');
+    
+    function updateNetworkStatus() {
+        if (navigator.onLine) {
+            networkStatus.classList.remove('offline');
+        } else {
+            networkStatus.classList.add('offline');
+        }
+    }
+    
+    // Initial check
+    updateNetworkStatus();
+    
+    // Add event listeners for network status changes
+    window.addEventListener('online', () => {
+        console.log('Device is now online');
+        updateNetworkStatus();
+        // Notify user
+        addMessage("You're back online! Full functionality has been restored.", 'ai');
+    });
+    
+    window.addEventListener('offline', () => {
+        console.log('Device is now offline');
+        updateNetworkStatus();
+        // Notify user
+        addMessage("You're offline. Limited functionality is available with cached responses.", 'ai');
+    });
     
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {

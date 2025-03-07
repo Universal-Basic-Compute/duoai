@@ -68,6 +68,7 @@ class ClaudeAPI {
      * @param {string} userMessage - The user's message
      * @param {string} screenshotPath - Path to the screenshot file
      * @returns {Promise<string>} - Claude's response
+     * @throws {Error} - If the API call fails or the screenshot is invalid
      */
     async sendMessageWithScreenshot(systemPrompt, userMessage, screenshotPath) {
         try {
@@ -84,68 +85,51 @@ class ClaudeAPI {
 
             console.log('Reading screenshot file:', screenshotPath);
             
-            // Read the file as base64
+            // Read the file as buffer
             const imageBuffer = fs.readFileSync(screenshotPath);
             
-            // Further compress the image if it's too large (over 5MB)
-            let base64Image;
-            if (imageBuffer.length > 5 * 1024 * 1024) {
-                console.log('Image is large, compressing further...');
-                // Create a temporary file for the compressed image
-                const tempPath = screenshotPath + '.compressed.jpg';
-                
-                // Compress the image
-                await sharp(imageBuffer)
-                    .resize({ width: 800 }) // Reduce width to 800px
-                    .jpeg({ quality: 70 }) // Convert to JPEG with 70% quality
-                    .toFile(tempPath);
-                    
-                // Read the compressed image
-                const compressedBuffer = fs.readFileSync(tempPath);
-                base64Image = compressedBuffer.toString('base64');
-                
-                // Delete the temporary file
-                fs.unlinkSync(tempPath);
-                
-                console.log('Image compressed successfully');
-            } else {
-                // Convert to JPEG for better compression
-                const tempPath = screenshotPath + '.jpg';
-                
-                // Convert to JPEG
-                await sharp(imageBuffer)
-                    .jpeg({ quality: 85 })
-                    .toFile(tempPath);
-                    
-                // Read the JPEG image
-                const jpegBuffer = fs.readFileSync(tempPath);
-                base64Image = jpegBuffer.toString('base64');
-                
-                // Delete the temporary file
-                fs.unlinkSync(tempPath);
-                
-                console.log('Image converted to JPEG');
-            }
+            // Optimize the screenshot
+            const base64Image = await this.optimizeScreenshot(imageBuffer);
             
             console.log('Sending request to remote server...');
             console.log('Image size (base64):', Math.round(base64Image.length / 1024), 'KB');
             
-            // Send the request to the backend server using the base64 endpoint
-            const response = await axios.post(this.base64ApiUrl, {
-                systemPrompt: systemPrompt || '',
-                userMessage: userMessage || '',
-                base64Image: base64Image
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                maxContentLength: Infinity,
-                maxBodyLength: Infinity,
-                timeout: 60000 // 60 second timeout
-            });
+            // Add error handling with retries
+            let retries = 0;
+            const maxRetries = 2;
+            
+            while (retries <= maxRetries) {
+                try {
+                    // Send the request to the backend server using the base64 endpoint
+                    const response = await axios.post(this.base64ApiUrl, {
+                        systemPrompt: systemPrompt || '',
+                        userMessage: userMessage || '',
+                        base64Image: base64Image
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        maxContentLength: Infinity,
+                        maxBodyLength: Infinity,
+                        timeout: 60000 // 60 second timeout
+                    });
 
-            // Return Claude's response
-            return response.data.response;
+                    // Return Claude's response
+                    return response.data.response;
+                } catch (requestError) {
+                    retries++;
+                    
+                    // If we've reached max retries, throw the error
+                    if (retries > maxRetries) {
+                        throw requestError;
+                    }
+                    
+                    console.log(`Request failed, retrying (${retries}/${maxRetries})...`);
+                    
+                    // Wait before retrying (exponential backoff)
+                    await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+                }
+            }
         } catch (error) {
             console.error('Error calling remote server:', error);
             if (error.response) {
@@ -153,6 +137,49 @@ class ClaudeAPI {
                 console.error('Response status:', error.response.status);
             }
             throw new Error(`Failed to get response from Claude: ${error.message}`);
+        }
+    }
+    /**
+     * Optimize a screenshot for sending to Claude API
+     * @param {Buffer} imageBuffer - The image buffer
+     * @returns {Promise<string>} - Base64 encoded optimized image
+     */
+    async optimizeScreenshot(imageBuffer) {
+        try {
+            // Get image metadata
+            const metadata = await sharp(imageBuffer).metadata();
+            
+            let processedBuffer;
+            
+            // Determine if we need to resize based on dimensions and size
+            if (metadata.width > 1200 || metadata.height > 1200 || imageBuffer.length > 5 * 1024 * 1024) {
+                console.log('Image is large, optimizing...');
+                // Resize and compress
+                processedBuffer = await sharp(imageBuffer)
+                    .resize({ 
+                        width: Math.min(1200, metadata.width),
+                        height: Math.min(1200, metadata.height),
+                        fit: 'inside'
+                    })
+                    .jpeg({ quality: 75 })
+                    .toBuffer();
+                
+                console.log('Image optimized successfully');
+            } else {
+                // Just convert to JPEG for better compression
+                processedBuffer = await sharp(imageBuffer)
+                    .jpeg({ quality: 85 })
+                    .toBuffer();
+                
+                console.log('Image converted to JPEG');
+            }
+            
+            // Convert to base64
+            return processedBuffer.toString('base64');
+        } catch (error) {
+            console.error('Error optimizing screenshot:', error);
+            // Fallback to original image if optimization fails
+            return imageBuffer.toString('base64');
         }
     }
 }

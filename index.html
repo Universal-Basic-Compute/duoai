@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://duoai.vercel.app https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com;">
     <title>DuoAI</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -109,6 +110,7 @@
         </div>
     </div>
 
+    <div class="network-status" id="networkStatus">You are offline</div>
     <script src="renderer.js"></script>
 </body>
 </html>

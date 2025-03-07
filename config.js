@@ -42,14 +42,37 @@ const defaultConfig = {
 // Load or create configuration
 function loadConfig() {
   try {
+    // Get environment
+    const env = process.env.NODE_ENV || 'development';
+    
+    // Environment-specific overrides
+    const envConfigs = {
+      development: {
+        API_URL: 'http://localhost:3000'
+      },
+      production: {
+        API_URL: 'https://duoai.vercel.app'
+      },
+      test: {
+        API_URL: 'http://localhost:3001'
+      }
+    };
+    
+    // Load config from file
+    let fileConfig = {};
     if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      return { ...defaultConfig, ...config };
+      fileConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    } else {
+      // Create default config file if it doesn't exist
+      fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
     }
     
-    // Create default config file if it doesn't exist
-    fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
-    return defaultConfig;
+    // Merge configs with priority: env-specific > file > default
+    return { 
+      ...defaultConfig, 
+      ...fileConfig, 
+      ...(envConfigs[env] || {}) 
+    };
   } catch (error) {
     console.error('Error loading config:', error);
     return defaultConfig;

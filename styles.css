@@ -716,3 +716,36 @@ body {
     50% { transform: scale(1); opacity: 1; }
     100% { transform: scale(0.5); opacity: 0.5; }
 }
+
+.cached-indicator {
+    font-size: 10px;
+    color: #ff9800;
+    background-color: rgba(255, 152, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.error-message {
+    color: #f44336;
+    font-style: italic;
+}
+
+.network-status {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 9999;
+    display: none;
+}
+
+.network-status.offline {
+    display: block;
+    background-color: rgba(244, 67, 54, 0.8);
+}
