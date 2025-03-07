@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 await claudeAPI.sendMessageWithScreenshotStreaming(
                     systemPrompt,
-                    "I just started the app. What do you see in this screenshot? Can you provide any gaming advice based on what you see?",
+                    "*the user did not type a specific message at this time*",
                     screenshotPath,
                     // On chunk callback
                     (chunk) => {
@@ -542,7 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             await claudeAPI.sendMessageWithScreenshotStreaming(
                 systemPrompt,
-                sanitizedMessage,
+                sanitizedMessage || "*the user did not type a specific message at this time*",
                 screenshotPath,
                 // On chunk callback
                 (chunk) => {

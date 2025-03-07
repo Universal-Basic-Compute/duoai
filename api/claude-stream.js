@@ -41,20 +41,20 @@ module.exports = async (req, res) => {
       processedBase64 = processedImageBuffer.toString('base64');
     }
     
+    // Use a mock user ID if req.user is not available
+    const userId = req.user ? req.user.id : 'mock-user-id';
+    
+    // Extract character name from system prompt if available
+    let characterName = null;
+    if (systemPrompt) {
+      const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+      if (characterMatch && characterMatch[1]) {
+        characterName = characterMatch[1];
+      }
+    }
+    
     // Save user message to Airtable immediately
     try {
-      // Extract character name from system prompt if available
-      let characterName = null;
-      if (systemPrompt) {
-        const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
-        if (characterMatch && characterMatch[1]) {
-          characterName = characterMatch[1];
-        }
-      }
-      
-      // Use a mock user ID if req.user is not available
-      const userId = req.user ? req.user.id : 'mock-user-id';
-      
       console.log('Saving user message to Airtable...');
       console.log('User ID:', userId);
       console.log('Character:', characterName || 'None');
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
       await airtableService.saveMessage(
         userId,
         'user',
-        userMessage || "What do you see in this screenshot?",
+        userMessage || "*the user did not type a specific message at this time*",
         characterName
       );
       
@@ -72,29 +72,60 @@ module.exports = async (req, res) => {
       // Don't fail the request if saving messages fails
     }
     
+    // Fetch previous messages for context
+    let previousMessages = [];
+    try {
+      console.log('Fetching previous messages for context...');
+      const messages = await airtableService.getUserMessages(userId, 20);
+      
+      if (messages && messages.length > 0) {
+        console.log(`Found ${messages.length} previous messages`);
+        
+        // Convert Airtable messages to Claude message format
+        // Sort by timestamp ascending (oldest first)
+        previousMessages = messages
+          .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
+          .map(msg => ({
+            role: msg.Role === 'user' ? 'user' : 'assistant',
+            content: msg.Role === 'user' 
+              ? msg.Content 
+              : [{ type: 'text', text: msg.Content }]
+          }));
+      } else {
+        console.log('No previous messages found');
+      }
+    } catch (fetchError) {
+      console.error('Error fetching previous messages:', fetchError);
+      // Continue without previous messages if there's an error
+    }
+    
+    // Prepare the messages array for Claude API
+    let claudeMessages = [...previousMessages];
+    
+    // Add the current message with the screenshot
+    claudeMessages.push({
+      role: 'user',
+      content: [
+        {
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: 'image/jpeg',
+            data: processedBase64
+          }
+        },
+        {
+          type: 'text',
+          text: userMessage || "*the user did not type a specific message at this time*"
+        }
+      ]
+    });
+    
     // Prepare the request payload for Claude API with streaming enabled
     const payload = {
       model: 'claude-3-7-sonnet-latest',
       system: systemPrompt || '',
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'image',
-              source: {
-                type: 'base64',
-                media_type: 'image/jpeg',
-                data: processedBase64
-              }
-            },
-            {
-              type: 'text',
-              text: userMessage || "What do you see in this screenshot? Can you provide any gaming advice based on what you see?"
-            }
-          ]
-        }
-      ],
+      messages: claudeMessages,
       max_tokens: 500,
       stream: true // Enable streaming
     };
