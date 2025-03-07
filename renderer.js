@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeSlider = document.getElementById('volumeSlider');
     const micButton = document.getElementById('micButton');
     const speechStatus = document.getElementById('speechStatus');
-    const voiceSelector = document.getElementById('voiceSelector');
     let isLoggedIn = false; // Track login state
     
     // Select Nova by default
@@ -275,10 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
             speechManager.setVoice(voiceId);
             localStorage.setItem('selectedVoice', voiceId);
             
-            // Update the voice selector to match Nova's voice
-            if (voiceSelector) {
-                voiceSelector.value = voiceId;
-            }
         }
     };
     
@@ -777,17 +772,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('speechVolume', volume);
     });
     
-    // Voice selector event listener
-    voiceSelector.addEventListener('change', () => {
-        const voiceId = voiceSelector.value;
-        speechManager.setVoice(voiceId);
-        localStorage.setItem('selectedVoice', voiceId);
-        
-        // Test the selected voice with browser TTS
-        speechManager.fallbackSpeak("Hello, I'm your gaming assistant.").catch(error => {
-            console.error('Error testing voice:', error);
-        });
-    });
 
     // Microphone button event listener
     micButton.addEventListener('click', () => {
@@ -850,12 +834,6 @@ document.addEventListener('DOMContentLoaded', () => {
             speechManager.setVolume(volume);
         }
         
-        // Load saved voice
-        const savedVoice = localStorage.getItem('selectedVoice');
-        if (savedVoice) {
-            voiceSelector.value = savedVoice;
-            speechManager.setVoice(savedVoice);
-        }
     }
     
     // Test ElevenLabs TTS
@@ -957,10 +935,6 @@ document.addEventListener('DOMContentLoaded', () => {
             speechManager.setVoice(voiceId);
             localStorage.setItem('selectedVoice', voiceId);
             
-            // Update the voice selector to match the character's voice
-            if (voiceSelector) {
-                voiceSelector.value = voiceId;
-            }
             
             // Optional: Close the submenu after selection
             // charactersSubmenu.style.right = '-300px';
