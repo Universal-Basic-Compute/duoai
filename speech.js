@@ -225,13 +225,14 @@ class SpeechManager {
             
             // Use the server as a proxy to avoid exposing API key in client
             try {
+                console.log(`Sending TTS request to server with voice ID: ${this.voiceId}`);
                 const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
                     text: text,
                     voiceId: this.voiceId,
                     modelId: useModel
                 }, {
                     responseType: 'arraybuffer',
-                    timeout: 30000 // 30 second timeout
+                    timeout: 60000 // 60 second timeout for longer texts
                 });
                     
                 console.log('Received TTS response, size:', response.data.byteLength);

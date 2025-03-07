@@ -856,8 +856,8 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                     // Trim text if it's too long (ElevenLabs has character limits)
                     const trimmedText = text.length > 5000 ? text.substring(0, 5000) + "..." : text;
                     
-                    // Use the stream option to get a buffer directly
-                    const response = await client.textToSpeech.convertToStream(
+                    // Get audio directly as a buffer
+                    audioData = await client.textToSpeech.convert(
                         voiceId || "JBFqnCBsd6RMkjVDRZzb", // Default to Rachel voice
                         {
                             text: trimmedText,
@@ -865,13 +865,6 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                             output_format: "mp3_44100_128"
                         }
                     );
-                    
-                    // Convert stream to buffer
-                    const chunks = [];
-                    for await (const chunk of response) {
-                        chunks.push(chunk);
-                    }
-                    audioData = Buffer.concat(chunks);
                     
                     console.log('Received audio from ElevenLabs, size:', audioData ? audioData.length : 0);
                     
