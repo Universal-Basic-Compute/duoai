@@ -510,12 +510,15 @@ app.post('/api/whisper', express.json({ limit: '10mb' }), async (req, res) => {
 
 // Get ElevenLabs API key (without exposing it to the client)
 app.get('/api/elevenlabs/key', (req, res) => {
-    // Only return a masked version for security
+    console.log('Received request for ElevenLabs API key');
+    
     if (process.env.ELEVENLABS_API_KEY) {
         const maskedKey = process.env.ELEVENLABS_API_KEY.substring(0, 4) + '...' + 
                           process.env.ELEVENLABS_API_KEY.substring(process.env.ELEVENLABS_API_KEY.length - 4);
+        console.log('Returning ElevenLabs API key (masked):', maskedKey);
         res.json({ key: process.env.ELEVENLABS_API_KEY, maskedKey });
     } else {
+        console.error('ElevenLabs API key not found in environment variables');
         res.status(404).json({ error: 'ElevenLabs API key not found' });
     }
 });
@@ -523,9 +526,16 @@ app.get('/api/elevenlabs/key', (req, res) => {
 // Text-to-speech endpoint
 app.post('/api/elevenlabs/tts', async (req, res) => {
     try {
+        console.log('Received request to /api/elevenlabs/tts');
+        
         const { text, voiceId, modelId } = req.body;
         
+        console.log('Text length:', text ? text.length : 0);
+        console.log('Voice ID:', voiceId || 'default');
+        console.log('Model ID:', modelId || 'default');
+        
         if (!text) {
+            console.error('No text provided for TTS');
             return res.status(400).json({ error: 'No text provided' });
         }
         
@@ -535,11 +545,15 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
             return res.status(500).json({ error: 'API key configuration error' });
         }
         
+        console.log('Initializing ElevenLabs client');
+        
         // Initialize ElevenLabs client
         const { ElevenLabsClient } = require('elevenlabs');
         const client = new ElevenLabsClient({
             apiKey: process.env.ELEVENLABS_API_KEY
         });
+        
+        console.log('Converting text to speech with ElevenLabs');
         
         // Convert text to speech
         const audio = await client.textToSpeech.convert(
@@ -551,14 +565,21 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
             }
         );
         
+        console.log('Received audio from ElevenLabs, size:', audio.length);
+        
         // Set response headers
         res.setHeader('Content-Type', 'audio/mpeg');
         res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
         
         // Send the audio data
         res.send(Buffer.from(audio));
+        console.log('Audio sent to client');
     } catch (error) {
         console.error('Error with ElevenLabs TTS:', error);
+        console.error('Error details:', error.message);
+        if (error.response) {
+            console.error('ElevenLabs API response:', error.response.data);
+        }
         res.status(500).json({ 
             error: 'Error processing text-to-speech',
             details: error.message

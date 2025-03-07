@@ -19,25 +19,44 @@ class SpeechManager {
     
     /**
      * Initialize ElevenLabs client
+     * @returns {Promise<boolean>} - True if initialization was successful
      */
     async initElevenLabs() {
         try {
             // Get the server port from localStorage or default to 3000
             const serverPort = localStorage.getItem('serverPort') || 3000;
             
+            console.log(`Checking for ElevenLabs API key at http://localhost:${serverPort}/api/elevenlabs/key`);
+            
             // Get API key from server
-            const response = await axios.get(`http://localhost:${serverPort}/api/elevenlabs/key`);
+            const response = await axios.get(`http://localhost:${serverPort}/api/elevenlabs/key`, {
+                timeout: 5000 // 5 second timeout
+            });
+            
+            console.log('ElevenLabs key response:', response.data ? 'Received' : 'Empty');
+            
             if (response.data && response.data.key) {
+                console.log('Initializing ElevenLabs client with key:', response.data.maskedKey);
+                
                 this.elevenLabsClient = new ElevenLabsClient({
                     apiKey: response.data.key
                 });
-                console.log('ElevenLabs client initialized');
+                
+                console.log('ElevenLabs client initialized successfully');
                 
                 // Get available voices
                 this.loadVoices();
+                return true;
+            } else {
+                console.error('No ElevenLabs API key received from server');
+                return false;
             }
         } catch (error) {
-            console.error('Error initializing ElevenLabs client:', error);
+            console.error('Error initializing ElevenLabs client:', error.message);
+            if (error.response) {
+                console.error('Response status:', error.response.status);
+            }
+            return false;
         }
     }
     
@@ -161,15 +180,25 @@ class SpeechManager {
         this.audioElement.currentTime = 0;
         
         if (!this.elevenLabsClient) {
-            console.warn('ElevenLabs client not initialized');
-            return this.fallbackSpeak(text);
+            console.warn('ElevenLabs client not initialized, attempting to initialize now...');
+            await this.initElevenLabs();
+            
+            // Check again after initialization attempt
+            if (!this.elevenLabsClient) {
+                console.warn('ElevenLabs client still not initialized, falling back to browser TTS');
+                return this.fallbackSpeak(text);
+            }
         }
         
         try {
             console.log('Converting text to speech with ElevenLabs:', text);
+            console.log('Using voice ID:', this.voiceId);
+            console.log('Using model ID:', this.modelId);
             
             // Get the server port from localStorage or default to 3000
             const serverPort = localStorage.getItem('serverPort') || 3000;
+            
+            console.log(`Sending TTS request to http://localhost:${serverPort}/api/elevenlabs/tts`);
             
             // Use the server as a proxy to avoid exposing API key in client
             const response = await axios.post(`http://localhost:${serverPort}/api/elevenlabs/tts`, {
@@ -177,12 +206,17 @@ class SpeechManager {
                 voiceId: this.voiceId,
                 modelId: this.modelId
             }, {
-                responseType: 'arraybuffer'
+                responseType: 'arraybuffer',
+                timeout: 30000 // 30 second timeout
             });
+            
+            console.log('Received TTS response, size:', response.data.byteLength);
             
             // Create blob from array buffer
             const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
             const audioUrl = URL.createObjectURL(audioBlob);
+            
+            console.log('Created audio URL:', audioUrl);
             
             // Play the audio
             return new Promise((resolve) => {
@@ -190,6 +224,7 @@ class SpeechManager {
                 this.audioElement.volume = this.volume;
                 
                 this.audioElement.onended = () => {
+                    console.log('Audio playback ended');
                     URL.revokeObjectURL(audioUrl);
                     resolve();
                 };
@@ -200,6 +235,7 @@ class SpeechManager {
                     resolve();
                 };
                 
+                console.log('Starting audio playback');
                 this.audioElement.play().catch(error => {
                     console.error('Error playing audio:', error);
                     resolve();
@@ -207,6 +243,11 @@ class SpeechManager {
             });
         } catch (error) {
             console.error('Error with ElevenLabs TTS:', error);
+            console.error('Error details:', error.message);
+            if (error.response) {
+                console.error('Response status:', error.response.status);
+                console.error('Response headers:', error.response.headers);
+            }
             // Fall back to browser's built-in TTS
             return this.fallbackSpeak(text);
         }

@@ -597,12 +597,35 @@ document.addEventListener('DOMContentLoaded', () => {
             speechManager.setVoice(savedVoice);
         }
     }
+    
+    // Test ElevenLabs TTS
+    async function testElevenLabsTTS() {
+        try {
+            console.log('Testing ElevenLabs TTS...');
+            const isAvailable = await speechManager.initElevenLabs();
+            console.log('ElevenLabs available:', isAvailable);
+            
+            if (isAvailable) {
+                console.log('ElevenLabs is available, testing voice...');
+                // Don't actually play a test sound to avoid disrupting the user
+                // Just log that it's ready
+                console.log('ElevenLabs TTS is ready to use');
+            } else {
+                console.warn('ElevenLabs is not available, will use browser TTS');
+            }
+        } catch (error) {
+            console.error('Error testing ElevenLabs TTS:', error);
+        }
+    }
 
     // Check login state at startup
     checkLoginState();
     
     // Load saved settings
     loadSavedSettings();
+    
+    // Test ElevenLabs TTS
+    testElevenLabsTTS();
     
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
