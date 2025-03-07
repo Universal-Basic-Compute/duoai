@@ -1,4 +1,4 @@
-const { desktopCapturer, screen } = require('electron');
+const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -19,32 +19,37 @@ class ScreenshotUtil {
      */
     async captureScreenshot() {
         try {
-            // Get all available sources
-            const sources = await desktopCapturer.getSources({ 
-                types: ['screen'],
-                thumbnailSize: { width: 1920, height: 1080 }
+            console.log('Requesting screenshot from main process...');
+            
+            // Use IPC to request a screenshot from the main process
+            return new Promise((resolve, reject) => {
+                // Generate a unique filename
+                const timestamp = new Date().getTime();
+                const filePath = path.join(this.screenshotDir, `screenshot-${timestamp}.png`);
+                
+                // Request screenshot from main process
+                ipcRenderer.once('screenshot-captured', (event, error, base64Data) => {
+                    if (error) {
+                        console.error('Error from main process:', error);
+                        reject(new Error(error));
+                        return;
+                    }
+                    
+                    try {
+                        // Convert base64 to buffer and save
+                        const buffer = Buffer.from(base64Data, 'base64');
+                        fs.writeFileSync(filePath, buffer);
+                        console.log('Screenshot saved to:', filePath);
+                        resolve(filePath);
+                    } catch (err) {
+                        console.error('Error saving screenshot:', err);
+                        reject(err);
+                    }
+                });
+                
+                // Send request to main process
+                ipcRenderer.send('capture-screenshot');
             });
-
-            // Use the primary display (first source)
-            const primarySource = sources[0];
-            
-            if (!primarySource) {
-                throw new Error('No screen source found');
-            }
-
-            // Get the thumbnail as a data URL
-            const thumbnail = primarySource.thumbnail.toDataURL();
-            
-            // Convert data URL to buffer
-            const base64Data = thumbnail.replace(/^data:image\/png;base64,/, '');
-            const buffer = Buffer.from(base64Data, 'base64');
-            
-            // Save the screenshot to a file
-            const timestamp = new Date().getTime();
-            const filePath = path.join(this.screenshotDir, `screenshot-${timestamp}.png`);
-            fs.writeFileSync(filePath, buffer);
-            
-            return filePath;
         } catch (error) {
             console.error('Error capturing screenshot:', error);
             throw error;

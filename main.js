@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, desktopCapturer } = require('electron');
 const path = require('path');
 
 // Handle window resize requests from renderer
@@ -15,6 +15,39 @@ ipcMain.on('resize-window', (event, size) => {
             x: screenWidth - size.width,
             y: win.getBounds().y
         });
+    }
+});
+
+// Handle screenshot capture requests from renderer
+ipcMain.on('capture-screenshot', async (event) => {
+    try {
+        console.log('Main process: Capturing screenshot...');
+        
+        // Get all available sources
+        const sources = await desktopCapturer.getSources({ 
+            types: ['screen'],
+            thumbnailSize: { width: 1920, height: 1080 }
+        });
+
+        // Use the primary display (first source)
+        const primarySource = sources[0];
+        
+        if (!primarySource) {
+            event.reply('screenshot-captured', 'No screen source found', null);
+            return;
+        }
+
+        // Get the thumbnail as a data URL
+        const thumbnail = primarySource.thumbnail.toDataURL();
+        
+        // Convert data URL to base64 string (remove the prefix)
+        const base64Data = thumbnail.replace(/^data:image\/png;base64,/, '');
+        
+        // Send the base64 data back to the renderer
+        event.reply('screenshot-captured', null, base64Data);
+    } catch (error) {
+        console.error('Error capturing screenshot in main process:', error);
+        event.reply('screenshot-captured', error.message, null);
     }
 });
 
