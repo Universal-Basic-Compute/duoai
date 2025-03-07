@@ -847,16 +847,17 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
             // Convert text to speech with proper error handling and retries
             let retries = 0;
             const maxRetries = 2;
-            let audio = null;
+            let audioData = null;
             
-            while (retries <= maxRetries && !audio) {
+            while (retries <= maxRetries && !audioData) {
                 try {
                     console.log(`Attempt ${retries + 1} to convert text to speech`);
                     
                     // Trim text if it's too long (ElevenLabs has character limits)
                     const trimmedText = text.length > 5000 ? text.substring(0, 5000) + "..." : text;
                     
-                    audio = await client.textToSpeech.convert(
+                    // Use the stream option to get a buffer directly
+                    const response = await client.textToSpeech.convertToStream(
                         voiceId || "JBFqnCBsd6RMkjVDRZzb", // Default to Rachel voice
                         {
                             text: trimmedText,
@@ -865,9 +866,16 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                         }
                     );
                     
-                    console.log('Received audio from ElevenLabs, size:', audio ? audio.length : 0);
+                    // Convert stream to buffer
+                    const chunks = [];
+                    for await (const chunk of response) {
+                        chunks.push(chunk);
+                    }
+                    audioData = Buffer.concat(chunks);
                     
-                    if (!audio || audio.length < 1000) {
+                    console.log('Received audio from ElevenLabs, size:', audioData ? audioData.length : 0);
+                    
+                    if (!audioData || audioData.length < 1000) {
                         console.error('Received invalid or empty audio from ElevenLabs');
                         throw new Error('Received invalid or empty audio from ElevenLabs');
                     }
