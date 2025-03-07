@@ -6,6 +6,7 @@
   ],
   "routes": [
     { "src": "/api/claude-base64", "dest": "/api/claude-base64.js" },
+    { "src": "/api/claude-stream", "dest": "/api/claude-stream.js" },
     { "src": "/api/elevenlabs/key", "dest": "/api/elevenlabs/key.js" },
     { "src": "/api/elevenlabs/tts", "dest": "/api/elevenlabs/tts.js" },
     { "src": "/api/whisper", "dest": "/api/whisper.js" },
