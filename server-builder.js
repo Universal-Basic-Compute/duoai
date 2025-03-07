@@ -36,6 +36,41 @@ async function buildServer() {
       fs.mkdirSync('dist/server', { recursive: true });
     }
     
+    // Copy API directory to dist/server
+    if (fs.existsSync('api')) {
+      if (!fs.existsSync('dist/server/api')) {
+        fs.mkdirSync('dist/server/api', { recursive: true });
+      }
+      
+      // Copy all files from api directory
+      const apiFiles = fs.readdirSync('api', { withFileTypes: true });
+      for (const file of apiFiles) {
+        if (file.isDirectory()) {
+          // Handle subdirectories
+          const subdir = path.join('api', file.name);
+          const targetSubdir = path.join('dist/server/api', file.name);
+          
+          if (!fs.existsSync(targetSubdir)) {
+            fs.mkdirSync(targetSubdir, { recursive: true });
+          }
+          
+          const subdirFiles = fs.readdirSync(subdir);
+          for (const subFile of subdirFiles) {
+            const source = path.join(subdir, subFile);
+            const target = path.join(targetSubdir, subFile);
+            fs.copyFileSync(source, target);
+          }
+        } else {
+          // Copy file
+          const source = path.join('api', file.name);
+          const target = path.join('dist/server/api', file.name);
+          fs.copyFileSync(source, target);
+        }
+      }
+      
+      console.log('API directory copied to dist/server/api');
+    }
+    
     // Build the server executable
     await exec([
       'server.js',

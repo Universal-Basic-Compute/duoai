@@ -1,9 +1,17 @@
 {
   "version": 2,
   "builds": [
-    { "src": "website/**", "use": "@vercel/static" }
+    { "src": "website/**", "use": "@vercel/static" },
+    { "src": "server.js", "use": "@vercel/node" },
+    { "src": "airtable-service.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/api/(.*)", "dest": "/server.js" },
+    { "src": "/auth/(.*)", "dest": "/server.js" },
+    { "src": "/health", "dest": "/server.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
