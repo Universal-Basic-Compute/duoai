@@ -56,6 +56,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Import Airtable service
+const airtableService = require('./airtable-service');
+
 // Passport configuration
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -63,14 +66,25 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback',
     userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
   },
-  function(accessToken, refreshToken, profile, cb) {
-    // In a production app, you would:
-    // 1. Check if user exists in your database
-    // 2. If not, create a new user
-    // 3. Return the user object
-    
-    // For now, we'll just use the Google profile
-    return cb(null, profile);
+  async function(accessToken, refreshToken, profile, cb) {
+    try {
+      // Check if user exists in Airtable
+      let user = await airtableService.findUserByGoogleId(profile.id);
+      
+      // If user doesn't exist, create a new one
+      if (!user) {
+        user = await airtableService.createUser(profile);
+      } else {
+        // Update last login time
+        await airtableService.updateLastLogin(user.id);
+      }
+      
+      // Return the user object
+      return cb(null, user);
+    } catch (error) {
+      console.error('Error in Google auth strategy:', error);
+      return cb(error, null);
+    }
   }
 ));
 
@@ -262,13 +276,14 @@ app.get('/auth/google/callback',
 // Check authentication status
 app.get('/api/auth/status', (req, res) => {
   if (req.isAuthenticated()) {
+    // User data is already coming from Airtable via passport
     res.json({
       isAuthenticated: true,
       user: {
         id: req.user.id,
-        name: req.user.displayName,
-        email: req.user.emails && req.user.emails[0] ? req.user.emails[0].value : '',
-        picture: req.user.photos && req.user.photos[0] ? req.user.photos[0].value : ''
+        name: req.user.Name || req.user.displayName,
+        email: req.user.Email || (req.user.emails && req.user.emails[0] ? req.user.emails[0].value : ''),
+        picture: req.user.ProfilePicture || (req.user.photos && req.user.photos[0] ? req.user.photos[0].value : '')
       }
     });
   } else {
@@ -307,27 +322,37 @@ const SUBSCRIPTION_PLANS = {
 };
 
 // Get user subscription
-app.get('/api/subscription', (req, res) => {
+app.get('/api/subscription', async (req, res) => {
     if (!req.isAuthenticated()) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    // In a real app, you would fetch this from your database
-    // For now, we'll return a mock subscription
-    const mockSubscription = {
-        userId: req.user.id,
-        plan: 'basic',
-        status: 'active',
-        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        hoursUsed: 2,
-        hoursTotal: SUBSCRIPTION_PLANS.basic.hoursPerMonth
-    };
-    
-    res.json(mockSubscription);
+    try {
+        // Get subscription details from Airtable
+        const subscription = await airtableService.getSubscription(req.user.id);
+        
+        // Get the plan details
+        const planDetails = SUBSCRIPTION_PLANS[subscription.plan] || SUBSCRIPTION_PLANS.basic;
+        
+        // Format the response
+        const response = {
+            userId: req.user.id,
+            plan: subscription.plan,
+            status: subscription.status,
+            currentPeriodEnd: subscription.expiryDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            hoursUsed: subscription.hoursUsed,
+            hoursTotal: planDetails.hoursPerMonth
+        };
+        
+        res.json(response);
+    } catch (error) {
+        console.error('Error fetching subscription:', error);
+        res.status(500).json({ error: 'Failed to fetch subscription details' });
+    }
 });
 
 // Subscribe to a plan
-app.post('/api/subscription', (req, res) => {
+app.post('/api/subscription', async (req, res) => {
     if (!req.isAuthenticated()) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
@@ -338,22 +363,37 @@ app.post('/api/subscription', (req, res) => {
         return res.status(400).json({ error: 'Invalid plan' });
     }
     
-    // In a real app, you would:
-    // 1. Process payment (Stripe, PayPal, etc.)
-    // 2. Store subscription in database
-    // 3. Return the updated subscription
-    
-    // For now, we'll return a mock successful subscription
-    const mockSubscription = {
-        userId: req.user.id,
-        plan: planId,
-        status: 'active',
-        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        hoursUsed: 0,
-        hoursTotal: SUBSCRIPTION_PLANS[planId].hoursPerMonth
-    };
-    
-    res.json(mockSubscription);
+    try {
+        // In a real app, you would process payment here
+        // For now, we'll just update the subscription in Airtable
+        
+        // Set expiry date to 30 days from now
+        const expiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        
+        // Update subscription in Airtable
+        await airtableService.updateSubscription(req.user.id, planId, 'active', expiryDate);
+        
+        // Reset hours used to 0 when subscribing to a new plan
+        await airtableService.updateUser(req.user.id, { HoursUsed: 0 });
+        
+        // Get updated subscription
+        const subscription = await airtableService.getSubscription(req.user.id);
+        
+        // Format the response
+        const response = {
+            userId: req.user.id,
+            plan: planId,
+            status: 'active',
+            currentPeriodEnd: expiryDate,
+            hoursUsed: 0,
+            hoursTotal: SUBSCRIPTION_PLANS[planId].hoursPerMonth
+        };
+        
+        res.json(response);
+    } catch (error) {
+        console.error('Error updating subscription:', error);
+        res.status(500).json({ error: 'Failed to update subscription' });
+    }
 });
 
 // Track usage time
@@ -363,10 +403,9 @@ app.post('/api/usage/start', (req, res) => {
     }
     
     // Start tracking session
-    // In a real app, you would store this in your database
     const sessionId = Date.now().toString();
     
-    // Store session start time in memory (use a database in production)
+    // Store session start time in session
     req.session.activeSession = {
         id: sessionId,
         startTime: Date.now()
@@ -375,7 +414,7 @@ app.post('/api/usage/start', (req, res) => {
     res.json({ sessionId });
 });
 
-app.post('/api/usage/end', (req, res) => {
+app.post('/api/usage/end', async (req, res) => {
     if (!req.isAuthenticated() || !req.session.activeSession) {
         return res.status(400).json({ error: 'No active session' });
     }
@@ -386,17 +425,21 @@ app.post('/api/usage/end', (req, res) => {
         return res.status(400).json({ error: 'Invalid session ID' });
     }
     
-    // Calculate session duration in hours
-    const duration = (Date.now() - req.session.activeSession.startTime) / (1000 * 60 * 60);
-    
-    // In a real app, you would:
-    // 1. Update the user's usage in the database
-    // 2. Check if they've exceeded their limit
-    
-    // Clear the active session
-    delete req.session.activeSession;
-    
-    res.json({ duration });
+    try {
+        // Calculate session duration in hours
+        const duration = (Date.now() - req.session.activeSession.startTime) / (1000 * 60 * 60);
+        
+        // Update the user's usage in Airtable
+        await airtableService.updateUsageHours(req.user.id, duration);
+        
+        // Clear the active session
+        delete req.session.activeSession;
+        
+        res.json({ duration });
+    } catch (error) {
+        console.error('Error updating usage hours:', error);
+        res.status(500).json({ error: 'Failed to update usage hours' });
+    }
 });
 
 // Serve static files from the website directory
