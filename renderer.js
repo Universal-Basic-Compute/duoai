@@ -523,8 +523,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Capture screenshot
             const screenshotPath = await screenshotUtil.captureScreenshot();
             
-            // Get system prompt
-            const systemPrompt = localStorage.getItem('currentSystemPrompt');
+            // Get current character
+            const currentCharacter = localStorage.getItem('currentCharacter');
             
             // Call Claude API with streaming
             let fullResponse = '';
@@ -534,13 +534,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             console.log('Sending message to Claude API with streaming...');
             console.log('Message:', sanitizedMessage);
-            console.log('Character:', localStorage.getItem('currentCharacter') || 'None');
+            console.log('Character:', currentCharacter || 'None');
             
             await claudeAPI.sendMessageWithScreenshotStreaming(
-                systemPrompt,
                 sanitizedMessage || "*the user did not type a specific message at this time*",
                 screenshotPath,
-                localStorage.getItem('currentCharacter'), // Add character name as a parameter
+                currentCharacter, // Pass character name
                 // On chunk callback
                 (chunk) => {
                     // Update the text element with the new chunk

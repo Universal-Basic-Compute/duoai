@@ -348,7 +348,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
     try {
         console.log('[STREAM] Received request to /api/claude-stream');
         
-        const { systemPrompt, userMessage, base64Image } = req.body;
+        const { userMessage, base64Image, characterName } = req.body;
         let fullResponse = '';
 
         if (!base64Image) {
@@ -363,8 +363,12 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
         }
 
         console.log('[STREAM] Preparing streaming request to Claude API');
-        console.log('[STREAM] System prompt length:', systemPrompt ? systemPrompt.length : 0);
+        console.log('[STREAM] Character name:', characterName || 'None');
         console.log('[STREAM] User message:', userMessage);
+        
+        // Generate system prompt based on character
+        const systemPrompt = await generateSystemPrompt(characterName);
+        console.log('[STREAM] Generated system prompt for character:', characterName);
         
         // Set up headers for SSE
         res.writeHead(200, {
