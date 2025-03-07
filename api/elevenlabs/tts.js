@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     
     // Set default values
     const finalVoiceId = voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default to Rachel voice
-    const finalModelId = modelId || "eleven_monolingual_v1";  // Use a more stable model
+    const finalModelId = modelId || "eleven_flash_v2_5";  // Use a more stable model
     
     console.log('Converting text to speech with ElevenLabs:');
     console.log('- Final Voice ID:', finalVoiceId);

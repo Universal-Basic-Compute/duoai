@@ -44,7 +44,7 @@ class SpeechManager {
                     console.log('ElevenLabs client initialized successfully');
                     
                     // Set default model to a more stable one
-                    this.modelId = "eleven_monolingual_v1";
+                    this.modelId = "eleven_flash_v2_5";
                     
                     // Get available voices
                     this.loadVoices();

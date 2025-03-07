@@ -860,7 +860,7 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                         voiceId || "JBFqnCBsd6RMkjVDRZzb", // Default to Rachel voice
                         {
                             text: trimmedText,
-                            model_id: modelId || "eleven_monolingual_v1", // Use a more stable model
+                            model_id: modelId || "eleven_flash_v2_5", // Use a more stable model
                             output_format: "mp3_44100_128"
                         }
                     );
