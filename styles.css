@@ -53,7 +53,7 @@ body {
     transform: translateY(-50%);
     background: var(--accent-gradient);
     color: white;
-    padding: 10px 3px; /* Reduced padding */
+    padding: 8px 3px; /* Reduced padding */
     border-radius: 6px 0 0 6px; /* Smaller border radius */
     cursor: pointer;
     z-index: 9999; /* Extremely high z-index */
@@ -61,7 +61,7 @@ body {
     box-shadow: -2px 0 10px var(--glow-color); /* Reduced shadow */
     animation: pulse 2s infinite;
     width: 20px; /* Reduced width */
-    height: 60px; /* Reduced height */
+    height: 40px; /* Significantly reduced height from 60px to 40px */
     pointer-events: auto !important; /* Force pointer events to be enabled */
     user-select: none; /* Prevent text selection */
 }
@@ -69,7 +69,7 @@ body {
 .tab-handle {
     writing-mode: vertical-rl;
     text-orientation: mixed;
-    font-size: 16px; /* Smaller font size */
+    font-size: 14px; /* Smaller font size */
     text-align: center;
     line-height: 20px; /* Match width of parent */
     pointer-events: none; /* Make sure events pass through to parent */
