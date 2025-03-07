@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+  <path d="M40,10 L60,10 L60,50 L40,50 Z" fill="#7e57c2"/>
+  <path d="M10,10 L30,10 L30,50 L10,50 Z" fill="#7e57c2"/>
+  <path d="M35,25 L35,35 L30,35 L30,25 Z" fill="#7e57c2"/>
+  <text x="70" y="40" font-family="Arial" font-size="30" font-weight="bold" fill="#ffffff">DUO<tspan fill="#7e57c2">AI</tspan></text>
+</svg>
