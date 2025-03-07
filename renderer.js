@@ -75,65 +75,81 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Start button functionality
     startButton.addEventListener('click', async () => {
-        // Check if a character is selected
-        currentCharacter = localStorage.getItem('currentCharacter');
-        if (!currentCharacter) {
-            alert('Please select a character first');
-            return;
-        }
-        
-        // Update the character info in the chat header
-        selectedCharacter.innerHTML = `
-            <div class="character-avatar">${currentCharacter.charAt(0)}</div>
-            <div class="character-info">${currentCharacter}</div>
-        `;
-        
-        // Clear previous messages
-        chatMessages.innerHTML = '';
-        
-        // Show the chat container
-        chatContainer.style.right = '0';
-        
-        // Hide the side menu
-        sideMenu.style.right = '-300px';
-        menuTab.style.right = '350px';
-        
-        // Resize window to accommodate the chat
-        ipcRenderer.send('resize-window', { width: 350, height: 600 });
-        
-        // Show loading indicator
-        addLoadingIndicator();
+        console.log('Start button clicked');
         
         try {
-            // Capture screenshot
-            const screenshotPath = await screenshotUtil.captureScreenshot();
+            // Check if a character is selected
+            currentCharacter = localStorage.getItem('currentCharacter');
+            if (!currentCharacter) {
+                alert('Please select a character first');
+                return;
+            }
+            
+            console.log(`Using character: ${currentCharacter}`);
+            
+            // Update the character info in the chat header
+            selectedCharacter.innerHTML = `
+                <div class="character-avatar">${currentCharacter.charAt(0)}</div>
+                <div class="character-info">${currentCharacter}</div>
+            `;
+            
+            // Clear previous messages
+            chatMessages.innerHTML = '';
+            
+            // Show the chat container
+            chatContainer.style.right = '0';
+            
+            // Hide the side menu
+            sideMenu.style.right = '-300px';
+            menuTab.style.right = '350px';
+            
+            // Resize window to accommodate the chat
+            ipcRenderer.send('resize-window', { width: 350, height: 600 });
+            
+            // Show loading indicator
+            addLoadingIndicator();
             
             // Get system prompt
             const systemPrompt = localStorage.getItem('currentSystemPrompt');
+            console.log('System prompt retrieved:', systemPrompt ? 'Yes' : 'No');
             
-            // Call Claude API
-            const response = await claudeAPI.sendMessageWithScreenshot(
-                systemPrompt,
-                "I just started the app. What do you see in this screenshot? Can you provide any gaming advice based on what you see?",
-                screenshotPath
-            );
-            
-            // Remove loading indicator
-            removeLoadingIndicator();
-            
-            // Add AI message to chat
-            addMessage(response, 'ai');
-            
-            // Clean up old screenshots
-            screenshotUtil.cleanupOldScreenshots();
+            try {
+                // Capture screenshot
+                console.log('Capturing screenshot...');
+                const screenshotPath = await screenshotUtil.captureScreenshot();
+                console.log('Screenshot captured:', screenshotPath);
+                
+                // Call Claude API
+                console.log('Sending message to Claude API...');
+                const response = await claudeAPI.sendMessageWithScreenshot(
+                    systemPrompt,
+                    "I just started the app. What do you see in this screenshot? Can you provide any gaming advice based on what you see?",
+                    screenshotPath
+                );
+                
+                console.log('Received response from Claude API');
+                
+                // Remove loading indicator
+                removeLoadingIndicator();
+                
+                // Add AI message to chat
+                addMessage(response, 'ai');
+                
+                // Clean up old screenshots
+                screenshotUtil.cleanupOldScreenshots();
+            } catch (error) {
+                console.error('Error in API call or screenshot:', error);
+                
+                // Remove loading indicator
+                removeLoadingIndicator();
+                
+                // Show error message with details
+                const errorMessage = `I'm sorry, I encountered an error: ${error.message}. Please make sure the backend server is running.`;
+                addMessage(errorMessage, 'ai');
+            }
         } catch (error) {
-            console.error('Error starting chat:', error);
-            
-            // Remove loading indicator
-            removeLoadingIndicator();
-            
-            // Show error message
-            addMessage("I'm sorry, I encountered an error. Please try again later.", 'ai');
+            console.error('Unexpected error in start button handler:', error);
+            alert(`An unexpected error occurred: ${error.message}`);
         }
     });
     

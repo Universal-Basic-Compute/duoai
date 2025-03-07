@@ -30,6 +30,21 @@ class ClaudeAPI {
     }
 
     /**
+     * Check if the backend server is running
+     * @returns {Promise<boolean>} - True if server is running, false otherwise
+     */
+    async checkServerStatus() {
+        try {
+            // Simple GET request to check if server is running
+            await axios.get('http://localhost:3000/health');
+            return true;
+        } catch (error) {
+            console.error('Backend server is not running:', error.message);
+            return false;
+        }
+    }
+
+    /**
      * Send a message to Claude with a screenshot via the backend server
      * @param {string} systemPrompt - The system prompt
      * @param {string} userMessage - The user's message
@@ -37,6 +52,11 @@ class ClaudeAPI {
      * @returns {Promise<string>} - Claude's response
      */
     async sendMessageWithScreenshot(systemPrompt, userMessage, screenshotPath) {
+        // Check if server is running
+        const serverRunning = await this.checkServerStatus().catch(() => false);
+        if (!serverRunning) {
+            throw new Error('Backend server is not running. Please start the server first.');
+        }
         try {
             // Create a FormData object
             const formData = new FormData();
