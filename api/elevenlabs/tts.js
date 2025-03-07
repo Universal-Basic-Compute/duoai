@@ -1,4 +1,4 @@
-const { ElevenLabsClient } = require('elevenlabs');
+const axios = require('axios');
 
 module.exports = async (req, res) => {
   try {
@@ -26,15 +26,10 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: 'API key configuration error' });
     }
     
-    console.log('Initializing ElevenLabs client with API key:', 
+    console.log('Using ElevenLabs API key:', 
                 process.env.ELEVENLABS_API_KEY ? process.env.ELEVENLABS_API_KEY.substring(0, 4) + '...' : 'undefined');
     
     try {
-      // Initialize ElevenLabs client
-      const client = new ElevenLabsClient({
-        apiKey: process.env.ELEVENLABS_API_KEY
-      });
-      
       // Set default values
       const finalVoiceId = voiceId || "JBFqnCBsd6RMkjVDRZzb"; // Default to Rachel voice
       const finalModelId = modelId || "eleven_flash_v2_5";  // Use a more stable model
@@ -61,27 +56,31 @@ module.exports = async (req, res) => {
             console.log(`Calling ElevenLabs API with voice ID: ${finalVoiceId}`);
             console.log(`Using model ID: ${finalModelId}`);
             
-            try {
-              // Get audio directly as a buffer
-              audio = await client.textToSpeech.convert(
-                finalVoiceId,
-                {
-                  text: trimmedText,
-                  model_id: finalModelId,
-                  output_format: "mp3_44100"
+            // Use direct API call with axios
+            const apiResponse = await axios({
+              method: 'POST',
+              url: `https://api.elevenlabs.io/v1/text-to-speech/${finalVoiceId}`,
+              headers: {
+                'Accept': 'audio/mpeg',
+                'Content-Type': 'application/json',
+                'xi-api-key': process.env.ELEVENLABS_API_KEY
+              },
+              data: {
+                text: trimmedText,
+                model_id: finalModelId,
+                voice_settings: {
+                  stability: 0.5,
+                  similarity_boost: 0.75
                 }
-              );
+              },
+              responseType: 'arraybuffer'
+            });
             
-              // Log successful conversion
-              console.log(`Successfully converted ${trimmedText.length} characters to speech`);
-            } catch (conversionError) {
-              console.error('Error in ElevenLabs conversion:', conversionError.message);
-              if (conversionError.response) {
-                console.error('ElevenLabs response status:', conversionError.response.status);
-                console.error('ElevenLabs response data:', JSON.stringify(conversionError.response.data, null, 2));
-              }
-              throw conversionError;
-            }
+            // Get audio directly as a buffer
+            audio = apiResponse.data;
+            
+            // Log successful conversion
+            console.log(`Successfully converted ${trimmedText.length} characters to speech`);
             
             // Check if audio is valid and log its size
             if (!audio) {
@@ -95,18 +94,6 @@ module.exports = async (req, res) => {
             if (audioSize < 1000) {
               console.error('Audio size is too small:', audioSize, 'bytes');
               console.error('This is likely not a valid audio file');
-              
-              // Try to log the first few bytes to see what we're getting
-              if (audio && audio.slice) {
-                const firstBytes = audio.slice(0, Math.min(20, audioSize));
-                console.error('First bytes of response:', firstBytes);
-              }
-              
-              throw new Error('Received invalid or too small audio from ElevenLabs');
-            }
-            
-            if (audioSize < 1000) {
-              console.error('Received too small audio from ElevenLabs (size:', audioSize, 'bytes)');
               throw new Error('Received invalid or too small audio from ElevenLabs');
             }
           } catch (apiCallError) {
@@ -142,14 +129,14 @@ module.exports = async (req, res) => {
       res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
       res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin requests
       
-      console.log('Sending audio data to client');
+      console.log('Sending audio data to client, size:', audio.length);
       
       // Send the audio data
       res.send(audio);
       
       console.log('Audio sent successfully');
     } catch (clientError) {
-      console.error('Error initializing ElevenLabs client or converting text:', clientError);
+      console.error('Error calling ElevenLabs API:', clientError);
       throw new Error(`ElevenLabs error: ${clientError.message}`);
     }
   } catch (error) {

@@ -842,7 +842,7 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
             
             console.log('Converting text to speech with ElevenLabs:');
             console.log('- Final Voice ID:', voiceId || "JBFqnCBsd6RMkjVDRZzb");
-            console.log('- Final Model ID:', modelId || "eleven_monolingual_v1");
+            console.log('- Final Model ID:', modelId || "eleven_flash_v2_5");
             
             // Convert text to speech with proper error handling and retries
             let retries = 0;
@@ -856,46 +856,33 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                     // Trim text if it's too long (ElevenLabs has character limits)
                     const trimmedText = text.length > 5000 ? text.substring(0, 5000) + "..." : text;
                     
-                    // Get audio directly as a buffer
-                    audioData = await client.textToSpeech.convert(
-                        voiceId || "JBFqnCBsd6RMkjVDRZzb", // Default to Rachel voice
-                        {
+                    // Use the direct API call instead of the client library
+                    const apiResponse = await axios({
+                        method: 'POST',
+                        url: `https://api.elevenlabs.io/v1/text-to-speech/${voiceId || "JBFqnCBsd6RMkjVDRZzb"}`,
+                        headers: {
+                            'Accept': 'audio/mpeg',
+                            'Content-Type': 'application/json',
+                            'xi-api-key': process.env.ELEVENLABS_API_KEY
+                        },
+                        data: {
                             text: trimmedText,
-                            model_id: modelId || "eleven_flash_v2_5", // Use a more stable model
-                            output_format: "mp3_44100"
-                        }
-                    );
+                            model_id: modelId || "eleven_flash_v2_5",
+                            voice_settings: {
+                                stability: 0.5,
+                                similarity_boost: 0.75
+                            }
+                        },
+                        responseType: 'arraybuffer'
+                    });
                     
-                    console.log('Received audio from ElevenLabs, size:', audioData ? audioData.length : 0);
+                    // Get the audio data directly as a buffer
+                    audioData = apiResponse.data;
+                    
+                    console.log('Received audio from ElevenLabs API, size:', audioData.length);
                     
                     if (!audioData || audioData.length < 1000) {
                         console.error('Received invalid or empty audio from ElevenLabs');
-                        
-                        // Try to decode the response if it's small (likely JSON error)
-                        if (audioData && audioData.length < 1000) {
-                            try {
-                                // Try to decode as UTF-8 text (likely JSON error)
-                                const errorText = audioData.toString('utf-8');
-                                console.error('Error response content:', errorText);
-                                
-                                // Try to parse as JSON
-                                try {
-                                    const errorJson = JSON.parse(errorText);
-                                    console.error('Parsed error JSON:', errorJson);
-                                    
-                                    // Return the error to the client
-                                    return res.status(500).json({ 
-                                        error: 'ElevenLabs API error',
-                                        details: errorJson
-                                    });
-                                } catch (jsonError) {
-                                    console.error('Error response is not valid JSON');
-                                }
-                            } catch (decodeError) {
-                                console.error('Could not decode error response as text');
-                            }
-                        }
-                        
                         throw new Error('Received invalid or empty audio from ElevenLabs');
                     }
                 } catch (elevenlabsError) {
@@ -922,7 +909,7 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
             res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
             res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin requests
             
-            console.log('Sending audio data to client');
+            console.log('Sending audio data to client, size:', audioData.length);
             
             // Send the audio data
             res.send(audioData);
