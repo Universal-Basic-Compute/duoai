@@ -263,7 +263,7 @@ class SpeechManager {
                         }
                     }
                 
-                    return this.fallbackSpeak(cleanedText);
+                    return this.fallbackSpeak(text);
                 }
                 
                 // Create blob from array buffer with explicit MIME type
@@ -291,7 +291,7 @@ class SpeechManager {
                             console.error('Error playing audio:', error);
                             // Fall back to browser TTS if playback fails
                             URL.revokeObjectURL(audioUrl);
-                            this.fallbackSpeak(cleanedText);
+                            this.fallbackSpeak(text);
                             resolve();
                         });
                     };
