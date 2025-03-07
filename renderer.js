@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const screenshotUtil = require('./screenshot');
     const claudeAPI = require('./claude_api');
     
-    // Set Claude API key - in a real app, this would be stored securely
-    // For development, you can set it here or use an environment variable
-    claudeAPI.setApiKey('YOUR_CLAUDE_API_KEY'); // Replace with your actual API key
+    // Set Claude API key from environment variable
+    // Make sure to set ANTHROPIC_API_KEY before starting the application
+    claudeAPI.setApiKey(process.env.ANTHROPIC_API_KEY || '');
     
     // Toggle menu when clicking on the tab
     menuTab.addEventListener('click', () => {
