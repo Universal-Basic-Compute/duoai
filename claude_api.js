@@ -1,6 +1,28 @@
-const axios = require('axios');
-const fs = require('fs');
-const FormData = require('form-data');
+// Try to load required modules with error handling
+let axios;
+let fs;
+let FormData;
+
+try {
+    axios = require('axios');
+    fs = require('fs');
+    FormData = require('form-data');
+} catch (error) {
+    console.error('Error loading modules:', error);
+    // Provide fallback implementations to prevent further errors
+    axios = {
+        post: () => Promise.reject(new Error('axios module not available'))
+    };
+    fs = {
+        createReadStream: () => null
+    };
+    FormData = function() {
+        return {
+            append: () => {},
+            getHeaders: () => ({})
+        };
+    };
+}
 
 class ClaudeAPI {
     constructor() {
