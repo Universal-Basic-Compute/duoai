@@ -14,53 +14,7 @@ function getAssetPath(...paths) {
 // Add fs module for file existence checks
 const fs = require('fs');
 
-// Start the Express server
-let serverProcess = null;
-
-function startServer() {
-    let serverPath;
-    let serverArgs = [];
-    
-    if (app.isPackaged) {
-        // Use the packaged server executable
-        serverPath = path.join(process.resourcesPath, 'server', 'duoai-server.exe');
-        
-        // Log the exact path for debugging
-        console.log('Looking for server at:', serverPath);
-        
-        // Check if the file exists
-        if (!fs.existsSync(serverPath)) {
-            console.error('Server executable not found at:', serverPath);
-            return;
-        }
-    } else {
-        // Use Node.js to run the server script in development
-        serverPath = 'node';
-        serverArgs = ['server.js'];
-    }
-    
-    console.log('Starting server with:', serverPath, serverArgs);
-    
-    serverProcess = spawn(serverPath, serverArgs, {
-        stdio: 'inherit',
-        detached: false
-    });
-    
-    console.log('Server started with PID:', serverProcess ? serverProcess.pid : 'unknown');
-    
-    if (serverProcess) {
-        serverProcess.on('error', (err) => {
-            console.error('Failed to start server:', err);
-        });
-        
-        serverProcess.on('exit', (code, signal) => {
-            console.log(`Server process exited with code ${code} and signal ${signal}`);
-            serverProcess = null;
-        });
-    } else {
-        console.error('Failed to start server process');
-    }
-}
+// No need to start a local server as we're using a remote server
 
 // Handle external URLs
 app.on('web-contents-created', (event, contents) => {
@@ -135,10 +89,6 @@ ipcMain.on('capture-screenshot', async (event) => {
 });
 
 function createWindow() {
-    // Start the server if it's not already running
-    if (!serverProcess) {
-        startServer();
-    }
     
     const mainWindow = new BrowserWindow({
         width: 350,  // Width for the menu
@@ -193,18 +143,7 @@ app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });
 
-// Clean up the server process when the app quits
-app.on('will-quit', () => {
-    if (serverProcess) {
-        console.log('Killing server process');
-        if (process.platform === 'win32') {
-            spawn('taskkill', ['/pid', serverProcess.pid, '/f', '/t']);
-        } else {
-            serverProcess.kill();
-        }
-        serverProcess = null;
-    }
-});
+// No need to clean up server process as we're using a remote server
 
 // Handle opening external URLs
 ipcMain.on('open-external-url', (event, url) => {
@@ -253,22 +192,6 @@ ipcMain.handle('get-config', async () => {
 
 ipcMain.handle('save-config', async (event, newConfig) => {
     const result = configManager.saveConfig(newConfig);
-    
-    // Restart the server to apply new settings
-    if (result && serverProcess) {
-        if (serverProcess) {
-            if (process.platform === 'win32') {
-                spawn('taskkill', ['/pid', serverProcess.pid, '/f', '/t']);
-            } else {
-                serverProcess.kill();
-            }
-            serverProcess = null;
-        }
-        
-        // Start the server with new config
-        startServer();
-    }
-    
     return result;
 });
 

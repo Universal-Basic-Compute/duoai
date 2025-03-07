@@ -34,10 +34,9 @@ try {
 
 class ClaudeAPI {
     constructor() {
-        // Try to get the port from localStorage, or default to 3000
-        const serverPort = localStorage.getItem('serverPort') || 3000;
-        this.apiUrl = `http://localhost:${serverPort}/api/claude`;
-        this.base64ApiUrl = `http://localhost:${serverPort}/api/claude-base64`;
+        // Use the remote server URL instead of localhost
+        this.apiUrl = 'https://duoai.vercel.app/api/claude';
+        this.base64ApiUrl = 'https://duoai.vercel.app/api/claude-base64';
     }
 
     /**
@@ -46,25 +45,16 @@ class ClaudeAPI {
      */
     async checkServerStatus() {
         try {
-            // Try ports 3000, 3001, 3002
-            for (let port = 3000; port <= 3002; port++) {
-                try {
-                    const response = await axios.get(`http://localhost:${port}/health`, { timeout: 1000 });
-                    if (response.status === 200) {
-                        // Found the correct port, update the API URLs
-                        this.apiUrl = `http://localhost:${port}/api/claude`;
-                        this.base64ApiUrl = `http://localhost:${port}/api/claude-base64`;
-                        // Save the port for future use
-                        localStorage.setItem('serverPort', port);
-                        return true;
-                    }
-                } catch (portError) {
-                    // This port didn't work, try the next one
-                    continue;
-                }
+            // Try the remote server
+            const response = await axios.get('https://duoai.vercel.app/health', { timeout: 5000 });
+            if (response.status === 200) {
+                // Server is running
+                this.apiUrl = 'https://duoai.vercel.app/api/claude';
+                this.base64ApiUrl = 'https://duoai.vercel.app/api/claude-base64';
+                return true;
             }
             
-            console.error('Could not find server on ports 3000-3002');
+            console.error('Remote server health check failed');
             return false;
         } catch (error) {
             console.error('Error checking server status:', error.message);
@@ -84,7 +74,7 @@ class ClaudeAPI {
             // Check if server is running
             const serverRunning = await this.checkServerStatus().catch(() => false);
             if (!serverRunning) {
-                throw new Error('Backend server is not running. Please start the server first.');
+                throw new Error('Remote server is not available. Please check your internet connection.');
             }
 
             // Check if screenshot file exists
@@ -137,7 +127,7 @@ class ClaudeAPI {
                 console.log('Image converted to JPEG');
             }
             
-            console.log('Sending request to backend server...');
+            console.log('Sending request to remote server...');
             console.log('Image size (base64):', Math.round(base64Image.length / 1024), 'KB');
             
             // Send the request to the backend server using the base64 endpoint
@@ -157,7 +147,7 @@ class ClaudeAPI {
             // Return Claude's response
             return response.data.response;
         } catch (error) {
-            console.error('Error calling backend server:', error);
+            console.error('Error calling remote server:', error);
             if (error.response) {
                 console.error('Response data:', error.response.data);
                 console.error('Response status:', error.response.status);

@@ -12,6 +12,7 @@ class SpeechManager {
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (Rachel)
         this.modelId = "eleven_flash_v2_5"; // Default model
+        this.serverUrl = 'https://duoai.vercel.app'; // Remote server URL
         
         // Initialize ElevenLabs client if API key is available
         this.initElevenLabs();
@@ -23,13 +24,10 @@ class SpeechManager {
      */
     async initElevenLabs() {
         try {
-            // Get the server port from localStorage or default to 3000
-            const serverPort = localStorage.getItem('serverPort') || 3000;
-            
-            console.log(`Checking for ElevenLabs API key at http://localhost:${serverPort}/api/elevenlabs/key`);
+            console.log(`Checking for ElevenLabs API key at ${this.serverUrl}/api/elevenlabs/key`);
             
             // Get API key from server
-            const response = await axios.get(`http://localhost:${serverPort}/api/elevenlabs/key`, {
+            const response = await axios.get(`${this.serverUrl}/api/elevenlabs/key`, {
                 timeout: 5000 // 5 second timeout
             });
             
@@ -108,11 +106,8 @@ class SpeechManager {
                     // Convert blob to base64
                     const base64Audio = await this.blobToBase64(audioBlob);
                     
-                    // Get the server port from localStorage or default to 3000
-                    const serverPort = localStorage.getItem('serverPort') || 3000;
-                    
-                    // Send to Whisper API
-                    const response = await axios.post(`http://localhost:${serverPort}/api/whisper`, {
+                    // Send to Whisper API on remote server
+                    const response = await axios.post(`${this.serverUrl}/api/whisper`, {
                         audioData: base64Audio
                     });
                     
@@ -179,39 +174,34 @@ class SpeechManager {
         this.audioElement.pause();
         this.audioElement.currentTime = 0;
         
-        // Check if text is empty or too short
-        if (!text || text.length < 2) {
-            console.warn('Text too short for TTS, skipping');
-            return Promise.resolve();
+        if (!this.elevenLabsClient) {
+            console.warn('ElevenLabs client not initialized, attempting to initialize now...');
+            await this.initElevenLabs();
+            
+            // Check again after initialization attempt
+            if (!this.elevenLabsClient) {
+                console.warn('ElevenLabs client still not initialized, falling back to browser TTS');
+                return this.fallbackSpeak(text);
+            }
         }
         
-        // Try ElevenLabs first, but be ready to fall back
-        let useElevenLabs = !!this.elevenLabsClient;
-        
-        if (useElevenLabs) {
-            try {
-                console.log('Converting text to speech with ElevenLabs:', text);
+        try {
+            console.log('Converting text to speech with ElevenLabs:', text);
+            console.log('Using voice ID:', this.voiceId);
+            console.log('Using model ID:', this.modelId);
+            
+            console.log(`Sending TTS request to ${this.serverUrl}/api/elevenlabs/tts`);
+            
+            // Use the server as a proxy to avoid exposing API key in client
+            const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
+                text: text,
+                voiceId: this.voiceId,
+                modelId: this.modelId
+            }, {
+                responseType: 'arraybuffer',
+                timeout: 30000 // 30 second timeout
+            });
                 
-                // Get the server port from localStorage or default to 3000
-                const serverPort = localStorage.getItem('serverPort') || 3000;
-                
-                console.log(`Sending TTS request to http://localhost:${serverPort}/api/elevenlabs/tts`);
-                
-                // Use the server as a proxy to avoid exposing API key in client
-                const response = await axios.post(`http://localhost:${serverPort}/api/elevenlabs/tts`, {
-                    text: text,
-                    voiceId: this.voiceId,
-                    modelId: this.modelId
-                }, {
-                    responseType: 'arraybuffer',
-                    timeout: 30000 // 30 second timeout
-                });
-                
-                // Check if we got a valid response
-                if (response.status !== 200 || !response.data || response.data.byteLength < 1000) {
-                    console.warn('Received unusually small audio file, might be an error response');
-                    throw new Error('Invalid audio response');
-                }
                 
                 console.log('Received TTS response, size:', response.data.byteLength);
                 
@@ -252,17 +242,9 @@ class SpeechManager {
                     console.error('Response headers:', error.response.headers);
                 }
                 
-                // Mark ElevenLabs as unavailable for this session to avoid repeated failures
-                console.warn('Disabling ElevenLabs for this session due to errors');
-                this.elevenLabsClient = null;
-                
                 // Fall back to browser's built-in TTS
                 return this.fallbackSpeak(text);
             }
-        } else {
-            // Use browser's built-in TTS
-            return this.fallbackSpeak(text);
-        }
     }
     
     /**
@@ -272,10 +254,8 @@ class SpeechManager {
      */
     fallbackSpeak(text) {
         return new Promise((resolve) => {
-            console.log('Using browser speech synthesis fallback');
-            
             if (!window.speechSynthesis) {
-                console.warn('Speech synthesis is not supported in this browser');
+                console.warn('Speech synthesis is not supported');
                 resolve();
                 return;
             }
@@ -284,25 +264,11 @@ class SpeechManager {
             window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(text);
-            
-            // Try to find a good voice
-            let voices = window.speechSynthesis.getVoices();
-            if (voices.length === 0) {
-                // Sometimes voices aren't loaded immediately
-                setTimeout(() => {
-                    voices = window.speechSynthesis.getVoices();
-                    this.setFallbackVoice(utterance, voices);
-                }, 200);
-            } else {
-                this.setFallbackVoice(utterance, voices);
-            }
-            
             utterance.volume = this.volume;
             utterance.rate = 1.0;
             utterance.pitch = 1.0;
             
             utterance.onend = () => {
-                console.log('Browser speech synthesis completed');
                 resolve();
             };
             
@@ -313,49 +279,6 @@ class SpeechManager {
             
             window.speechSynthesis.speak(utterance);
         });
-    }
-    
-    /**
-     * Set the best available voice for fallback speech synthesis
-     * @param {SpeechSynthesisUtterance} utterance - The utterance to set voice for
-     * @param {SpeechSynthesisVoice[]} voices - Available voices
-     */
-    setFallbackVoice(utterance, voices) {
-        // Try to find a good English voice
-        const preferredVoices = [
-            // Look for these voice names in order of preference
-            { name: 'Google UK English Female', lang: 'en-GB' },
-            { name: 'Microsoft Zira', lang: 'en-US' },
-            { name: 'Samantha', lang: 'en-US' },
-            { name: 'Google US English', lang: 'en-US' }
-        ];
-        
-        // Try to find one of our preferred voices
-        for (const preferred of preferredVoices) {
-            const voice = voices.find(v => 
-                v.name === preferred.name || 
-                (v.name.includes(preferred.name) && v.lang.includes(preferred.lang))
-            );
-            if (voice) {
-                utterance.voice = voice;
-                console.log('Using fallback voice:', voice.name);
-                return;
-            }
-        }
-        
-        // If no preferred voice found, try to find any English voice
-        const englishVoice = voices.find(v => v.lang.startsWith('en-'));
-        if (englishVoice) {
-            utterance.voice = englishVoice;
-            console.log('Using English fallback voice:', englishVoice.name);
-            return;
-        }
-        
-        // If still no voice, use the first available voice
-        if (voices.length > 0) {
-            utterance.voice = voices[0];
-            console.log('Using first available fallback voice:', voices[0].name);
-        }
     }
 
     /**

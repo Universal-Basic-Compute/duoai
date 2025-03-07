@@ -5,13 +5,11 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "server": "node server.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist:win": "electron-builder --win",
     "dist:mac": "electron-builder --mac",
-    "dist:linux": "electron-builder --linux",
-    "build:server": "node server-builder.js"
+    "dist:linux": "electron-builder --linux"
   },
   "author": "",
   "license": "ISC",
@@ -46,7 +44,10 @@
       "!website{,/**/*}",
       "!dist{,/**/*}",
       "!node_modules/.cache{,/**/*}",
-      "!**/*.{iml,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,suo,xproj,cc,d.ts,pdb}"
+      "!**/*.{iml,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,suo,xproj,cc,d.ts,pdb}",
+      "!server.js",
+      "!server-builder.js",
+      "!airtable-service.js"
     ],
     "extraResources": [
       {
@@ -62,11 +63,6 @@
       {
         "from": "images",
         "to": "images",
-        "filter": ["**/*"]
-      },
-      {
-        "from": "dist/server",
-        "to": "server",
         "filter": ["**/*"]
       }
     ],
