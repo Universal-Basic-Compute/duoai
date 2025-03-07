@@ -73,11 +73,10 @@ class ClaudeAPI {
             formData.append('systemPrompt', systemPrompt || '');
             formData.append('userMessage', userMessage || '');
             
-            // Read the file as a buffer and append it with the correct filename
-            const fileBuffer = fs.readFileSync(screenshotPath);
-            const filename = path.basename(screenshotPath);
-            formData.append('screenshot', fileBuffer, {
-                filename: filename,
+            // Use createReadStream instead of readFileSync for better handling of large files
+            const fileStream = fs.createReadStream(screenshotPath);
+            formData.append('screenshot', fileStream, {
+                filename: path.basename(screenshotPath),
                 contentType: 'image/png'
             });
 
@@ -86,8 +85,8 @@ class ClaudeAPI {
             // Send the request to the backend server
             const response = await axios.post(this.apiUrl, formData, {
                 headers: {
-                    ...formData.getHeaders(),
-                    'Content-Type': 'multipart/form-data'
+                    ...formData.getHeaders()
+                    // Don't manually set Content-Type, let FormData set it with the boundary
                 },
                 maxContentLength: Infinity,
                 maxBodyLength: Infinity

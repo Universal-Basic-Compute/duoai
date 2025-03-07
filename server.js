@@ -47,7 +47,8 @@ app.post('/api/claude', upload.single('screenshot'), async (req, res) => {
     try {
         console.log('Received request to /api/claude');
         console.log('Request body fields:', Object.keys(req.body));
-        console.log('File received:', req.file ? 'Yes' : 'No');
+        console.log('Request files:', req.files);
+        console.log('Request file:', req.file);
         
         const { systemPrompt, userMessage } = req.body;
         const screenshotFile = req.file;
@@ -58,6 +59,7 @@ app.post('/api/claude', upload.single('screenshot'), async (req, res) => {
         }
 
         console.log('Screenshot file path:', screenshotFile.path);
+        console.log('Screenshot file size:', screenshotFile.size);
 
         // Read the screenshot file
         const imageBuffer = fs.readFileSync(screenshotFile.path);
