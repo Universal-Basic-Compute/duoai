@@ -63,7 +63,7 @@ module.exports = async (req, res) => {
           ]
         }
       ],
-      max_tokens: 4000
+      max_tokens: 500
     };
     
     // Call Claude API

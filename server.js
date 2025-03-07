@@ -220,7 +220,7 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
                     ]
                 }
             ],
-            max_tokens: 4000
+            max_tokens: 500
         };
 
         console.log('Sending request to Claude API');
@@ -344,7 +344,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
                     ]
                 }
             ],
-            max_tokens: 4000,
+            max_tokens: 500,
             stream: true
         };
 
