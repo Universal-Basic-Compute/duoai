@@ -11,7 +11,7 @@ class SpeechManager {
         this.audioElement = new Audio();
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
-        this.modelId = "eleven_flash_v2_5"; // Default model
+        this.modelId = "eleven_monolingual_v1"; // Changed to more stable model
         this.serverUrl = 'http://localhost:3000'; // Local server URL
         
         // Initialize ElevenLabs client if API key is available
@@ -43,12 +43,25 @@ class SpeechManager {
                     
                     console.log('ElevenLabs client initialized successfully');
                     
-                    // Set default model to a more stable one
-                    this.modelId = "eleven_flash_v2_5";
-                    
-                    // Get available voices
-                    this.loadVoices();
-                    return true;
+                    // Try to verify the client works by getting voices
+                    try {
+                        const voices = await this.elevenLabsClient.voices.getAll();
+                        console.log('Successfully retrieved voices from ElevenLabs:', 
+                                   voices && voices.length ? `${voices.length} voices found` : 'No voices found');
+                        
+                        // Set default model to a more stable one
+                        this.modelId = "eleven_monolingual_v1"; // Changed to more stable model
+                        
+                        // Get available voices
+                        this.loadVoices();
+                        return true;
+                    } catch (voicesError) {
+                        console.error('Error verifying ElevenLabs client with voices call:', voicesError);
+                        // Client initialized but voices call failed - still return true
+                        // as the client might work for TTS
+                        this.modelId = "eleven_monolingual_v1"; // Use more stable model
+                        return true;
+                    }
                 } catch (clientError) {
                     console.error('Error creating ElevenLabs client:', clientError);
                     return false;
@@ -204,55 +217,100 @@ class SpeechManager {
             console.log('Using voice ID:', this.voiceId);
             console.log('Using model ID:', this.modelId);
             
+            // Try with a simpler model first if we're using the flash model
+            const useModel = this.modelId === "eleven_flash_v2_5" ? "eleven_monolingual_v1" : this.modelId;
+            console.log(`Using model for this request: ${useModel}`);
+            
             console.log(`Sending TTS request to ${this.serverUrl}/api/elevenlabs/tts`);
             
             // Use the server as a proxy to avoid exposing API key in client
-            const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
-                text: text,
-                voiceId: this.voiceId,
-                modelId: this.modelId
-            }, {
-                responseType: 'arraybuffer',
-                timeout: 30000 // 30 second timeout
-            });
-                
-            console.log('Received TTS response, size:', response.data.byteLength);
-            
-            // Create blob from array buffer
-            const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
-            const audioUrl = URL.createObjectURL(audioBlob);
-            
-            console.log('Created audio URL:', audioUrl);
-            
-            // Play the audio
-            return new Promise((resolve) => {
-                this.audioElement.src = audioUrl;
-                this.audioElement.volume = this.volume;
-                
-                this.audioElement.onended = () => {
-                    console.log('Audio playback ended');
-                    URL.revokeObjectURL(audioUrl);
-                    resolve();
-                };
-                
-                this.audioElement.onerror = (error) => {
-                    console.error('Error playing audio:', error);
-                    URL.revokeObjectURL(audioUrl);
-                    resolve();
-                };
-                
-                console.log('Starting audio playback');
-                this.audioElement.play().catch(error => {
-                    console.error('Error playing audio:', error);
-                    resolve();
+            try {
+                const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
+                    text: text,
+                    voiceId: this.voiceId,
+                    modelId: useModel
+                }, {
+                    responseType: 'arraybuffer',
+                    timeout: 30000 // 30 second timeout
                 });
-            });
+                    
+                console.log('Received TTS response, size:', response.data.byteLength);
+                
+                // Create blob from array buffer
+                const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                console.log('Created audio URL:', audioUrl);
+                
+                // Play the audio
+                return new Promise((resolve) => {
+                    this.audioElement.src = audioUrl;
+                    this.audioElement.volume = this.volume;
+                    
+                    this.audioElement.onended = () => {
+                        console.log('Audio playback ended');
+                        URL.revokeObjectURL(audioUrl);
+                        resolve();
+                    };
+                    
+                    this.audioElement.onerror = (error) => {
+                        console.error('Error playing audio:', error);
+                        URL.revokeObjectURL(audioUrl);
+                        resolve();
+                    };
+                    
+                    console.log('Starting audio playback');
+                    this.audioElement.play().catch(error => {
+                        console.error('Error playing audio:', error);
+                        resolve();
+                    });
+                });
+            } catch (apiError) {
+                console.error('Error with ElevenLabs API call:', apiError.message);
+                
+                // If we tried with a different model, try with the original model
+                if (useModel !== this.modelId) {
+                    console.log(`Retrying with original model: ${this.modelId}`);
+                    
+                    const retryResponse = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
+                        text: text,
+                        voiceId: this.voiceId,
+                        modelId: this.modelId
+                    }, {
+                        responseType: 'arraybuffer',
+                        timeout: 30000
+                    });
+                    
+                    const audioBlob = new Blob([retryResponse.data], { type: 'audio/mpeg' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    return new Promise((resolve) => {
+                        this.audioElement.src = audioUrl;
+                        this.audioElement.volume = this.volume;
+                        
+                        this.audioElement.onended = () => {
+                            URL.revokeObjectURL(audioUrl);
+                            resolve();
+                        };
+                        
+                        this.audioElement.onerror = () => {
+                            URL.revokeObjectURL(audioUrl);
+                            resolve();
+                        };
+                        
+                        this.audioElement.play().catch(() => resolve());
+                    });
+                }
+                
+                throw apiError; // Re-throw if we can't retry with a different model
+            }
         } catch (error) {
             console.error('Error with ElevenLabs TTS:', error);
             console.error('Error details:', error.message);
             if (error.response) {
                 console.error('Response status:', error.response.status);
-                console.error('Response headers:', error.response.headers);
+                console.error('Response data type:', typeof error.response.data);
+                console.error('Response headers:', JSON.stringify(error.response.headers));
             }
             
             console.log('Falling back to browser TTS due to ElevenLabs error');
