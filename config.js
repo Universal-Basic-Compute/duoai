@@ -37,7 +37,7 @@ const defaultConfig = {
   ANTHROPIC_API_KEY: '',
   ELEVENLABS_API_KEY: '',
   SESSION_SECRET: 'duoai-session-secret',
-  API_URL: 'https://duoai.vercel.app' // Default API URL
+  API_URL: 'https://duoai-9febs9khj-ubc4ai.vercel.app' // Updated default API URL
 };
 
 // Load or create configuration
@@ -52,7 +52,7 @@ function loadConfig() {
         API_URL: 'http://localhost:3000'
       },
       production: {
-        API_URL: 'https://duoai.vercel.app'
+        API_URL: 'https://duoai-9febs9khj-ubc4ai.vercel.app'
       },
       test: {
         API_URL: 'http://localhost:3001'

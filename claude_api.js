@@ -11,14 +11,18 @@ try {
     FormData = require('form-data');
     path = require('path');
     sharp = require('sharp'); // Import sharp module
+    console.log('All required modules loaded successfully');
 } catch (error) {
     console.error('Error loading modules:', error);
     // Provide fallback implementations to prevent further errors
     axios = {
-        post: () => Promise.reject(new Error('axios module not available'))
+        post: () => Promise.reject(new Error('axios module not available')),
+        get: () => Promise.reject(new Error('axios module not available'))
     };
     fs = {
-        createReadStream: () => null
+        createReadStream: () => null,
+        existsSync: () => false,
+        readFileSync: () => Buffer.from([])
     };
     FormData = function() {
         return {
@@ -27,8 +31,10 @@ try {
         };
     };
     // Add fallback for sharp
-    sharp = {
-        resize: () => ({ jpeg: () => ({ toFile: () => Promise.resolve() }) })
+    sharp = function() {
+        return {
+            resize: () => ({ jpeg: () => ({ toBuffer: () => Promise.resolve(Buffer.from([])) }) })
+        };
     };
 }
 
@@ -39,7 +45,10 @@ class ClaudeAPI {
     constructor() {
         // Load config to get API URL
         const config = loadConfig();
-        this.baseUrl = config.API_URL || 'https://duoai.vercel.app';
+        
+        // Default to the Vercel deployment URL if no API URL is configured
+        this.baseUrl = config.API_URL || 'https://duoai-9febs9khj-ubc4ai.vercel.app';
+        console.log(`Using API base URL: ${this.baseUrl}`);
         
         // Use URLs with base URL for serverless endpoints
         this.apiUrl = `${this.baseUrl}/api/claude`;
