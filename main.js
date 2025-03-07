@@ -14,6 +14,18 @@ function getAssetPath(...paths) {
 // Add fs module for file existence checks
 const fs = require('fs');
 
+// Check for .env file
+const envFilePath = path.join(__dirname, '.env');
+if (!fs.existsSync(envFilePath)) {
+  console.warn('\x1b[33m%s\x1b[0m', 'WARNING: No .env file found in project root!');
+  console.warn('\x1b[33m%s\x1b[0m', 'Some features may not work correctly without environment variables.');
+} else {
+  console.log('\x1b[32m%s\x1b[0m', '.env file found in project root');
+  
+  // Load environment variables from .env file
+  require('dotenv').config();
+}
+
 // No need to start a local server as we're using a remote server
 
 // Handle external URLs

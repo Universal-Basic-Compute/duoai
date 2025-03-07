@@ -27,6 +27,22 @@ console.log('AIRTABLE_BASE_ID exists:', !!process.env.AIRTABLE_BASE_ID);
 console.log('ANTHROPIC_API_KEY exists:', !!process.env.ANTHROPIC_API_KEY);
 console.log('ELEVENLABS_API_KEY exists:', !!process.env.ELEVENLABS_API_KEY);
 
+// Add this new code to check for .env file
+const envFilePath = path.join(__dirname, '.env');
+if (!fs.existsSync(envFilePath)) {
+  console.warn('\x1b[33m%s\x1b[0m', 'WARNING: No .env file found in project root!');
+  console.warn('\x1b[33m%s\x1b[0m', 'Create a .env file with the following variables:');
+  console.warn('\x1b[33m%s\x1b[0m', '  AIRTABLE_API_KEY=your_airtable_api_key');
+  console.warn('\x1b[33m%s\x1b[0m', '  AIRTABLE_BASE_ID=your_airtable_base_id');
+  console.warn('\x1b[33m%s\x1b[0m', '  ANTHROPIC_API_KEY=your_anthropic_api_key');
+  console.warn('\x1b[33m%s\x1b[0m', '  ELEVENLABS_API_KEY=your_elevenlabs_api_key');
+  console.warn('\x1b[33m%s\x1b[0m', '  GOOGLE_CLIENT_ID=your_google_client_id');
+  console.warn('\x1b[33m%s\x1b[0m', '  GOOGLE_CLIENT_SECRET=your_google_client_secret');
+  console.warn('\x1b[33m%s\x1b[0m', '  SESSION_SECRET=your_session_secret');
+} else {
+  console.log('\x1b[32m%s\x1b[0m', '.env file found in project root');
+}
+
 const app = express();
 const port = process.env.PORT || 3000;
 
