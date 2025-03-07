@@ -1,17 +1,45 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain, screen } = require('electron');
 const path = require('path');
+
+// Handle window resize requests from renderer
+ipcMain.on('resize-window', (event, size) => {
+    const win = BrowserWindow.getFocusedWindow();
+    if (win) {
+        const primaryDisplay = screen.getPrimaryDisplay();
+        const { width: screenWidth } = primaryDisplay.workAreaSize;
+        
+        // Always position at the right edge of the screen
+        win.setBounds({
+            width: size.width,
+            height: size.height,
+            x: screenWidth - size.width,
+            y: win.getBounds().y
+        });
+    }
+});
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
-        width: 800,
+        width: 50,  // Just enough width for the pull tab initially
         height: 600,
+        frame: false,  // Remove window frame
+        transparent: true,  // Make window background transparent
+        alwaysOnTop: true,  // Always on top of other windows
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
         }
     });
 
+    // Position the window at the right edge of the screen
+    const primaryDisplay = screen.getPrimaryDisplay();
+    const { width } = primaryDisplay.workAreaSize;
+    mainWindow.setPosition(width - 50, 0);
+    
     mainWindow.loadFile('index.html');
+    
+    // Prevent the window from being moved by the user
+    mainWindow.setMovable(false);
     
     // Uncomment to open DevTools automatically
     // mainWindow.webContents.openDevTools();
