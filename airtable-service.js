@@ -1,12 +1,27 @@
 const Airtable = require('airtable');
 
-// Configure Airtable
-Airtable.configure({
-    apiKey: process.env.AIRTABLE_API_KEY
-});
+// Initialize variables
+let airtableEnabled = false;
+let base;
+let usersTable;
 
-const base = Airtable.base(process.env.AIRTABLE_BASE_ID);
-const usersTable = base('USERS');
+try {
+  // Configure Airtable
+  if (process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
+    Airtable.configure({
+      apiKey: process.env.AIRTABLE_API_KEY
+    });
+    
+    base = Airtable.base(process.env.AIRTABLE_BASE_ID);
+    usersTable = base('USERS');
+    airtableEnabled = true;
+    console.log('Airtable initialized successfully');
+  } else {
+    console.warn('Airtable API key or Base ID not provided. Using mock data instead.');
+  }
+} catch (error) {
+  console.warn('Failed to initialize Airtable:', error.message);
+}
 
 /**
  * Find a user by their Google ID
@@ -14,6 +29,23 @@ const usersTable = base('USERS');
  * @returns {Promise<Object|null>} - The user object or null if not found
  */
 async function findUserByGoogleId(googleId) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Using mock user data for Google ID:', googleId);
+        return {
+            id: 'mock-id-' + googleId,
+            GoogleId: googleId,
+            Name: 'Mock User',
+            Email: 'mock@example.com',
+            ProfilePicture: '',
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'basic',
+            SubscriptionStatus: 'active',
+            HoursUsed: 0
+        };
+    }
+    
     try {
         const records = await usersTable.select({
             filterByFormula: `{GoogleId} = '${googleId}'`,
@@ -39,6 +71,23 @@ async function findUserByGoogleId(googleId) {
  * @returns {Promise<Object>} - The created user object
  */
 async function createUser(userData) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Creating mock user for:', userData.displayName || userData.id);
+        return {
+            id: 'mock-id-' + userData.id,
+            GoogleId: userData.id,
+            Name: userData.displayName || '',
+            Email: userData.emails && userData.emails[0] ? userData.emails[0].value : '',
+            ProfilePicture: userData.photos && userData.photos[0] ? userData.photos[0].value : '',
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'free', // Default subscription plan
+            SubscriptionStatus: 'inactive',
+            HoursUsed: 0
+        };
+    }
+    
     try {
         const records = await usersTable.create([
             {
@@ -76,6 +125,16 @@ async function createUser(userData) {
  * @returns {Promise<Object>} - The updated user object
  */
 async function updateUser(recordId, userData) {
+    if (!airtableEnabled) {
+        // Return mock updated user data
+        console.log('Updating mock user:', recordId, userData);
+        return {
+            id: recordId,
+            ...userData,
+            LastUpdated: new Date().toISOString()
+        };
+    }
+    
     try {
         const records = await usersTable.update([
             {
@@ -103,6 +162,7 @@ async function updateUser(recordId, userData) {
  * @returns {Promise<Object>} - The updated user object
  */
 async function updateLastLogin(recordId) {
+    console.log('Updating last login for user:', recordId);
     return updateUser(recordId, {
         LastLogin: new Date().toISOString()
     });
@@ -117,6 +177,7 @@ async function updateLastLogin(recordId) {
  * @returns {Promise<Object>} - The updated user object
  */
 async function updateSubscription(recordId, plan, status, expiryDate) {
+    console.log('Updating subscription for user:', recordId, plan, status);
     return updateUser(recordId, {
         SubscriptionPlan: plan,
         SubscriptionStatus: status,
@@ -131,11 +192,22 @@ async function updateSubscription(recordId, plan, status, expiryDate) {
  * @returns {Promise<Object>} - The updated user object
  */
 async function updateUsageHours(recordId, additionalHours) {
+    if (!airtableEnabled) {
+        console.log('Updating mock usage hours for user:', recordId, additionalHours);
+        return {
+            id: recordId,
+            HoursUsed: additionalHours,
+            LastUpdated: new Date().toISOString()
+        };
+    }
+    
     try {
         // First get the current user to get current hours
         const user = await usersTable.find(recordId);
         const currentHours = user.fields.HoursUsed || 0;
         const newHours = currentHours + additionalHours;
+        
+        console.log(`Updating hours for user ${recordId}: ${currentHours} + ${additionalHours} = ${newHours}`);
         
         return updateUser(recordId, {
             HoursUsed: newHours
@@ -152,6 +224,16 @@ async function updateUsageHours(recordId, additionalHours) {
  * @returns {Promise<Object>} - The subscription details
  */
 async function getSubscription(recordId) {
+    if (!airtableEnabled) {
+        console.log('Getting mock subscription for user:', recordId);
+        return {
+            plan: 'basic',
+            status: 'active',
+            expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            hoursUsed: 2
+        };
+    }
+    
     try {
         const user = await usersTable.find(recordId);
         

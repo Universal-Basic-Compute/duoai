@@ -13,10 +13,19 @@ try {
   // Try to load from config.js (when packaged)
   const config = require('./config');
   config.setupEnv();
+  console.log('Loaded configuration from config.js');
 } catch (error) {
   // Fallback to dotenv (for development)
+  console.log('Failed to load from config.js, falling back to dotenv:', error.message);
   require('dotenv').config();
 }
+
+// Log environment variables status
+console.log('Environment variables check:');
+console.log('AIRTABLE_API_KEY exists:', !!process.env.AIRTABLE_API_KEY);
+console.log('AIRTABLE_BASE_ID exists:', !!process.env.AIRTABLE_BASE_ID);
+console.log('ANTHROPIC_API_KEY exists:', !!process.env.ANTHROPIC_API_KEY);
+console.log('ELEVENLABS_API_KEY exists:', !!process.env.ELEVENLABS_API_KEY);
 
 const app = express();
 const port = process.env.PORT || 3000;
