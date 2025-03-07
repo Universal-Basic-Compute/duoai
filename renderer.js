@@ -19,8 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const claudeAPI = require('./claude_api');
     
     
+    // Ensure menu tab is in the correct position at startup
+    menuTab.style.right = '0';
+    
     // Toggle menu when clicking on the tab
-    menuTab.addEventListener('click', () => {
+    menuTab.addEventListener('click', (event) => {
+        // Prevent any default behavior or event propagation issues
+        event.preventDefault();
+        event.stopPropagation();
+        
+        console.log('Menu tab clicked, current state:', menuOpen);
+        
         // First, ensure chat container is hidden if we're opening the menu
         if (!menuOpen) {
             chatContainer.style.right = '-350px';
@@ -38,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ipcRenderer.send('resize-window', { width: 350, height: 600 });
         }
         menuOpen = !menuOpen;
+        
+        console.log('Menu state after click:', menuOpen);
     });
     
     // Start button functionality
