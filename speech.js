@@ -1,4 +1,12 @@
-const { ipcRenderer } = require('electron');
+// Try to import Electron's ipcRenderer safely
+let ipcRenderer;
+try {
+    const electron = require('electron');
+    ipcRenderer = electron.ipcRenderer;
+} catch (error) {
+    console.warn('Electron not available:', error.message);
+    ipcRenderer = null;
+}
 const axios = require('axios');
 const { ElevenLabsClient } = require('elevenlabs');
 
@@ -14,8 +22,20 @@ class SpeechManager {
         this.modelId = "eleven_flash_v2_5"; // Using flash model
         this.serverUrl = 'http://localhost:3000'; // Local server URL
         
+        // Safely detect environment
+        this.isBrowserEnv = typeof window !== 'undefined';
+        this.hasAudioAPI = typeof Audio !== 'undefined';
+        this.isNodeEnv = typeof process !== 'undefined' && 
+                        process.versions && 
+                        process.versions.node;
+        this.isElectronEnv = typeof process !== 'undefined' && 
+                            process.versions && 
+                            process.versions.electron;
+        
+        console.log(`SpeechManager environment: Browser: ${this.isBrowserEnv}, Audio API: ${this.hasAudioAPI}, Node: ${this.isNodeEnv}, Electron: ${this.isElectronEnv}`);
+        
         // Initialize audio element if in browser environment
-        if (typeof Audio !== 'undefined') {
+        if (this.hasAudioAPI) {
             try {
                 this.audioElement = new Audio();
                 console.log('Audio element initialized');
@@ -424,7 +444,9 @@ class SpeechManager {
             }
             this.volume = Math.max(0, Math.min(1, parseFloat(volume) || 0.5));
             console.log(`Setting volume to ${this.volume}`);
-            if (this.audioElement) {
+            
+            // Only try to set volume on audio element if we're in a browser environment
+            if (this.hasAudioAPI && this.audioElement) {
                 try {
                     this.audioElement.volume = this.volume;
                 } catch (error) {
@@ -467,6 +489,12 @@ class SpeechManager {
      */
     isSpeechRecognitionSupported() {
         try {
+            // First check if we're in a browser environment
+            if (!this.isBrowserEnv) {
+                console.log('Not in browser environment, speech recognition not supported');
+                return false;
+            }
+            
             // More comprehensive check for speech recognition support
             const hasMediaDevices = typeof navigator !== 'undefined' && 
                                    !!navigator.mediaDevices && 
@@ -496,6 +524,14 @@ class SpeechManager {
      */
     isElevenLabsAvailable() {
         try {
+            // First check if we have network capabilities
+            const hasNetwork = this.isBrowserEnv || this.isNodeEnv || this.isElectronEnv;
+            
+            if (!hasNetwork) {
+                console.log('No network capabilities detected, ElevenLabs not available');
+                return false;
+            }
+            
             // Check if the client exists and is properly initialized
             const clientExists = !!this.elevenLabsClient;
             
@@ -523,6 +559,12 @@ class SpeechManager {
     cleanup() {
         console.log('Cleaning up SpeechManager resources');
         try {
+            // Skip audio cleanup if not in browser environment
+            if (!this.isBrowserEnv) {
+                console.log('Not in browser environment, skipping audio cleanup');
+                return;
+            }
+            
             // Create a local reference to the audio element
             const audioEl = this.audioElement;
             
@@ -603,47 +645,49 @@ class SpeechManager {
     }
 }
 
+// Create a fallback implementation that can be used in any environment
+const fallbackImplementation = {
+    speak: () => Promise.resolve(),
+    setVolume: () => {},
+    setVoice: () => {},
+    cleanup: () => {},
+    isElevenLabsAvailable: () => false,
+    isSpeechRecognitionSupported: () => false,
+    startListening: () => {},
+    stopListening: () => {},
+    initElevenLabs: () => Promise.resolve(false)
+};
+
 // Create a singleton instance with error handling
 let instance;
 try {
     console.log('Creating SpeechManager instance');
     
-    // Check if we're in a browser environment
-    if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
-        console.log('Audio API is available');
+    // More robust environment detection
+    const isBrowser = typeof window !== 'undefined';
+    const hasAudioAPI = typeof Audio !== 'undefined';
+    const isNode = typeof process !== 'undefined' && 
+                  process.versions && 
+                  process.versions.node;
+    const isElectron = typeof process !== 'undefined' && 
+                      process.versions && 
+                      process.versions.electron;
+    
+    console.log(`Environment detection: Browser: ${isBrowser}, Audio API: ${hasAudioAPI}, Node: ${isNode}, Electron: ${isElectron}`);
+    
+    if (isBrowser && hasAudioAPI) {
+        console.log('Audio API is available, creating full implementation');
         instance = new SpeechManager();
         console.log('SpeechManager instance created successfully');
     } else {
         console.warn('Audio API is not available in this environment, using fallback implementation');
-        // Provide a minimal fallback implementation directly
-        instance = {
-            speak: () => Promise.resolve(),
-            setVolume: () => {},
-            setVoice: () => {},
-            cleanup: () => {},
-            isElevenLabsAvailable: () => false,
-            isSpeechRecognitionSupported: () => false,
-            startListening: () => {},
-            stopListening: () => {},
-            initElevenLabs: () => Promise.resolve(false)
-        };
+        instance = fallbackImplementation;
     }
 } catch (error) {
     console.error('Error creating SpeechManager instance:', error);
     console.error('Stack trace:', error.stack);
-    // Provide a minimal fallback implementation
     console.warn('Using fallback implementation for SpeechManager due to error');
-    instance = {
-        speak: () => Promise.resolve(),
-        setVolume: () => {},
-        setVoice: () => {},
-        cleanup: () => {},
-        isElevenLabsAvailable: () => false,
-        isSpeechRecognitionSupported: () => false,
-        startListening: () => {},
-        stopListening: () => {},
-        initElevenLabs: () => Promise.resolve(false)
-    };
+    instance = fallbackImplementation;
 }
 
 module.exports = instance;
