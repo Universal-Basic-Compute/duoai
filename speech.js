@@ -11,7 +11,7 @@ class SpeechManager {
         this.audioElement = new Audio();
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
-        this.modelId = "eleven_monolingual_v1"; // Changed to more stable model
+        this.modelId = "eleven_flash_v2_5"; // Using flash model
         this.serverUrl = 'http://localhost:3000'; // Local server URL
         
         // Initialize ElevenLabs client if API key is available
@@ -49,8 +49,8 @@ class SpeechManager {
                         console.log('Successfully retrieved voices from ElevenLabs:', 
                                    voices && voices.length ? `${voices.length} voices found` : 'No voices found');
                         
-                        // Set default model to a more stable one
-                        this.modelId = "eleven_monolingual_v1"; // Changed to more stable model
+                        // Set default model
+                        this.modelId = "eleven_flash_v2_5"; // Using flash model
                         
                         // Get available voices
                         this.loadVoices();
@@ -217,8 +217,8 @@ class SpeechManager {
             console.log('Using voice ID:', this.voiceId);
             console.log('Using model ID:', this.modelId);
             
-            // Try with a simpler model first if we're using the flash model
-            const useModel = this.modelId === "eleven_flash_v2_5" ? "eleven_monolingual_v1" : this.modelId;
+            // Always use the flash model
+            const useModel = "eleven_flash_v2_5";
             console.log(`Using model for this request: ${useModel}`);
             
             console.log(`Sending TTS request to ${this.serverUrl}/api/elevenlabs/tts`);
@@ -268,39 +268,7 @@ class SpeechManager {
             } catch (apiError) {
                 console.error('Error with ElevenLabs API call:', apiError.message);
                 
-                // If we tried with a different model, try with the original model
-                if (useModel !== this.modelId) {
-                    console.log(`Retrying with original model: ${this.modelId}`);
-                    
-                    const retryResponse = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
-                        text: text,
-                        voiceId: this.voiceId,
-                        modelId: this.modelId
-                    }, {
-                        responseType: 'arraybuffer',
-                        timeout: 30000
-                    });
-                    
-                    const audioBlob = new Blob([retryResponse.data], { type: 'audio/mpeg' });
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    
-                    return new Promise((resolve) => {
-                        this.audioElement.src = audioUrl;
-                        this.audioElement.volume = this.volume;
-                        
-                        this.audioElement.onended = () => {
-                            URL.revokeObjectURL(audioUrl);
-                            resolve();
-                        };
-                        
-                        this.audioElement.onerror = () => {
-                            URL.revokeObjectURL(audioUrl);
-                            resolve();
-                        };
-                        
-                        this.audioElement.play().catch(() => resolve());
-                    });
-                }
+                // No need to retry with a different model since we're always using flash
                 
                 throw apiError; // Re-throw if we can't retry with a different model
             }
