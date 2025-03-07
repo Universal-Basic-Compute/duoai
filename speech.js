@@ -578,19 +578,31 @@ let instance;
 try {
     console.log('Creating SpeechManager instance');
     
-    // Check if Audio API is available
-    if (typeof Audio !== 'undefined') {
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined' && typeof Audio !== 'undefined') {
         console.log('Audio API is available');
         instance = new SpeechManager();
         console.log('SpeechManager instance created successfully');
     } else {
-        throw new Error('Audio API is not available in this environment');
+        console.warn('Audio API is not available in this environment, using fallback implementation');
+        // Provide a minimal fallback implementation directly
+        instance = {
+            speak: () => Promise.resolve(),
+            setVolume: () => {},
+            setVoice: () => {},
+            cleanup: () => {},
+            isElevenLabsAvailable: () => false,
+            isSpeechRecognitionSupported: () => false,
+            startListening: () => {},
+            stopListening: () => {},
+            initElevenLabs: () => Promise.resolve(false)
+        };
     }
 } catch (error) {
     console.error('Error creating SpeechManager instance:', error);
     console.error('Stack trace:', error.stack);
     // Provide a minimal fallback implementation
-    console.warn('Using fallback implementation for SpeechManager');
+    console.warn('Using fallback implementation for SpeechManager due to error');
     instance = {
         speak: () => Promise.resolve(),
         setVolume: () => {},
