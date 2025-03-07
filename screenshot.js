@@ -2,6 +2,7 @@ const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const sharp = require('sharp'); // Add sharp for image resizing
 
 class ScreenshotUtil {
     constructor() {
@@ -25,10 +26,11 @@ class ScreenshotUtil {
             return new Promise((resolve, reject) => {
                 // Generate a unique filename
                 const timestamp = new Date().getTime();
-                const filePath = path.join(this.screenshotDir, `screenshot-${timestamp}.png`);
+                const originalFilePath = path.join(this.screenshotDir, `screenshot-original-${timestamp}.png`);
+                const resizedFilePath = path.join(this.screenshotDir, `screenshot-${timestamp}.png`);
                 
                 // Request screenshot from main process
-                ipcRenderer.once('screenshot-captured', (event, error, base64Data) => {
+                ipcRenderer.once('screenshot-captured', async (event, error, base64Data) => {
                     if (error) {
                         console.error('Error from main process:', error);
                         reject(new Error(error));
@@ -36,13 +38,24 @@ class ScreenshotUtil {
                     }
                     
                     try {
-                        // Convert base64 to buffer and save
+                        // Convert base64 to buffer and save original
                         const buffer = Buffer.from(base64Data, 'base64');
-                        fs.writeFileSync(filePath, buffer);
-                        console.log('Screenshot saved to:', filePath);
-                        resolve(filePath);
+                        fs.writeFileSync(originalFilePath, buffer);
+                        console.log('Original screenshot saved to:', originalFilePath);
+                        
+                        // Resize the image to 1568px width
+                        await sharp(originalFilePath)
+                            .resize({ width: 1568, withoutEnlargement: true })
+                            .toFile(resizedFilePath);
+                        
+                        console.log('Resized screenshot saved to:', resizedFilePath);
+                        
+                        // Delete the original file to save space
+                        fs.unlinkSync(originalFilePath);
+                        
+                        resolve(resizedFilePath);
                     } catch (err) {
-                        console.error('Error saving screenshot:', err);
+                        console.error('Error processing screenshot:', err);
                         reject(err);
                     }
                 });
