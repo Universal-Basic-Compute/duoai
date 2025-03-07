@@ -50,6 +50,11 @@
     ],
     "extraResources": [
       {
+        "from": ".",
+        "to": ".",
+        "filter": ["index.html", "styles.css", "renderer.js"]
+      },
+      {
         "from": "prompts",
         "to": "prompts",
         "filter": ["**/*"]
@@ -65,6 +70,7 @@
         "filter": ["**/*"]
       }
     ],
+    "asar": false,
     "win": {
       "target": ["nsis"],
       "icon": "images/app-icon.ico"

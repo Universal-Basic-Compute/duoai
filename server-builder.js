@@ -39,8 +39,8 @@ async function buildServer() {
     // Build the server executable
     await exec([
       'server.js',
-      '--target', 'node18-win-x64,node18-macos-x64,node18-linux-x64',
-      '--output', 'dist/server/duoai-server'
+      '--target', 'node18-win-x64',  // Only build for the current platform
+      '--output', 'dist/server/duoai-server.exe'  // Explicitly add .exe extension
     ]);
     
     console.log('Server executable built successfully!');

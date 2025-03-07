@@ -11,40 +11,55 @@ function getAssetPath(...paths) {
   return path.join(app.isPackaged ? process.resourcesPath : __dirname, ...paths);
 }
 
+// Add fs module for file existence checks
+const fs = require('fs');
+
 // Start the Express server
 let serverProcess = null;
 
 function startServer() {
     let serverPath;
-    let serverArgs;
+    let serverArgs = [];
     
     if (app.isPackaged) {
         // Use the packaged server executable
-        const platform = process.platform;
-        const extension = platform === 'win32' ? '.exe' : '';
-        serverPath = path.join(process.resourcesPath, 'server', `duoai-server${extension}`);
-        serverArgs = [];
+        serverPath = path.join(process.resourcesPath, 'server', 'duoai-server.exe');
+        
+        // Log the exact path for debugging
+        console.log('Looking for server at:', serverPath);
+        
+        // Check if the file exists
+        if (!fs.existsSync(serverPath)) {
+            console.error('Server executable not found at:', serverPath);
+            return;
+        }
     } else {
         // Use Node.js to run the server script in development
         serverPath = 'node';
         serverArgs = ['server.js'];
     }
     
+    console.log('Starting server with:', serverPath, serverArgs);
+    
     serverProcess = spawn(serverPath, serverArgs, {
         stdio: 'inherit',
         detached: false
     });
     
-    console.log('Server started with PID:', serverProcess.pid);
+    console.log('Server started with PID:', serverProcess ? serverProcess.pid : 'unknown');
     
-    serverProcess.on('error', (err) => {
-        console.error('Failed to start server:', err);
-    });
-    
-    serverProcess.on('exit', (code, signal) => {
-        console.log(`Server process exited with code ${code} and signal ${signal}`);
-        serverProcess = null;
-    });
+    if (serverProcess) {
+        serverProcess.on('error', (err) => {
+            console.error('Failed to start server:', err);
+        });
+        
+        serverProcess.on('exit', (code, signal) => {
+            console.log(`Server process exited with code ${code} and signal ${signal}`);
+            serverProcess = null;
+        });
+    } else {
+        console.error('Failed to start server process');
+    }
 }
 
 // Handle external URLs
@@ -146,7 +161,16 @@ function createWindow() {
     const { width, height } = primaryDisplay.workAreaSize;
     mainWindow.setPosition(width - 350, Math.floor(height / 2) - 300);
     
-    mainWindow.loadFile(getAssetPath('index.html'));
+    // Use the correct path to index.html
+    const indexPath = getAssetPath('index.html');
+    console.log('Loading HTML from:', indexPath);
+    
+    // Check if the file exists
+    if (!fs.existsSync(indexPath)) {
+        console.error('index.html not found at:', indexPath);
+    }
+    
+    mainWindow.loadFile(indexPath);
     
     // Allow the window to be moved during login
     mainWindow.setMovable(true);
