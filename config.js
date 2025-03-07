@@ -49,13 +49,13 @@ function loadConfig() {
     // Environment-specific overrides
     const envConfigs = {
       development: {
-        API_URL: 'https://duoai-9febs9khj-ubc4ai.vercel.app'
+        API_URL: 'https://duoai.vercel.app'
       },
       production: {
-        API_URL: 'https://duoai-9febs9khj-ubc4ai.vercel.app'
+        API_URL: 'https://duoai.vercel.app'
       },
       test: {
-        API_URL: 'https://duoai-9febs9khj-ubc4ai.vercel.app'
+        API_URL: 'https://duoai.vercel.app'
       }
     };
     
