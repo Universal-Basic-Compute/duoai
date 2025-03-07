@@ -510,6 +510,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listener for logout button
     logoutButton.addEventListener('click', logout);
     
+    // Settings button
+    const settingsButton = document.createElement('button');
+    settingsButton.id = 'settingsButton';
+    settingsButton.className = 'secondary-button';
+    settingsButton.textContent = 'Settings';
+    settingsButton.style.marginTop = '15px';
+    
+    // Insert settings button before logout button
+    logoutButton.parentNode.insertBefore(settingsButton, logoutButton);
+    
+    // Settings button functionality
+    settingsButton.addEventListener('click', () => {
+        ipcRenderer.send('open-settings');
+    });
+    
     // Volume slider event listener
     volumeSlider.addEventListener('input', () => {
         const volume = parseFloat(volumeSlider.value);
