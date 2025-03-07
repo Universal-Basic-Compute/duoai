@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
         
         // Prepare the request payload for Claude API
         const payload = {
-            model: 'claude-3-opus-20240229',
+            model: 'claude-3-7-sonnet-latest',
             system: systemPrompt || '',
             messages: [
                 {

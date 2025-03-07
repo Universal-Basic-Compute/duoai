@@ -199,7 +199,7 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
         
         // Prepare the request payload for Claude API
         const payload = {
-            model: 'claude-3-opus-20240229',  // Use a valid model
+            model: 'claude-3-7-sonnet-latest',  // Use a valid model
             system: systemPrompt || '',
             messages: [
                 {
