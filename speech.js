@@ -245,6 +245,27 @@ class SpeechManager {
                 // Check if we received valid audio data
                 if (!response.data || responseSize < 1000) {
                     console.error('Received invalid or empty audio data (size:', responseSize, 'bytes)');
+                
+                    // Try to decode the response as JSON error
+                    if (response.data && responseSize > 0) {
+                        try {
+                            // Convert ArrayBuffer to string
+                            const decoder = new TextDecoder('utf-8');
+                            const errorText = decoder.decode(response.data);
+                            console.error('Error response content:', errorText);
+                        
+                            // Try to parse as JSON
+                            try {
+                                const errorJson = JSON.parse(errorText);
+                                console.error('Parsed error JSON:', errorJson);
+                            } catch (jsonError) {
+                                console.error('Error response is not valid JSON');
+                            }
+                        } catch (decodeError) {
+                            console.error('Could not decode error response as text:', decodeError);
+                        }
+                    }
+                
                     return this.fallbackSpeak(cleanedText);
                 }
                 
@@ -311,6 +332,31 @@ class SpeechManager {
                 });
             } catch (apiError) {
                 console.error('Error with ElevenLabs API call:', apiError.message);
+            
+                // Try to extract error details from the response
+                if (apiError.response && apiError.response.data) {
+                    try {
+                        // If the response is an ArrayBuffer, try to decode it
+                        if (apiError.response.data instanceof ArrayBuffer) {
+                            const decoder = new TextDecoder('utf-8');
+                            const errorText = decoder.decode(apiError.response.data);
+                            console.error('Error response content:', errorText);
+                        
+                            // Try to parse as JSON
+                            try {
+                                const errorJson = JSON.parse(errorText);
+                                console.error('Parsed error JSON:', errorJson);
+                            } catch (jsonError) {
+                                console.error('Error response is not valid JSON');
+                            }
+                        } else {
+                            console.error('Error response data:', apiError.response.data);
+                        }
+                    } catch (decodeError) {
+                        console.error('Could not decode error response:', decodeError);
+                    }
+                }
+            
                 return this.fallbackSpeak(cleanedText);
             }
         } catch (error) {
