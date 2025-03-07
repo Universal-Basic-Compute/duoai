@@ -141,7 +141,7 @@ body {
     box-shadow: -2px 0 10px var(--glow-color); /* Reduced shadow */
     animation: pulse 2s infinite;
     width: 20px; /* Reduced width */
-    height: 40px; /* Significantly reduced height from 60px to 40px */
+    height: 30px; /* Reduced height from 40px to 30px */
     pointer-events: auto !important; /* Force pointer events to be enabled */
     user-select: none; /* Prevent text selection */
 }
