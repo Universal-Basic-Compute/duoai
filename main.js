@@ -1,5 +1,49 @@
-const { app, BrowserWindow, ipcMain, screen, desktopCapturer } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell } = require('electron');
 const path = require('path');
+const { spawn } = require('child_process');
+
+// Start the Express server
+let serverProcess = null;
+
+function startServer() {
+    serverProcess = spawn('node', ['server.js'], {
+        stdio: 'inherit',
+        detached: false
+    });
+    
+    console.log('Server started with PID:', serverProcess.pid);
+    
+    serverProcess.on('error', (err) => {
+        console.error('Failed to start server:', err);
+    });
+    
+    serverProcess.on('exit', (code, signal) => {
+        console.log(`Server process exited with code ${code} and signal ${signal}`);
+        serverProcess = null;
+    });
+}
+
+// Handle external URLs
+app.on('web-contents-created', (event, contents) => {
+    contents.on('will-navigate', (event, navigationUrl) => {
+        const parsedUrl = new URL(navigationUrl);
+        
+        // Allow navigation to localhost
+        if (parsedUrl.hostname === 'localhost') {
+            return;
+        }
+        
+        // For all other URLs, open in external browser
+        event.preventDefault();
+        shell.openExternal(navigationUrl);
+    });
+    
+    contents.setWindowOpenHandler(({ url }) => {
+        // Open all external links in the default browser
+        shell.openExternal(url);
+        return { action: 'deny' };
+    });
+});
 
 // Handle window resize requests from renderer
 ipcMain.on('resize-window', (event, size) => {
@@ -52,6 +96,11 @@ ipcMain.on('capture-screenshot', async (event) => {
 });
 
 function createWindow() {
+    // Start the server if it's not already running
+    if (!serverProcess) {
+        startServer();
+    }
+    
     const mainWindow = new BrowserWindow({
         width: 350,  // Wider initially to show login
         height: 500,
@@ -93,4 +142,22 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
+});
+
+// Clean up the server process when the app quits
+app.on('will-quit', () => {
+    if (serverProcess) {
+        console.log('Killing server process');
+        if (process.platform === 'win32') {
+            spawn('taskkill', ['/pid', serverProcess.pid, '/f', '/t']);
+        } else {
+            serverProcess.kill();
+        }
+        serverProcess = null;
+    }
+});
+
+// Handle opening external URLs
+ipcMain.on('open-external-url', (event, url) => {
+    shell.openExternal(url);
 });

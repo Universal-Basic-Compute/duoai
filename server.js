@@ -5,6 +5,9 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
 
 // Load environment variables
 dotenv.config();
@@ -37,6 +40,48 @@ const upload = multer({
 app.use(cors());
 app.use(express.json({ limit: '100mb' })); // Increase from default to 100mb
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'duoai-session-secret',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}));
+
+// Initialize Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Passport configuration
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback',
+    userProfileURL: 'https://www.googleapis.com/oauth2/v3/userinfo'
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    // In a production app, you would:
+    // 1. Check if user exists in your database
+    // 2. If not, create a new user
+    // 3. Return the user object
+    
+    // For now, we'll just use the Google profile
+    return cb(null, profile);
+  }
+));
+
+// Serialize and deserialize user
+passport.serializeUser((user, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+  done(null, user);
+});
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -201,6 +246,168 @@ app.post('/api/claude', upload.single('screenshot'), async (req, res) => {
             details: error.response ? error.response.data : error.message
         });
     }
+});
+
+// Google authentication routes
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect to the app
+    res.redirect('/');
+  });
+
+// Check authentication status
+app.get('/api/auth/status', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({
+      isAuthenticated: true,
+      user: {
+        id: req.user.id,
+        name: req.user.displayName,
+        email: req.user.emails && req.user.emails[0] ? req.user.emails[0].value : '',
+        picture: req.user.photos && req.user.photos[0] ? req.user.photos[0].value : ''
+      }
+    });
+  } else {
+    res.json({ isAuthenticated: false });
+  }
+});
+
+// Logout route
+app.get('/api/auth/logout', (req, res) => {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+});
+
+// Subscription plans
+const SUBSCRIPTION_PLANS = {
+    basic: {
+        id: 'basic',
+        name: 'Basic',
+        price: 14.99,
+        hoursPerMonth: 10
+    },
+    pro: {
+        id: 'pro',
+        name: 'Pro',
+        price: 29.99,
+        hoursPerMonth: 30
+    },
+    ultimate: {
+        id: 'ultimate',
+        name: 'Ultimate',
+        price: 49.99,
+        hoursPerMonth: Infinity // Unlimited
+    }
+};
+
+// Get user subscription
+app.get('/api/subscription', (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    // In a real app, you would fetch this from your database
+    // For now, we'll return a mock subscription
+    const mockSubscription = {
+        userId: req.user.id,
+        plan: 'basic',
+        status: 'active',
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        hoursUsed: 2,
+        hoursTotal: SUBSCRIPTION_PLANS.basic.hoursPerMonth
+    };
+    
+    res.json(mockSubscription);
+});
+
+// Subscribe to a plan
+app.post('/api/subscription', (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    const { planId } = req.body;
+    
+    if (!SUBSCRIPTION_PLANS[planId]) {
+        return res.status(400).json({ error: 'Invalid plan' });
+    }
+    
+    // In a real app, you would:
+    // 1. Process payment (Stripe, PayPal, etc.)
+    // 2. Store subscription in database
+    // 3. Return the updated subscription
+    
+    // For now, we'll return a mock successful subscription
+    const mockSubscription = {
+        userId: req.user.id,
+        plan: planId,
+        status: 'active',
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        hoursUsed: 0,
+        hoursTotal: SUBSCRIPTION_PLANS[planId].hoursPerMonth
+    };
+    
+    res.json(mockSubscription);
+});
+
+// Track usage time
+app.post('/api/usage/start', (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    // Start tracking session
+    // In a real app, you would store this in your database
+    const sessionId = Date.now().toString();
+    
+    // Store session start time in memory (use a database in production)
+    req.session.activeSession = {
+        id: sessionId,
+        startTime: Date.now()
+    };
+    
+    res.json({ sessionId });
+});
+
+app.post('/api/usage/end', (req, res) => {
+    if (!req.isAuthenticated() || !req.session.activeSession) {
+        return res.status(400).json({ error: 'No active session' });
+    }
+    
+    const { sessionId } = req.body;
+    
+    if (req.session.activeSession.id !== sessionId) {
+        return res.status(400).json({ error: 'Invalid session ID' });
+    }
+    
+    // Calculate session duration in hours
+    const duration = (Date.now() - req.session.activeSession.startTime) / (1000 * 60 * 60);
+    
+    // In a real app, you would:
+    // 1. Update the user's usage in the database
+    // 2. Check if they've exceeded their limit
+    
+    // Clear the active session
+    delete req.session.activeSession;
+    
+    res.json({ duration });
+});
+
+// Serve static files from the website directory
+app.use(express.static(path.join(__dirname, 'website')));
+
+// Serve the Electron app files for local development
+app.use(express.static(__dirname));
+
+// Catch-all route to serve index.html for client-side routing
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'website', 'index.html'));
 });
 
 // Start the server

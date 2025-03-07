@@ -1768,10 +1768,128 @@ input:checked + .slider:before {
     transform: rotate(45deg);
 }
 
+/* Profile Page Styles */
+.profile-section {
+    padding: 80px 0;
+    background: var(--primary-bg);
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 30px;
+}
+
+.profile-card, .subscription-card {
+    background: rgba(30, 30, 36, 0.5);
+    border-radius: 15px;
+    padding: 30px;
+    border: 1px solid var(--border-color);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    margin-right: 20px;
+    overflow: hidden;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-details h2 {
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.profile-details p {
+    color: var(--text-secondary);
+}
+
+.profile-actions {
+    margin-top: 20px;
+}
+
+.subscription-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.subscription-details {
+    margin-bottom: 30px;
+}
+
+.subscription-status, .subscription-usage, .subscription-renewal {
+    margin-bottom: 25px;
+}
+
+.subscription-details h3 {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 5px;
+}
+
+.status-badge.active {
+    background-color: rgba(0, 230, 118, 0.2);
+    color: #00e676;
+}
+
+.status-badge.inactive {
+    background-color: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+}
+
+.usage-bar {
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.usage-progress {
+    height: 100%;
+    background: var(--accent-gradient);
+    border-radius: 5px;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
 /* Responsive Styles */
 @media (max-width: 1024px) {
     .hero-content h1 {
         font-size: 3rem;
+    }
+    
+    .profile-grid {
+        grid-template-columns: 1fr;
     }
     
     .roadmap-date {

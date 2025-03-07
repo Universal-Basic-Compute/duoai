@@ -60,21 +60,129 @@ document.addEventListener('DOMContentLoaded', () => {
     const systemPromptBuilder = require('./system_prompt_builder');
     const screenshotUtil = require('./screenshot');
     const claudeAPI = require('./claude_api');
+    const authBridge = require('./bridge');
+
+    // Add these variables at the top of the file
+    let activeSessionId = null;
+    let isSubscriptionActive = false;
+
+    // Function to check authentication status with the server
+    async function checkServerAuthStatus() {
+        try {
+            const authStatus = await authBridge.checkAuthStatus();
+        
+            if (authStatus.isAuthenticated) {
+                // User is logged in
+                console.log('Logged in as:', authStatus.user.name);
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('user', JSON.stringify(authStatus.user));
+            
+                // Check subscription status
+                await checkSubscriptionStatus();
+            
+                return true;
+            } else {
+                // User is not logged in
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('user');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error checking authentication status:', error);
+            return false;
+        }
+    }
+
+    // Function to check subscription status
+    async function checkSubscriptionStatus() {
+        try {
+            const subscription = await authBridge.checkSubscription();
+        
+            if (subscription) {
+                // Store subscription info
+                localStorage.setItem('subscription', JSON.stringify(subscription));
+            
+                // Check if subscription is active
+                isSubscriptionActive = subscription.status === 'active' && 
+                                      (subscription.hoursUsed < subscription.hoursTotal || 
+                                       subscription.hoursTotal === Infinity);
+            
+                return isSubscriptionActive;
+            }
+        } catch (error) {
+            console.error('Error checking subscription status:', error);
+            isSubscriptionActive = false;
+            return false;
+        }
+    }
+
+    // Start tracking usage when chat is opened
+    async function startUsageTracking() {
+        if (!localStorage.getItem('isLoggedIn')) {
+            return null;
+        }
+    
+        try {
+            const result = await authBridge.startUsageTracking();
+            if (result) {
+                activeSessionId = result.sessionId;
+                console.log('Started usage tracking, session ID:', activeSessionId);
+                return activeSessionId;
+            }
+        } catch (error) {
+            console.error('Error starting usage tracking:', error);
+        }
+        return null;
+    }
+
+    // End tracking when chat is closed
+    async function endUsageTracking() {
+        if (!activeSessionId) {
+            return;
+        }
+    
+        try {
+            const result = await authBridge.endUsageTracking(activeSessionId);
+            if (result) {
+                console.log('Ended usage tracking, duration:', result.duration, 'hours');
+                activeSessionId = null;
+            }
+        } catch (error) {
+            console.error('Error ending usage tracking:', error);
+        }
+    }
     
     // Function to check login state
-    function checkLoginState() {
-        // For now, we'll use localStorage to simulate login state
-        // In a real app, you would check with your authentication service
+    async function checkLoginState() {
+        // First check local storage (for quick UI response)
         isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
         
         if (isLoggedIn) {
-            // User is logged in, hide login container and show app
+            // User is logged in based on local storage, show app
             loginContainer.classList.add('hidden');
             menuTab.style.display = 'block';
+            
+            // Verify with server in the background
+            const serverAuth = await checkServerAuthStatus();
+            if (!serverAuth) {
+                // Server says not authenticated, update UI
+                loginContainer.classList.remove('hidden');
+                menuTab.style.display = 'none';
+                isLoggedIn = false;
+            }
         } else {
             // User is not logged in, show login container and hide app
             loginContainer.classList.remove('hidden');
             menuTab.style.display = 'none';
+            
+            // Still check with server in case there's a session cookie
+            const serverAuth = await checkServerAuthStatus();
+            if (serverAuth) {
+                // Server says authenticated, update UI
+                loginContainer.classList.add('hidden');
+                menuTab.style.display = 'block';
+                isLoggedIn = true;
+            }
         }
     }
     
@@ -129,6 +237,21 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Start button clicked');
         
         try {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                alert('Please log in to use DUOAI');
+                return;
+            }
+            
+            // Check subscription status
+            const hasActiveSubscription = await checkSubscriptionStatus();
+            if (!hasActiveSubscription) {
+                alert('Your subscription is not active or you have used all your allocated hours. Please upgrade your plan.');
+                // Open pricing page in browser
+                ipcRenderer.send('open-external-url', 'http://localhost:3000/pricing.html');
+                return;
+            }
+            
             // Check if a character is selected
             currentCharacter = localStorage.getItem('currentCharacter');
             if (!currentCharacter) {
@@ -156,6 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Resize window to accommodate the chat
             ipcRenderer.send('resize-window', { width: 350, height: 600 });
+            
+            // Start usage tracking
+            await startUsageTracking();
             
             // Show loading indicator
             addLoadingIndicator();
@@ -205,7 +331,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Close chat button functionality
-    closeChatButton.addEventListener('click', () => {
+    closeChatButton.addEventListener('click', async () => {
+        // End usage tracking
+        await endUsageTracking();
+        
         // Hide the chat container
         chatContainer.style.right = '-350px';
         
@@ -337,23 +466,21 @@ document.addEventListener('DOMContentLoaded', () => {
     googleLoginButton.addEventListener('click', () => {
         console.log('Google login button clicked');
         
-        // In a real app, you would implement Google OAuth here
-        // For now, we'll simulate a successful login
-        localStorage.setItem('isLoggedIn', 'true');
-        isLoggedIn = true;
-        
-        // Update UI
-        loginContainer.classList.add('hidden');
-        menuTab.style.display = 'block';
-        
-        // Resize window to show the menu tab
-        ipcRenderer.send('resize-window', { width: 50, height: 600 });
+        // Open the login URL in the default browser
+        const loginUrl = authBridge.getLoginUrl();
+        ipcRenderer.send('open-external-url', loginUrl);
     });
     
     // Logout function
     function logout() {
-        localStorage.setItem('isLoggedIn', 'false');
-        isLoggedIn = false;
+        // Open the logout URL in the default browser
+        const logoutUrl = authBridge.getLogoutUrl();
+        ipcRenderer.send('open-external-url', logoutUrl);
+        
+        // Clear local storage
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('user');
+        localStorage.removeItem('subscription');
         
         // Update UI
         loginContainer.classList.remove('hidden');
