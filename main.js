@@ -27,22 +27,27 @@ function createWindow() {
         alwaysOnTop: true,  // Always on top of other windows
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
-        }
+            contextIsolation: false,
+            enableRemoteModule: true
+        },
+        // Add these properties
+        resizable: false,
+        fullscreenable: false,
+        skipTaskbar: true
     });
 
     // Position the window at the right edge of the screen
     const primaryDisplay = screen.getPrimaryDisplay();
-    const { width } = primaryDisplay.workAreaSize;
-    mainWindow.setPosition(width - 50, 0);
+    const { width, height } = primaryDisplay.workAreaSize;
+    mainWindow.setPosition(width - 50, Math.floor(height / 2) - 300);
     
     mainWindow.loadFile('index.html');
     
     // Prevent the window from being moved by the user
     mainWindow.setMovable(false);
     
-    // Uncomment to open DevTools automatically
-    // mainWindow.webContents.openDevTools();
+    // Open DevTools for debugging
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
 }
 
 app.whenReady().then(() => {

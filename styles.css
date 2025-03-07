@@ -56,10 +56,12 @@ body {
     padding: 15px 5px;
     border-radius: 8px 0 0 8px;
     cursor: pointer;
-    z-index: 1010; /* Increase z-index to be higher than everything */
+    z-index: 9999; /* Extremely high z-index */
     transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: -2px 0 15px var(--glow-color);
     animation: pulse 2s infinite;
+    width: 30px; /* Explicit width */
+    height: 80px; /* Explicit height */
     pointer-events: auto !important; /* Force pointer events to be enabled */
     user-select: none; /* Prevent text selection */
 }
@@ -68,6 +70,8 @@ body {
     writing-mode: vertical-rl;
     text-orientation: mixed;
     font-size: 20px;
+    text-align: center;
+    line-height: 30px; /* Match width of parent */
     pointer-events: none; /* Make sure events pass through to parent */
 }
 

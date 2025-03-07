@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     console.log('Menu tab element:', menuTab);
+    
+    // Apply direct styles to ensure clickability
     menuTab.style.pointerEvents = 'auto';
+    menuTab.style.cursor = 'pointer';
+    menuTab.style.zIndex = '9999';
     
     let menuOpen = false;
     let currentCharacter = null;
@@ -32,18 +36,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ensure menu tab is in the correct position at startup
     menuTab.style.right = '0';
     
-    // Toggle menu when clicking on the tab
-    menuTab.addEventListener('click', (event) => {
-        // Prevent any default behavior or event propagation issues
-        event.preventDefault();
-        event.stopPropagation();
-        
-        console.log('Menu tab clicked, current state:', menuOpen);
+    // Remove any existing event listeners
+    menuTab.removeEventListener('click', null);
+    
+    // Define a named function for better debugging
+    function handleMenuTabClick(event) {
+        console.log('Menu tab clicked!');
         
         // Toggle menu state
-        menuOpen = !menuOpen;
-        
         if (menuOpen) {
+            // Hide menu
+            sideMenu.style.right = '-300px';
+            menuTab.style.right = '0';
+            // Resize window to be narrow when menu is closed
+            ipcRenderer.send('resize-window', { width: 50, height: 600 });
+            menuOpen = false;
+        } else {
             // Show menu
             sideMenu.style.right = '0';
             menuTab.style.right = '300px';
@@ -51,15 +59,18 @@ document.addEventListener('DOMContentLoaded', () => {
             chatContainer.style.right = '-350px';
             // Resize window to accommodate the open menu
             ipcRenderer.send('resize-window', { width: 350, height: 600 });
-        } else {
-            // Hide menu
-            sideMenu.style.right = '-300px';
-            menuTab.style.right = '0';
-            // Resize window to be narrow when menu is closed
-            ipcRenderer.send('resize-window', { width: 50, height: 600 });
+            menuOpen = true;
         }
         
         console.log('Menu state after click:', menuOpen);
+    }
+    
+    // Add the click event listener
+    menuTab.addEventListener('click', handleMenuTabClick);
+    
+    // Also add a mousedown event for better responsiveness
+    menuTab.addEventListener('mousedown', function(event) {
+        console.log('Mouse down on menu tab');
     });
     
     // Start button functionality
