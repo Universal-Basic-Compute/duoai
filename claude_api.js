@@ -1,81 +1,40 @@
 const axios = require('axios');
 const fs = require('fs');
-const path = require('path');
+const FormData = require('form-data');
 
 class ClaudeAPI {
     constructor() {
-        // Load API key from environment variable or config file
-        this.apiKey = process.env.CLAUDE_API_KEY || '';
-        this.apiUrl = 'https://api.anthropic.com/v1/messages';
-        this.model = 'claude-3-sonnet-20240229';
+        this.apiUrl = 'http://localhost:3000/api/claude'; // Your backend server URL
     }
 
     /**
-     * Set the API key
-     * @param {string} apiKey - Claude API key
-     */
-    setApiKey(apiKey) {
-        this.apiKey = apiKey;
-    }
-
-    /**
-     * Send a message to Claude with a screenshot
+     * Send a message to Claude with a screenshot via the backend server
      * @param {string} systemPrompt - The system prompt
      * @param {string} userMessage - The user's message
      * @param {string} screenshotPath - Path to the screenshot file
      * @returns {Promise<string>} - Claude's response
      */
     async sendMessageWithScreenshot(systemPrompt, userMessage, screenshotPath) {
-        if (!this.apiKey) {
-            throw new Error('Claude API key is not set');
-        }
-
         try {
-            // Read the screenshot file and convert to base64
-            const imageBuffer = fs.readFileSync(screenshotPath);
-            const base64Image = imageBuffer.toString('base64');
-            const mimeType = 'image/png';
-            const dataUri = `data:${mimeType};base64,${base64Image}`;
+            // Create a FormData object
+            const formData = new FormData();
+            formData.append('systemPrompt', systemPrompt || '');
+            formData.append('userMessage', userMessage || '');
+            formData.append('screenshot', fs.createReadStream(screenshotPath));
 
-            // Prepare the request payload
-            const payload = {
-                model: this.model,
-                system: systemPrompt,
-                messages: [
-                    {
-                        role: 'user',
-                        content: [
-                            {
-                                type: 'image',
-                                source: {
-                                    type: 'base64',
-                                    media_type: mimeType,
-                                    data: base64Image
-                                }
-                            },
-                            {
-                                type: 'text',
-                                text: userMessage || "What do you see in this screenshot? Can you provide any gaming advice based on what you see?"
-                            }
-                        ]
-                    }
-                ],
-                max_tokens: 4000
-            };
-
-            // Send the request to Claude API
-            const response = await axios.post(this.apiUrl, payload, {
+            // Send the request to the backend server
+            const response = await axios.post(this.apiUrl, formData, {
                 headers: {
-                    'Content-Type': 'application/json',
-                    'x-api-key': this.apiKey,
-                    'anthropic-version': '2023-06-01'
-                }
+                    ...formData.getHeaders()
+                },
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity
             });
 
             // Return Claude's response
-            return response.data.content[0].text;
+            return response.data.response;
         } catch (error) {
-            console.error('Error calling Claude API:', error);
+            console.error('Error calling backend server:', error);
             if (error.response) {
                 console.error('Response data:', error.response.data);
                 console.error('Response status:', error.response.status);

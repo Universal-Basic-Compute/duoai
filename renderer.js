@@ -18,9 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const screenshotUtil = require('./screenshot');
     const claudeAPI = require('./claude_api');
     
-    // Set Claude API key from environment variable
-    // Make sure to set ANTHROPIC_API_KEY before starting the application
-    claudeAPI.setApiKey(process.env.ANTHROPIC_API_KEY || '');
     
     // Toggle menu when clicking on the tab
     menuTab.addEventListener('click', () => {
