@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Toggle menu when clicking on the tab
     menuTab.addEventListener('click', () => {
+        // First, ensure chat container is hidden if we're opening the menu
+        if (!menuOpen) {
+            chatContainer.style.right = '-350px';
+        }
+        
         if (menuOpen) {
             sideMenu.style.right = '-300px';
             menuTab.style.right = '0';
