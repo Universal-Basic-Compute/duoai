@@ -52,8 +52,12 @@ module.exports = async (req, res) => {
         }
       }
       
-      // Save user message - use a mock user ID if req.user is not available
+      // Use a mock user ID if req.user is not available
       const userId = req.user ? req.user.id : 'mock-user-id';
+      
+      console.log('Saving user message to Airtable...');
+      console.log('User ID:', userId);
+      console.log('Character:', characterName || 'None');
       
       await airtableService.saveMessage(
         userId,
@@ -62,7 +66,7 @@ module.exports = async (req, res) => {
         characterName
       );
       
-      console.log('User message saved to Airtable');
+      console.log('User message saved to Airtable successfully');
     } catch (saveError) {
       console.error('Error saving user message to Airtable:', saveError);
       // Don't fail the request if saving messages fails
@@ -152,8 +156,13 @@ module.exports = async (req, res) => {
           }
         }
         
-        // Save assistant message - use a mock user ID if req.user is not available
+        // Use a mock user ID if req.user is not available
         const userId = req.user ? req.user.id : 'mock-user-id';
+        
+        console.log('Saving assistant message to Airtable...');
+        console.log('User ID:', userId);
+        console.log('Character:', characterName || 'None');
+        console.log('Message length:', fullResponse.length);
         
         if (fullResponse.length > 0) {
           await airtableService.saveMessage(
@@ -163,12 +172,16 @@ module.exports = async (req, res) => {
             characterName
           );
           
-          console.log('Assistant message saved to Airtable');
+          console.log('Assistant message saved to Airtable successfully');
         } else {
           console.error('No response text to save to Airtable');
         }
       } catch (saveError) {
         console.error('Error saving assistant message to Airtable:', saveError);
+        console.error('Error details:', saveError.message);
+        if (saveError.stack) {
+          console.error('Error stack:', saveError.stack);
+        }
       }
       
       // End the response

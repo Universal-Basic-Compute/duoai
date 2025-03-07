@@ -258,9 +258,13 @@ async function getSubscription(recordId) {
  * @returns {Promise<Object>} - The created message object
  */
 async function saveMessage(userId, role, content, characterName = null) {
+    console.log(`Attempting to save ${role} message for user ${userId}`);
+    console.log(`Message length: ${content ? content.length : 0} characters`);
+    console.log(`Character: ${characterName || 'None'}`);
+    
     if (!airtableEnabled) {
         // Return mock message data
-        console.log('Saving mock message for user:', userId);
+        console.log('Airtable not enabled, saving mock message');
         return {
             id: 'mock-message-' + Date.now(),
             UserId: userId,
@@ -272,6 +276,24 @@ async function saveMessage(userId, role, content, characterName = null) {
     }
     
     try {
+        // Validate inputs
+        if (!userId) {
+            console.error('No user ID provided for message');
+            return null;
+        }
+        
+        if (!content) {
+            console.error('No content provided for message');
+            return null;
+        }
+        
+        // Truncate content if it's too long for Airtable (100,000 character limit)
+        const truncatedContent = content.length > 95000 
+            ? content.substring(0, 95000) + '... [truncated]' 
+            : content;
+        
+        console.log('Creating message in Airtable...');
+        
         const messagesTable = base('MESSAGES');
         
         const records = await messagesTable.create([
@@ -279,7 +301,7 @@ async function saveMessage(userId, role, content, characterName = null) {
                 fields: {
                     UserId: userId,
                     Role: role,
-                    Content: content,
+                    Content: truncatedContent,
                     Character: characterName || '',
                     Timestamp: new Date().toISOString()
                 }
@@ -287,15 +309,26 @@ async function saveMessage(userId, role, content, characterName = null) {
         ]);
         
         if (records && records.length > 0) {
+            console.log(`Message saved successfully with ID: ${records[0].id}`);
             return {
                 id: records[0].id,
                 ...records[0].fields
             };
         }
+        
+        console.error('Failed to save message - no records returned');
         throw new Error('Failed to save message');
     } catch (error) {
-        console.error('Error saving message:', error);
-        throw error;
+        console.error('Error saving message to Airtable:', error);
+        console.error('Error message:', error.message);
+        
+        // Log more details if available
+        if (error.response) {
+            console.error('Airtable API response:', error.response.data);
+        }
+        
+        // Return null instead of throwing to prevent breaking the main flow
+        return null;
     }
 }
 

@@ -536,6 +536,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add typing indicator
             messageElement.classList.add('typing');
             
+            console.log('Sending message to Claude API with streaming...');
+            console.log('Message:', sanitizedMessage);
+            console.log('Character:', localStorage.getItem('currentCharacter') || 'None');
+            
             await claudeAPI.sendMessageWithScreenshotStreaming(
                 systemPrompt,
                 sanitizedMessage,
@@ -556,6 +560,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Store the full response
                     fullResponse = completeResponse;
                     
+                    console.log('Received complete response from Claude API');
+                    console.log('Response length:', fullResponse.length);
+                    
                     // Cache the response for offline use
                     cacheResponse(`message_${sanitizedMessage.substring(0, 50)}`, fullResponse);
                     
@@ -565,6 +572,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             );
+            
+            console.log('Streaming response from Claude API completed');
             
             // Clean up old screenshots
             screenshotUtil.cleanupOldScreenshots();
