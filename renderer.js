@@ -66,6 +66,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const claudeAPI = require('./claude_api');
     const authBridge = require('./bridge');
     const speechManager = require('./speech');
+    
+    // Add offline support utilities
+    const responseCache = new Map();
+    
+    // Check for network connectivity
+    function isOnline() {
+        return navigator.onLine;
+    }
+    
+    // Cache important responses
+    function cacheResponse(key, data) {
+        responseCache.set(key, {
+            data,
+            timestamp: Date.now()
+        });
+        
+        // Also store in localStorage for persistence
+        try {
+            localStorage.setItem(`cache_${key}`, JSON.stringify({
+                data,
+                timestamp: Date.now()
+            }));
+        } catch (e) {
+            console.warn('Failed to cache in localStorage:', e);
+        }
+    }
+    
+    // Get cached response
+    function getCachedResponse(key, maxAgeMs = 24 * 60 * 60 * 1000) { // Default 24 hours
+        // Try memory cache first
+        const memoryCache = responseCache.get(key);
+        if (memoryCache && (Date.now() - memoryCache.timestamp < maxAgeMs)) {
+            return memoryCache.data;
+        }
+        
+        // Try localStorage
+        try {
+            const storedCache = localStorage.getItem(`cache_${key}`);
+            if (storedCache) {
+                const parsed = JSON.parse(storedCache);
+                if (Date.now() - parsed.timestamp < maxAgeMs) {
+                    // Refresh memory cache
+                    responseCache.set(key, parsed);
+                    return parsed.data;
+                }
+            }
+        } catch (e) {
+            console.warn('Failed to retrieve from localStorage:', e);
+        }
+        
+        return null;
+    }
 
     // Add these variables at the top of the file
     let activeSessionId = null;
