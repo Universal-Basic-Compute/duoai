@@ -3,12 +3,58 @@ const sharp = require('sharp');
 const airtableService = require('../../airtable-service');
 
 module.exports = async (req, res) => {
+
+// Function to generate system prompts based on character
+async function generateSystemPrompt(characterName) {
+    try {
+        // Base prompt path
+        const basePromptPath = path.join(__dirname, '..', 'prompts', 'base_prompt.txt');
+        
+        // Read base prompt
+        let basePrompt = '';
+        try {
+            basePrompt = fs.readFileSync(basePromptPath, 'utf8');
+            console.log('Read base prompt successfully');
+        } catch (error) {
+            console.error('Error reading base prompt:', error);
+            basePrompt = "You are DuoAI, an advanced gaming assistant with access to the player's screen.";
+        }
+        
+        // If no character specified, return base prompt
+        if (!characterName) {
+            console.log('No character specified, using base prompt only');
+            return basePrompt;
+        }
+        
+        // Character-specific prompt path
+        const characterPromptPath = path.join(__dirname, '..', 'prompts', 'characters', `${characterName.toLowerCase()}.txt`);
+        
+        // Read character-specific prompt
+        let characterPrompt = '';
+        try {
+            characterPrompt = fs.readFileSync(characterPromptPath, 'utf8');
+            console.log(`Read character prompt for ${characterName} successfully`);
+        } catch (error) {
+            console.error(`Error reading character prompt for ${characterName}:`, error);
+            return basePrompt; // Return base prompt if character prompt not found
+        }
+        
+        // Combine prompts
+        const fullPrompt = `${basePrompt}\n\n${'='.repeat(50)}\n\n${characterPrompt}`;
+        console.log(`Generated full prompt for ${characterName} (length: ${fullPrompt.length})`);
+        
+        return fullPrompt;
+    } catch (error) {
+        console.error('Error generating system prompt:', error);
+        return "You are DuoAI, an advanced gaming assistant with access to the player's screen.";
+    }
+}
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { systemPrompt, userMessage, base64Image } = req.body;
+    const { userMessage, base64Image, characterName } = req.body;
 
     if (!base64Image) {
       return res.status(400).json({ error: 'No image provided' });
@@ -18,6 +64,10 @@ module.exports = async (req, res) => {
     if (!process.env.ANTHROPIC_API_KEY) {
       return res.status(500).json({ error: 'API key configuration error' });
     }
+    
+    // Generate system prompt based on character
+    const systemPrompt = await generateSystemPrompt(characterName);
+    console.log('Generated system prompt for character:', characterName);
     
     // Process image with sharp in memory (no file system operations)
     const imageBuffer = Buffer.from(base64Image, 'base64');
@@ -104,7 +154,7 @@ module.exports = async (req, res) => {
     // Prepare the request payload for Claude API
     const payload = {
       model: 'claude-3-7-sonnet-latest',
-      system: systemPrompt || '',
+      system: systemPrompt,
       messages: claudeMessages,
       max_tokens: 500
     };
@@ -124,14 +174,6 @@ module.exports = async (req, res) => {
     // Save the user message and Claude's response to Airtable
     try {
         if (req.user && req.user.id) {
-            // Extract character name from system prompt if available
-            let characterName = null;
-            if (systemPrompt) {
-                const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
-                if (characterMatch && characterMatch[1]) {
-                    characterName = characterMatch[1];
-                }
-            }
             
             // Save user message
             await airtableService.saveMessage(

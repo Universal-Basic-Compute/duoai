@@ -347,10 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Start usage tracking
             await startUsageTracking();
             
-            // Get system prompt
-            const systemPrompt = localStorage.getItem('currentSystemPrompt');
-            console.log('System prompt retrieved:', systemPrompt ? 'Yes' : 'No');
-            
             try {
                 // Capture screenshot
                 console.log('Capturing screenshot...');
@@ -377,10 +373,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 let fullResponse = '';
                 
                 await claudeAPI.sendMessageWithScreenshotStreaming(
-                    systemPrompt,
                     "*the user did not type a specific message at this time*",
                     screenshotPath,
-                    currentCharacter, // Add character name as a parameter
+                    currentCharacter, // Pass character name
                     // On chunk callback
                     (chunk) => {
                         // Update the text element with the new chunk
@@ -909,12 +904,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const characterName = item.querySelector('.character-name').textContent;
             console.log(`Selected character: ${characterName}`);
             
-            // Build the system prompt for the selected character
-            const systemPrompt = systemPromptBuilder.buildSystemPrompt(characterName);
-            console.log('System prompt built successfully');
-            
-            // Store the system prompt for later use
-            localStorage.setItem('currentSystemPrompt', systemPrompt);
+            // Store the character name for later use
             localStorage.setItem('currentCharacter', characterName);
             
             // Set the voice for the selected character

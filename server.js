@@ -106,6 +106,52 @@ const storage = multer.diskStorage({
     }
 });
 
+// Add a function to generate system prompts based on character
+async function generateSystemPrompt(characterName) {
+    try {
+        // Base prompt path
+        const basePromptPath = path.join(__dirname, 'prompts', 'base_prompt.txt');
+        
+        // Read base prompt
+        let basePrompt = '';
+        try {
+            basePrompt = fs.readFileSync(basePromptPath, 'utf8');
+            console.log('[PROMPT] Read base prompt successfully');
+        } catch (error) {
+            console.error('[PROMPT] Error reading base prompt:', error);
+            basePrompt = "You are DuoAI, an advanced gaming assistant with access to the player's screen.";
+        }
+        
+        // If no character specified, return base prompt
+        if (!characterName) {
+            console.log('[PROMPT] No character specified, using base prompt only');
+            return basePrompt;
+        }
+        
+        // Character-specific prompt path
+        const characterPromptPath = path.join(__dirname, 'prompts', 'characters', `${characterName.toLowerCase()}.txt`);
+        
+        // Read character-specific prompt
+        let characterPrompt = '';
+        try {
+            characterPrompt = fs.readFileSync(characterPromptPath, 'utf8');
+            console.log(`[PROMPT] Read character prompt for ${characterName} successfully`);
+        } catch (error) {
+            console.error(`[PROMPT] Error reading character prompt for ${characterName}:`, error);
+            return basePrompt; // Return base prompt if character prompt not found
+        }
+        
+        // Combine prompts
+        const fullPrompt = `${basePrompt}\n\n${'='.repeat(50)}\n\n${characterPrompt}`;
+        console.log(`[PROMPT] Generated full prompt for ${characterName} (length: ${fullPrompt.length})`);
+        
+        return fullPrompt;
+    } catch (error) {
+        console.error('[PROMPT] Error generating system prompt:', error);
+        return "You are DuoAI, an advanced gaming assistant with access to the player's screen.";
+    }
+}
+
 const upload = multer({ 
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
@@ -257,14 +303,6 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
             // Save the user message and Claude's response to Airtable
             try {
                 if (req.user && req.user.id) {
-                    // Extract character name from system prompt if available
-                    let characterName = null;
-                    if (systemPrompt) {
-                        const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
-                        if (characterMatch && characterMatch[1]) {
-                            characterName = characterMatch[1];
-                        }
-                    }
                     
                     // Save user message
                     await airtableService.saveMessage(
@@ -368,7 +406,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
         // Prepare the request payload for Claude API with streaming
         const payload = {
             model: 'claude-3-7-sonnet-latest',
-            system: systemPrompt || '',
+            system: systemPrompt,
             messages: [
                 {
                     role: 'user',
