@@ -53,8 +53,8 @@ ipcMain.on('capture-screenshot', async (event) => {
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
-        width: 50,  // Just enough width for the pull tab initially
-        height: 600,
+        width: 350,  // Wider initially to show login
+        height: 500,
         frame: false,  // Remove window frame
         transparent: true,  // Make window background transparent
         alwaysOnTop: true,  // Always on top of other windows
@@ -69,15 +69,15 @@ function createWindow() {
         skipTaskbar: true
     });
 
-    // Position the window at the right edge of the screen
+    // Position the window at the center of the screen initially
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
-    mainWindow.setPosition(width - 50, Math.floor(height / 2) - 300);
+    mainWindow.setPosition(Math.floor(width / 2) - 175, Math.floor(height / 2) - 250);
     
     mainWindow.loadFile('index.html');
     
-    // Prevent the window from being moved by the user
-    mainWindow.setMovable(false);
+    // Allow the window to be moved during login
+    mainWindow.setMovable(true);
     
     // Open DevTools for debugging
     mainWindow.webContents.openDevTools({ mode: 'detach' });

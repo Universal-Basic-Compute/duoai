@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('sendButton');
     const closeChatButton = document.getElementById('closeChatButton');
     const selectedCharacter = document.getElementById('selectedCharacter');
+    const loginContainer = document.getElementById('loginContainer');
+    const googleLoginButton = document.getElementById('googleLoginButton');
+    const logoutButton = document.getElementById('logoutButton');
+    let isLoggedIn = false; // Track login state
     
     // Select Nova by default
     const selectDefaultCharacter = () => {
@@ -56,6 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const systemPromptBuilder = require('./system_prompt_builder');
     const screenshotUtil = require('./screenshot');
     const claudeAPI = require('./claude_api');
+    
+    // Function to check login state
+    function checkLoginState() {
+        // For now, we'll use localStorage to simulate login state
+        // In a real app, you would check with your authentication service
+        isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        
+        if (isLoggedIn) {
+            // User is logged in, hide login container and show app
+            loginContainer.classList.add('hidden');
+            menuTab.style.display = 'block';
+        } else {
+            // User is not logged in, show login container and hide app
+            loginContainer.classList.remove('hidden');
+            menuTab.style.display = 'none';
+        }
+    }
+    
+    // Hide menu tab initially
+    menuTab.style.display = 'none';
     
     // Call the function to select Nova by default
     selectDefaultCharacter();
@@ -308,6 +332,46 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide the characters submenu
         charactersSubmenu.style.right = '-300px';
     });
+    
+    // Add event listener for Google login button
+    googleLoginButton.addEventListener('click', () => {
+        console.log('Google login button clicked');
+        
+        // In a real app, you would implement Google OAuth here
+        // For now, we'll simulate a successful login
+        localStorage.setItem('isLoggedIn', 'true');
+        isLoggedIn = true;
+        
+        // Update UI
+        loginContainer.classList.add('hidden');
+        menuTab.style.display = 'block';
+        
+        // Resize window to show the menu tab
+        ipcRenderer.send('resize-window', { width: 50, height: 600 });
+    });
+    
+    // Logout function
+    function logout() {
+        localStorage.setItem('isLoggedIn', 'false');
+        isLoggedIn = false;
+        
+        // Update UI
+        loginContainer.classList.remove('hidden');
+        menuTab.style.display = 'none';
+        
+        // Hide other containers
+        sideMenu.style.right = '-300px';
+        chatContainer.style.right = '-350px';
+        
+        // Resize window to show login
+        ipcRenderer.send('resize-window', { width: 350, height: 500 });
+    }
+    
+    // Add event listener for logout button
+    logoutButton.addEventListener('click', logout);
+    
+    // Check login state at startup
+    checkLoginState();
     
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
