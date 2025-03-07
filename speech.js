@@ -195,10 +195,10 @@ class SpeechManager {
         this.audioElement.pause();
         this.audioElement.currentTime = 0;
         
-        // For very short text, use browser TTS to avoid API overhead
+        // For very short text, just skip it
         if (!text || text.length < 10) {
-            console.log('Text is very short or empty, using browser TTS for efficiency');
-            return this.fallbackSpeak(text || "");
+            console.log('Text is very short or empty, skipping TTS');
+            return Promise.resolve();
         }
         
         if (!this.elevenLabsClient) {
@@ -207,8 +207,8 @@ class SpeechManager {
             
             // Check again after initialization attempt
             if (!initialized) {
-                console.warn('ElevenLabs client still not initialized, falling back to browser TTS');
-                return this.fallbackSpeak(text);
+                console.warn('ElevenLabs client not initialized, cannot speak text');
+                return Promise.resolve();
             }
         }
         
@@ -263,7 +263,7 @@ class SpeechManager {
                         }
                     }
                 
-                    return this.fallbackSpeak(text);
+                    return Promise.resolve();
                 }
                 
                 // Create blob from array buffer with explicit MIME type
@@ -289,9 +289,7 @@ class SpeechManager {
                         console.log('Audio can play through, starting playback');
                         this.audioElement.play().catch(error => {
                             console.error('Error playing audio:', error);
-                            // Fall back to browser TTS if playback fails
                             URL.revokeObjectURL(audioUrl);
-                            this.fallbackSpeak(text);
                             resolve();
                         });
                     };
@@ -299,8 +297,8 @@ class SpeechManager {
                     // Add loadedmetadata event to log audio duration
                     this.audioElement.onloadedmetadata = () => {
                         console.log('Audio metadata loaded, duration:', 
-                                   this.audioElement.duration, 
-                                   'seconds, volume:', this.volume);
+                               this.audioElement.duration, 
+                               'seconds, volume:', this.volume);
                     };
                     
                     this.audioElement.onended = () => {
@@ -312,17 +310,14 @@ class SpeechManager {
                     this.audioElement.onerror = (error) => {
                         console.error('Error loading audio:', error);
                         URL.revokeObjectURL(audioUrl);
-                        // Fall back to browser TTS
-                        this.fallbackSpeak(text);
                         resolve();
                     };
                     
                     // Set a timeout in case the audio never loads
                     setTimeout(() => {
                         if (this.audioElement.readyState < 3) { // HAVE_FUTURE_DATA
-                            console.warn('Audio taking too long to load, falling back to browser TTS');
+                            console.warn('Audio taking too long to load');
                             URL.revokeObjectURL(audioUrl);
-                            this.fallbackSpeak(cleanedText);
                             resolve();
                         }
                     }, 5000); // 5 second timeout
@@ -354,7 +349,7 @@ class SpeechManager {
                     }
                 }
             
-                return this.fallbackSpeak(cleanedText);
+                return Promise.resolve();
             }
         } catch (error) {
             console.error('Error with ElevenLabs TTS:', error);
@@ -365,90 +360,11 @@ class SpeechManager {
                 console.error('Response headers:', JSON.stringify(error.response.headers));
             }
             
-            console.log('Falling back to browser TTS due to ElevenLabs error');
-            // Fall back to browser's built-in TTS
-            return this.fallbackSpeak(text);
+            return Promise.resolve();
         }
     }
     
-    /**
-     * Fallback to browser's built-in speech synthesis
-     * @param {string} text - Text to speak
-     * @returns {Promise} - Resolves when speech is complete
-     */
-    fallbackSpeak(text) {
-        return new Promise((resolve) => {
-            if (!text || !window.speechSynthesis) {
-                console.warn('Empty text or speech synthesis not supported');
-                resolve();
-                return;
-            }
-            
-            // Cancel any ongoing speech
-            window.speechSynthesis.cancel();
-            
-            // Split long text into smaller chunks to avoid synthesis errors
-            const chunks = this.chunkText(text);
-            let currentChunk = 0;
-            
-            const speakNextChunk = () => {
-                if (currentChunk >= chunks.length) {
-                    resolve();
-                    return;
-                }
-                
-                const chunk = chunks[currentChunk];
-                currentChunk++;
-                
-                const utterance = new SpeechSynthesisUtterance(chunk);
-                utterance.volume = this.volume;
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                
-                utterance.onend = () => {
-                    speakNextChunk();
-                };
-                
-                utterance.onerror = (event) => {
-                    console.error('Speech synthesis error:', event);
-                    // Continue with next chunk even if there's an error
-                    speakNextChunk();
-                };
-                
-                window.speechSynthesis.speak(utterance);
-            };
-            
-            // Start speaking the first chunk
-            speakNextChunk();
-        });
-    }
     
-    /**
-     * Chunk text for better browser TTS handling
-     * @param {string} text - Text to chunk
-     * @returns {string[]} - Array of text chunks
-     */
-    chunkText(text) {
-        // Split text into sentences or chunks of about 200 characters
-        const chunks = [];
-        const sentences = text.split(/(?<=[.!?])\s+/);
-        
-        let currentChunk = '';
-        for (const sentence of sentences) {
-            if (currentChunk.length + sentence.length > 200) {
-                chunks.push(currentChunk);
-                currentChunk = sentence;
-            } else {
-                currentChunk += (currentChunk ? ' ' : '') + sentence;
-            }
-        }
-        
-        if (currentChunk) {
-            chunks.push(currentChunk);
-        }
-        
-        return chunks;
-    }
 
     /**
      * Set the volume for speech

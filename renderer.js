@@ -826,11 +826,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (isAvailable) {
                 console.log('ElevenLabs is available, testing voice...');
-                // Don't actually play a test sound to avoid disrupting the user
-                // Just log that it's ready
                 console.log('ElevenLabs TTS is ready to use');
             } else {
-                console.warn('ElevenLabs is not available, will use browser TTS');
+                console.warn('ElevenLabs is not available. Voice synthesis will not work.');
+                // You could show a warning to the user here
+                alert('ElevenLabs voice service is not available. Please check your API key configuration.');
             }
         } catch (error) {
             console.error('Error testing ElevenLabs TTS:', error);
