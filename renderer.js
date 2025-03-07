@@ -514,6 +514,18 @@ document.addEventListener('DOMContentLoaded', () => {
         speechManager.setVolume(volume);
         localStorage.setItem('speechVolume', volume);
     });
+    
+    // Voice selector event listener
+    voiceSelector.addEventListener('change', () => {
+        const voiceId = voiceSelector.value;
+        speechManager.setVoice(voiceId);
+        localStorage.setItem('selectedVoice', voiceId);
+        
+        // Test the selected voice
+        speechManager.speak("Hello, I'm your gaming assistant.").catch(error => {
+            console.error('Error testing voice:', error);
+        });
+    });
 
     // Microphone button event listener
     micButton.addEventListener('click', () => {
@@ -567,13 +579,22 @@ document.addEventListener('DOMContentLoaded', () => {
         speechStatus.textContent = '';
     }
 
-    // Load saved volume setting
+    const voiceSelector = document.getElementById('voiceSelector');
+    
+    // Load saved settings
     function loadSavedSettings() {
         const savedVolume = localStorage.getItem('speechVolume');
         if (savedVolume !== null) {
             const volume = parseFloat(savedVolume);
             volumeSlider.value = volume;
             speechManager.setVolume(volume);
+        }
+        
+        // Load saved voice
+        const savedVoice = localStorage.getItem('selectedVoice');
+        if (savedVoice) {
+            voiceSelector.value = savedVoice;
+            speechManager.setVoice(savedVoice);
         }
     }
 

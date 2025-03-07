@@ -538,7 +538,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 50%;
+  width: 30%;
 }
 
 .volume-icon {
@@ -568,6 +568,30 @@ body {
 .slider::-webkit-slider-thumb:hover {
   background: #b24592;
   transform: scale(1.2);
+}
+
+.voice-selector {
+  margin: 0 10px;
+}
+
+.voice-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(126, 87, 194, 0.3);
+  color: var(--text-color);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  outline: none;
+}
+
+.voice-select:focus {
+  border-color: var(--accent-color);
+}
+
+.voice-select option {
+  background-color: var(--secondary-bg);
+  color: var(--text-color);
 }
 
 .speech-controls {

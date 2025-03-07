@@ -508,6 +508,92 @@ app.post('/api/whisper', express.json({ limit: '10mb' }), async (req, res) => {
     }
 });
 
+// Get ElevenLabs API key (without exposing it to the client)
+app.get('/api/elevenlabs/key', (req, res) => {
+    // Only return a masked version for security
+    if (process.env.ELEVENLABS_API_KEY) {
+        const maskedKey = process.env.ELEVENLABS_API_KEY.substring(0, 4) + '...' + 
+                          process.env.ELEVENLABS_API_KEY.substring(process.env.ELEVENLABS_API_KEY.length - 4);
+        res.json({ key: process.env.ELEVENLABS_API_KEY, maskedKey });
+    } else {
+        res.status(404).json({ error: 'ElevenLabs API key not found' });
+    }
+});
+
+// Text-to-speech endpoint
+app.post('/api/elevenlabs/tts', async (req, res) => {
+    try {
+        const { text, voiceId, modelId } = req.body;
+        
+        if (!text) {
+            return res.status(400).json({ error: 'No text provided' });
+        }
+        
+        // Check if API key is available
+        if (!process.env.ELEVENLABS_API_KEY) {
+            console.error('ElevenLabs API key is missing');
+            return res.status(500).json({ error: 'API key configuration error' });
+        }
+        
+        // Initialize ElevenLabs client
+        const { ElevenLabsClient } = require('elevenlabs');
+        const client = new ElevenLabsClient({
+            apiKey: process.env.ELEVENLABS_API_KEY
+        });
+        
+        // Convert text to speech
+        const audio = await client.textToSpeech.convert(
+            voiceId || "JBFqnCBsd6RMkjVDRZzb", // Default to Rachel voice
+            {
+                text: text,
+                model_id: modelId || "eleven_flash_v2_5",
+                output_format: "mp3_44100_128"
+            }
+        );
+        
+        // Set response headers
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
+        
+        // Send the audio data
+        res.send(Buffer.from(audio));
+    } catch (error) {
+        console.error('Error with ElevenLabs TTS:', error);
+        res.status(500).json({ 
+            error: 'Error processing text-to-speech',
+            details: error.message
+        });
+    }
+});
+
+// Get available voices
+app.get('/api/elevenlabs/voices', async (req, res) => {
+    try {
+        // Check if API key is available
+        if (!process.env.ELEVENLABS_API_KEY) {
+            console.error('ElevenLabs API key is missing');
+            return res.status(500).json({ error: 'API key configuration error' });
+        }
+        
+        // Initialize ElevenLabs client
+        const { ElevenLabsClient } = require('elevenlabs');
+        const client = new ElevenLabsClient({
+            apiKey: process.env.ELEVENLABS_API_KEY
+        });
+        
+        // Get all voices
+        const voices = await client.voices.getAll();
+        
+        res.json({ voices });
+    } catch (error) {
+        console.error('Error getting ElevenLabs voices:', error);
+        res.status(500).json({ 
+            error: 'Error getting voices',
+            details: error.message
+        });
+    }
+});
+
 // Serve the Electron app files for local development
 app.use(express.static(__dirname));
 
