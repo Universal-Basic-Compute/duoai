@@ -55,9 +55,19 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
             return res.status(400).json({ error: 'No image provided' });
         }
 
+        // Check if API key is available
+        if (!process.env.ANTHROPIC_API_KEY) {
+            console.error('Anthropic API key is missing');
+            return res.status(500).json({ error: 'API key configuration error' });
+        }
+
+        console.log('Preparing request to Claude API');
+        console.log('System prompt length:', systemPrompt ? systemPrompt.length : 0);
+        console.log('User message:', userMessage);
+        
         // Prepare the request payload for Claude API
         const payload = {
-            model: 'claude-3-7-sonnet-latest',
+            model: 'claude-3-opus-20240229',  // Use a valid model
             system: systemPrompt || '',
             messages: [
                 {
@@ -67,7 +77,7 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
                             type: 'image',
                             source: {
                                 type: 'base64',
-                                media_type: 'image/png',
+                                media_type: 'image/jpeg',  // Changed to jpeg since we're converting to jpeg
                                 data: base64Image
                             }
                         },
@@ -81,19 +91,32 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
             max_tokens: 4000
         };
 
+        console.log('Sending request to Claude API');
+        
         // Call Claude API
-        const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': process.env.ANTHROPIC_API_KEY,
-                'anthropic-version': '2023-06-01'
+        try {
+            const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': process.env.ANTHROPIC_API_KEY,
+                    'anthropic-version': '2023-06-01'
+                }
+            });
+            
+            console.log('Received response from Claude API');
+            
+            // Return Claude's response
+            res.json({ response: response.data.content[0].text });
+        } catch (apiError) {
+            console.error('Error from Claude API:', apiError.message);
+            if (apiError.response) {
+                console.error('Claude API response status:', apiError.response.status);
+                console.error('Claude API response data:', JSON.stringify(apiError.response.data, null, 2));
             }
-        });
-
-        // Return Claude's response
-        res.json({ response: response.data.content[0].text });
+            throw apiError;
+        }
     } catch (error) {
-        console.error('Error calling Claude API:', error);
+        console.error('Error calling Claude API:', error.message);
         res.status(500).json({ 
             error: 'Error processing request',
             details: error.response ? error.response.data : error.message

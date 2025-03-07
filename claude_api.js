@@ -93,7 +93,22 @@ class ClaudeAPI {
                 
                 console.log('Image compressed successfully');
             } else {
-                base64Image = imageBuffer.toString('base64');
+                // Convert to JPEG for better compression
+                const tempPath = screenshotPath + '.jpg';
+                
+                // Convert to JPEG
+                await sharp(imageBuffer)
+                    .jpeg({ quality: 85 })
+                    .toFile(tempPath);
+                    
+                // Read the JPEG image
+                const jpegBuffer = fs.readFileSync(tempPath);
+                base64Image = jpegBuffer.toString('base64');
+                
+                // Delete the temporary file
+                fs.unlinkSync(tempPath);
+                
+                console.log('Image converted to JPEG');
             }
             
             console.log('Sending request to backend server...');
@@ -109,7 +124,8 @@ class ClaudeAPI {
                     'Content-Type': 'application/json'
                 },
                 maxContentLength: Infinity,
-                maxBodyLength: Infinity
+                maxBodyLength: Infinity,
+                timeout: 60000 // 60 second timeout
             });
 
             // Return Claude's response
@@ -120,7 +136,7 @@ class ClaudeAPI {
                 console.error('Response data:', error.response.data);
                 console.error('Response status:', error.response.status);
             }
-            throw error;
+            throw new Error(`Failed to get response from Claude: ${error.message}`);
         }
     }
 }
