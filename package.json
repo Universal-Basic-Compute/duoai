@@ -1,98 +1,35 @@
 {
-  "name": "duoai",
-  "version": "1.0.0",
-  "description": "DuoAI: Your Intelligent Gaming Companion",
-  "main": "main.js",
+  "name": "xforge-frontend",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "electron .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win",
-    "dist:mac": "electron-builder --mac",
-    "dist:linux": "electron-builder --linux",
-    "deploy": "vercel --prod"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "axios": "^1.8.1",
-    "electron": "^35.0.0",
-    "electron-builder": "^25.1.8",
-    "form-data": "^4.0.2",
-    "pkg": "^5.8.1"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "airtable": "^0.12.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "elevenlabs": "^0.2.1",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "multer": "^1.4.5-lts.1",
-    "node-webvtt": "^1.9.4",
+    "next": "15.2.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "sharp": "^0.33.5"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
-  "build": {
-    "appId": "com.duoai.app",
-    "productName": "DUOAI",
-    "directories": {
-      "output": "dist"
-    },
-    "jest": {
-      "testEnvironment": "node",
-      "testMatch": ["**/__tests__/**/*.js", "**/?(*.)+(spec|test).js"],
-      "collectCoverage": true,
-      "coverageReporters": ["text", "lcov"],
-      "coverageDirectory": "coverage"
-    },
-    "files": [
-      "**/*",
-      "!website{,/**/*}",
-      "!dist{,/**/*}",
-      "!api{,/**/*}",
-      "!node_modules/.cache{,/**/*}",
-      "!**/*.{iml,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,suo,xproj,cc,d.ts,pdb}",
-      "!server.js",
-      "!server-builder.js",
-      "!airtable-service.js",
-      "!vercel.json"
-    ],
-    "extraResources": [
-      {
-        "from": ".",
-        "to": ".",
-        "filter": ["index.html", "styles.css", "renderer.js"]
-      },
-      {
-        "from": "prompts",
-        "to": "prompts",
-        "filter": ["**/*"]
-      },
-      {
-        "from": "images",
-        "to": "images",
-        "filter": ["**/*"]
-      }
-    ],
-    "asar": false,
-    "win": {
-      "target": ["nsis"],
-      "icon": "images/app-icon.ico"
-    },
-    "mac": {
-      "target": ["dmg"],
-      "icon": "images/app-icon.icns"
-    },
-    "linux": {
-      "target": ["AppImage"],
-      "icon": "images/app-icon.png"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
-    }
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "axios": "^1.8.2",
+    "electron": "^35.0.0",
+    "elevenlabs": "^1.53.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
