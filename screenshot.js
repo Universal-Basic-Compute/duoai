@@ -1,4 +1,4 @@
-const { desktopCapturer, remote } = require('electron');
+const { desktopCapturer, screen } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
