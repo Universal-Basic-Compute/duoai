@@ -246,13 +246,14 @@ class ClaudeAPI {
                     // Process the response text as SSE
                     if (response.data) {
                         let fullResponse = '';
-                        const lines = response.data.split('\n\n');
+                        // Split by event boundaries, not just newlines
+                        const events = response.data.split('\n\n');
                         
-                        for (const line of lines) {
-                            if (!line.trim()) continue;
+                        for (const event of events) {
+                            if (!event.trim()) continue;
                             
-                            // Extract the data part
-                            const match = line.match(/^data: (.+)$/m);
+                            // Extract the data part more precisely
+                            const match = event.match(/^data: (.+)$/m);
                             if (!match) continue;
                             
                             try {
