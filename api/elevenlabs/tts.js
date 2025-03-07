@@ -2,6 +2,16 @@ const axios = require('axios');
 
 module.exports = async (req, res) => {
   try {
+    // Set CORS headers to allow requests from any origin
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight OPTIONS request
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+    
     // Validate request method
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Method not allowed' });
