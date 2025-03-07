@@ -61,7 +61,8 @@ module.exports = async (req, res) => {
             console.log(`Calling ElevenLabs API with voice ID: ${finalVoiceId}`);
             console.log(`Using model ID: ${finalModelId}`);
             
-            audio = await client.textToSpeech.convert(
+            // Use the stream option to get a buffer directly
+            const response = await client.textToSpeech.convertToStream(
               finalVoiceId,
               {
                 text: trimmedText,
@@ -69,6 +70,13 @@ module.exports = async (req, res) => {
                 output_format: "mp3_44100_128"
               }
             );
+            
+            // Convert stream to buffer
+            const chunks = [];
+            for await (const chunk of response) {
+              chunks.push(chunk);
+            }
+            audio = Buffer.concat(chunks);
             
             console.log('Received audio from ElevenLabs, size:', audio ? audio.length : 0);
             
@@ -111,7 +119,7 @@ module.exports = async (req, res) => {
       console.log('Sending audio data to client');
       
       // Send the audio data
-      res.send(Buffer.from(audio));
+      res.send(audio);
       
       console.log('Audio sent successfully');
     } catch (clientError) {

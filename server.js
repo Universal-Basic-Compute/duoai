@@ -897,7 +897,7 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
             console.log('Sending audio data to client');
             
             // Send the audio data
-            res.send(Buffer.from(audio));
+            res.send(audioData);
             
             console.log('Audio sent successfully');
         } catch (clientError) {
