@@ -201,9 +201,6 @@ class SpeechManager {
             return this.fallbackSpeak(text || "");
         }
         
-        // Check if text has duplicate words at the beginning (a common issue with Claude responses)
-        const cleanedText = this.cleanDuplicateWords(text);
-        
         if (!this.elevenLabsClient) {
             console.warn('ElevenLabs client not initialized, attempting to initialize now...');
             const initialized = await this.initElevenLabs();
@@ -211,12 +208,12 @@ class SpeechManager {
             // Check again after initialization attempt
             if (!initialized) {
                 console.warn('ElevenLabs client still not initialized, falling back to browser TTS');
-                return this.fallbackSpeak(cleanedText);
+                return this.fallbackSpeak(text);
             }
         }
         
         try {
-            console.log('Converting text to speech with ElevenLabs:', cleanedText.substring(0, 50) + '...');
+            console.log('Converting text to speech with ElevenLabs:', text.substring(0, 50) + '...');
             console.log('Using voice ID:', this.voiceId);
             console.log('Using model ID:', this.modelId);
             
@@ -230,7 +227,7 @@ class SpeechManager {
             try {
                 console.log(`Sending TTS request to server with voice ID: ${this.voiceId}`);
                 const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
-                    text: cleanedText,
+                    text: text,
                     voiceId: this.voiceId,
                     modelId: useModel
                 }, {
@@ -316,7 +313,7 @@ class SpeechManager {
                         console.error('Error loading audio:', error);
                         URL.revokeObjectURL(audioUrl);
                         // Fall back to browser TTS
-                        this.fallbackSpeak(cleanedText);
+                        this.fallbackSpeak(text);
                         resolve();
                     };
                     
@@ -370,29 +367,8 @@ class SpeechManager {
             
             console.log('Falling back to browser TTS due to ElevenLabs error');
             // Fall back to browser's built-in TTS
-            return this.fallbackSpeak(cleanedText);
+            return this.fallbackSpeak(text);
         }
-    }
-    
-    /**
-     * Clean duplicate words at the beginning of text
-     * @param {string} text - Text to clean
-     * @returns {string} - Cleaned text
-     */
-    cleanDuplicateWords(text) {
-        if (!text) return '';
-        
-        // Pattern to match repeated words at the beginning like "I'mI'm" or "I canI can"
-        const duplicatePattern = /^(\w+['']?\w*)\1/;
-        const match = text.match(duplicatePattern);
-        
-        if (match) {
-            console.log('Found duplicate words at beginning:', match[0]);
-            // Replace the duplicate with a single instance
-            return text.replace(duplicatePattern, match[1]);
-        }
-        
-        return text;
     }
     
     /**
