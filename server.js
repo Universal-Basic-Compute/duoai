@@ -13,8 +13,23 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Create uploads directory if it doesn't exist
+        if (!fs.existsSync('uploads')) {
+            fs.mkdirSync('uploads', { recursive: true });
+        }
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        // Use a unique filename
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'screenshot-' + uniqueSuffix + '.png');
+    }
+});
+
 const upload = multer({ 
-    dest: 'uploads/',
+    storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
@@ -30,12 +45,19 @@ app.get('/health', (req, res) => {
 // Claude API endpoint
 app.post('/api/claude', upload.single('screenshot'), async (req, res) => {
     try {
+        console.log('Received request to /api/claude');
+        console.log('Request body fields:', Object.keys(req.body));
+        console.log('File received:', req.file ? 'Yes' : 'No');
+        
         const { systemPrompt, userMessage } = req.body;
         const screenshotFile = req.file;
 
         if (!screenshotFile) {
+            console.error('No screenshot file in request');
             return res.status(400).json({ error: 'No screenshot provided' });
         }
+
+        console.log('Screenshot file path:', screenshotFile.path);
 
         // Read the screenshot file
         const imageBuffer = fs.readFileSync(screenshotFile.path);

@@ -11,6 +11,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeChatButton = document.getElementById('closeChatButton');
     const selectedCharacter = document.getElementById('selectedCharacter');
     
+    // Select Nova by default
+    const selectDefaultCharacter = () => {
+        // Find the Nova character item
+        const novaCharacterItem = Array.from(document.querySelectorAll('.character-item'))
+            .find(item => item.querySelector('.character-name').textContent === 'Nova');
+        
+        if (novaCharacterItem) {
+            console.log('Selecting Nova by default');
+            
+            // Add active class
+            novaCharacterItem.classList.add('character-active');
+            
+            // Build the system prompt for Nova
+            const systemPrompt = systemPromptBuilder.buildSystemPrompt('Nova');
+            console.log('Default system prompt built for Nova');
+            
+            // Store the system prompt for later use
+            localStorage.setItem('currentSystemPrompt', systemPrompt);
+            localStorage.setItem('currentCharacter', 'Nova');
+            
+            // Set current character
+            currentCharacter = 'Nova';
+        }
+    };
+    
     console.log('Menu tab found:', menuTab !== null);
     if (menuTab === null) {
         console.error('Menu tab element not found!');
@@ -32,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const screenshotUtil = require('./screenshot');
     const claudeAPI = require('./claude_api');
     
+    // Call the function to select Nova by default
+    selectDefaultCharacter();
     
     // Ensure menu tab is in the correct position at startup
     menuTab.style.right = '0';
