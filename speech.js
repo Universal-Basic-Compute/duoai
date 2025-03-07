@@ -509,9 +509,12 @@ class SpeechManager {
             
             return Promise.resolve();
         }
+    } catch (outerError) {
+        // Add this catch block to fix the syntax error
+        console.error('Unexpected error in speak method:', outerError);
+        return Promise.resolve();
     }
-    
-    
+}
 
     /**
      * Set the volume for speech
