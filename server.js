@@ -402,6 +402,69 @@ app.post('/api/usage/end', (req, res) => {
 // Serve static files from the website directory
 app.use(express.static(path.join(__dirname, 'website')));
 
+// Whisper API endpoint for speech-to-text
+app.post('/api/whisper', express.json({ limit: '10mb' }), async (req, res) => {
+    try {
+        const { audioData } = req.body;
+        
+        if (!audioData) {
+            return res.status(400).json({ error: 'No audio data provided' });
+        }
+        
+        // Check if API key is available
+        if (!process.env.OPENAI_API_KEY) {
+            console.error('OpenAI API key is missing');
+            return res.status(500).json({ error: 'API key configuration error' });
+        }
+        
+        // Convert base64 to buffer
+        const audioBuffer = Buffer.from(audioData, 'base64');
+        
+        // Save to temporary file
+        const tempFilePath = path.join(os.tmpdir(), `whisper-${Date.now()}.webm`);
+        fs.writeFileSync(tempFilePath, audioBuffer);
+        
+        try {
+            // Call OpenAI Whisper API
+            const formData = new FormData();
+            formData.append('file', fs.createReadStream(tempFilePath));
+            formData.append('model', 'whisper-1');
+            
+            const response = await axios.post('https://api.openai.com/v1/audio/transcriptions', formData, {
+                headers: {
+                    ...formData.getHeaders(),
+                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+                }
+            });
+            
+            // Clean up temp file
+            fs.unlinkSync(tempFilePath);
+            
+            // Return transcription
+            res.json({ transcription: response.data.text });
+        } catch (apiError) {
+            console.error('Error calling Whisper API:', apiError.message);
+            if (apiError.response) {
+                console.error('Whisper API response status:', apiError.response.status);
+                console.error('Whisper API response data:', JSON.stringify(apiError.response.data, null, 2));
+            }
+            
+            // Clean up temp file
+            if (fs.existsSync(tempFilePath)) {
+                fs.unlinkSync(tempFilePath);
+            }
+            
+            throw apiError;
+        }
+    } catch (error) {
+        console.error('Error processing audio:', error.message);
+        res.status(500).json({ 
+            error: 'Error processing audio',
+            details: error.response ? error.response.data : error.message
+        });
+    }
+});
+
 // Serve the Electron app files for local development
 app.use(express.static(__dirname));
 

@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginContainer = document.getElementById('loginContainer');
     const googleLoginButton = document.getElementById('googleLoginButton');
     const logoutButton = document.getElementById('logoutButton');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const micButton = document.getElementById('micButton');
+    const speechStatus = document.getElementById('speechStatus');
     let isLoggedIn = false; // Track login state
     
     // Select Nova by default
@@ -61,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const screenshotUtil = require('./screenshot');
     const claudeAPI = require('./claude_api');
     const authBridge = require('./bridge');
+    const speechManager = require('./speech');
 
     // Add these variables at the top of the file
     let activeSessionId = null;
@@ -421,6 +425,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Speak AI messages
+        if (sender === 'ai') {
+            speechManager.speak(text).catch(error => {
+                console.error('Error speaking message:', error);
+            });
+        }
     }
     
     // Function to add loading indicator
@@ -497,8 +508,80 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listener for logout button
     logoutButton.addEventListener('click', logout);
     
+    // Volume slider event listener
+    volumeSlider.addEventListener('input', () => {
+        const volume = parseFloat(volumeSlider.value);
+        speechManager.setVolume(volume);
+        localStorage.setItem('speechVolume', volume);
+    });
+
+    // Microphone button event listener
+    micButton.addEventListener('click', () => {
+        if (speechManager.isListening) {
+            stopSpeechRecognition();
+        } else {
+            startSpeechRecognition();
+        }
+    });
+
+    // Function to start speech recognition
+    function startSpeechRecognition() {
+        if (!speechManager.isSpeechRecognitionSupported()) {
+            alert('Speech recognition is not supported in this browser');
+            return;
+        }
+        
+        micButton.classList.add('recording');
+        speechStatus.textContent = 'Listening...';
+        
+        speechManager.startListening(
+            // On result
+            (transcript) => {
+                userInput.value = transcript;
+                userInput.style.height = 'auto';
+                userInput.style.height = (userInput.scrollHeight) + 'px';
+                stopSpeechRecognition();
+                
+                // Auto-send after a short delay
+                setTimeout(() => {
+                    sendMessage();
+                }, 500);
+            },
+            // On end
+            (error) => {
+                stopSpeechRecognition();
+                if (error) {
+                    speechStatus.textContent = 'Error: ' + error;
+                    setTimeout(() => {
+                        speechStatus.textContent = '';
+                    }, 3000);
+                }
+            }
+        );
+    }
+
+    // Function to stop speech recognition
+    function stopSpeechRecognition() {
+        speechManager.stopListening();
+        micButton.classList.remove('recording');
+        speechStatus.textContent = '';
+    }
+
+    // Load saved volume setting
+    function loadSavedSettings() {
+        const savedVolume = localStorage.getItem('speechVolume');
+        if (savedVolume !== null) {
+            const volume = parseFloat(savedVolume);
+            volumeSlider.value = volume;
+            speechManager.setVolume(volume);
+        }
+    }
+
     // Check login state at startup
     checkLoginState();
+    
+    // Load saved settings
+    loadSavedSettings();
     
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
