@@ -108,6 +108,7 @@ module.exports = async (req, res) => {
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
       res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+      res.setHeader('Access-Control-Allow-Origin', '*'); // Allow cross-origin requests
       
       console.log('Sending audio data to client');
       

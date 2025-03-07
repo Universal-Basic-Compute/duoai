@@ -237,16 +237,35 @@ class SpeechManager {
                     
                 console.log('Received TTS response, size:', response.data.byteLength);
                 
-                // Create blob from array buffer
-                const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
-                const audioUrl = URL.createObjectURL(audioBlob);
+                // Check if we received valid audio data
+                if (!response.data || response.data.byteLength < 100) {
+                    console.error('Received invalid or empty audio data');
+                    return this.fallbackSpeak(text);
+                }
                 
+                // Create blob from array buffer with explicit MIME type
+                const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+                console.log('Created audio blob, size:', audioBlob.size);
+                
+                const audioUrl = URL.createObjectURL(audioBlob);
                 console.log('Created audio URL:', audioUrl);
                 
-                // Play the audio
+                // Play the audio with better error handling
                 return new Promise((resolve) => {
-                    this.audioElement.src = audioUrl;
+                    // Create a new audio element each time to avoid issues with reusing
+                    this.audioElement = new Audio();
                     this.audioElement.volume = this.volume;
+                    
+                    this.audioElement.oncanplaythrough = () => {
+                        console.log('Audio can play through, starting playback');
+                        this.audioElement.play().catch(error => {
+                            console.error('Error playing audio:', error);
+                            // Fall back to browser TTS if playback fails
+                            URL.revokeObjectURL(audioUrl);
+                            this.fallbackSpeak(text);
+                            resolve();
+                        });
+                    };
                     
                     this.audioElement.onended = () => {
                         console.log('Audio playback ended');
@@ -255,16 +274,25 @@ class SpeechManager {
                     };
                     
                     this.audioElement.onerror = (error) => {
-                        console.error('Error playing audio:', error);
+                        console.error('Error loading audio:', error);
                         URL.revokeObjectURL(audioUrl);
+                        // Fall back to browser TTS
+                        this.fallbackSpeak(text);
                         resolve();
                     };
                     
-                    console.log('Starting audio playback');
-                    this.audioElement.play().catch(error => {
-                        console.error('Error playing audio:', error);
-                        resolve();
-                    });
+                    // Set the source after attaching event handlers
+                    this.audioElement.src = audioUrl;
+                    
+                    // Set a timeout in case the audio never loads
+                    setTimeout(() => {
+                        if (this.audioElement.readyState < 3) { // HAVE_FUTURE_DATA
+                            console.warn('Audio taking too long to load, falling back to browser TTS');
+                            URL.revokeObjectURL(audioUrl);
+                            this.fallbackSpeak(text);
+                            resolve();
+                        }
+                    }, 5000); // 5 second timeout
                 });
             } catch (apiError) {
                 console.error('Error with ElevenLabs API call:', apiError.message);
