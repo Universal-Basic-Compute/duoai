@@ -3,8 +3,10 @@ const path = require('path');
 
 class SystemPromptBuilder {
     constructor() {
-        this.basePromptPath = path.join(__dirname, 'prompts', 'base_prompt.txt');
-        this.charactersPath = path.join(__dirname, 'prompts', 'characters');
+        // Use __dirname for local development and process.cwd() for Vercel
+        const rootDir = process.env.VERCEL ? process.cwd() : __dirname;
+        this.basePromptPath = path.join(rootDir, 'prompts', 'base_prompt.txt');
+        this.charactersPath = path.join(rootDir, 'prompts', 'characters');
     }
 
     /**

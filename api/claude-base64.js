@@ -1,5 +1,7 @@
 const axios = require('axios');
 const sharp = require('sharp');
+const fs = require('fs');
+const path = require('path');
 const airtableService = require('../../airtable-service');
 
 module.exports = async (req, res) => {
