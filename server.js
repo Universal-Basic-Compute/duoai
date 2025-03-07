@@ -194,7 +194,7 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
     try {
         console.log('Received request to /api/claude-base64');
         
-        const { systemPrompt, userMessage, base64Image } = req.body;
+        const { systemPrompt, userMessage, base64Image, characterName } = req.body;
 
         if (!base64Image) {
             console.error('No base64 image in request');
@@ -339,15 +339,8 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
         const userId = req.user ? req.user.id : 'mock-user-id';
         console.log('[STREAM] Using user ID:', userId);
         
-        // Extract character name from system prompt if available
-        let characterName = null;
-        if (systemPrompt) {
-            const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
-            if (characterMatch && characterMatch[1]) {
-                characterName = characterMatch[1];
-            }
-        }
-        console.log('[STREAM] Character name extracted:', characterName || 'None');
+        // Use character name from request
+        console.log('[STREAM] Character name from request:', characterName || 'None');
         
         // Save user message to Airtable immediately
         try {

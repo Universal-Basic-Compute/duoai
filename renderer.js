@@ -380,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     systemPrompt,
                     "*the user did not type a specific message at this time*",
                     screenshotPath,
+                    currentCharacter, // Add character name as a parameter
                     // On chunk callback
                     (chunk) => {
                         // Update the text element with the new chunk
@@ -544,6 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 systemPrompt,
                 sanitizedMessage || "*the user did not type a specific message at this time*",
                 screenshotPath,
+                localStorage.getItem('currentCharacter'), // Add character name as a parameter
                 // On chunk callback
                 (chunk) => {
                     // Update the text element with the new chunk

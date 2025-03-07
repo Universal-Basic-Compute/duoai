@@ -188,12 +188,13 @@ class ClaudeAPI {
      * @param {string} systemPrompt - The system prompt
      * @param {string} userMessage - The user's message
      * @param {string} screenshotPath - Path to the screenshot file
+     * @param {string} characterName - The character name
      * @param {Function} onChunk - Callback function for each text chunk
      * @param {Function} onComplete - Callback function when streaming is complete
      * @returns {Promise<void>} - Resolves when streaming is complete
      * @throws {Error} - If the API call fails or the screenshot is invalid
      */
-    async sendMessageWithScreenshotStreaming(systemPrompt, userMessage, screenshotPath, onChunk, onComplete) {
+    async sendMessageWithScreenshotStreaming(systemPrompt, userMessage, screenshotPath, characterName, onChunk, onComplete) {
         try {
             // Check if server is running
             const serverRunning = await this.checkServerStatus().catch(() => false);
@@ -231,7 +232,8 @@ class ClaudeAPI {
                     const response = await axios.post(streamUrl, {
                         systemPrompt: systemPrompt || '',
                         userMessage: userMessage || '',
-                        base64Image: base64Image
+                        base64Image: base64Image,
+                        characterName: characterName || ''
                     }, {
                         headers: {
                             'Content-Type': 'application/json'
