@@ -35,6 +35,20 @@ console.log('ELEVENLABS_API_KEY exists:', !!process.env.ELEVENLABS_API_KEY);
 console.log('GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
 console.log('GOOGLE_CLIENT_SECRET exists:', !!process.env.GOOGLE_CLIENT_SECRET ? 'Yes' : 'No');
 
+// Check Airtable configuration
+console.log('\n=== AIRTABLE CONFIGURATION ===');
+console.log('AIRTABLE_API_KEY exists:', !!process.env.AIRTABLE_API_KEY);
+console.log('AIRTABLE_BASE_ID exists:', !!process.env.AIRTABLE_BASE_ID);
+
+if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
+    console.warn('\x1b[33m%s\x1b[0m', 'WARNING: Airtable configuration is incomplete!');
+    console.warn('\x1b[33m%s\x1b[0m', 'Messages will not be saved to Airtable.');
+    console.warn('\x1b[33m%s\x1b[0m', 'Please set AIRTABLE_API_KEY and AIRTABLE_BASE_ID in your .env file.');
+} else {
+    console.log('\x1b[32m%s\x1b[0m', 'Airtable configuration looks good!');
+}
+console.log('===============================\n');
+
 // Add this new code to check for .env file
 const envFilePath = path.join(__dirname, '.env');
 console.log('Checking if .env exists at:', envFilePath);
@@ -294,25 +308,25 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
 // Claude streaming API endpoint
 app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res) => {
     try {
-        console.log('Received request to /api/claude-stream');
+        console.log('[STREAM] Received request to /api/claude-stream');
         
         const { systemPrompt, userMessage, base64Image } = req.body;
         let fullResponse = '';
 
         if (!base64Image) {
-            console.error('No base64 image in request');
+            console.error('[STREAM] No base64 image in request');
             return res.status(400).json({ error: 'No image provided' });
         }
 
         // Check if API key is available
         if (!process.env.ANTHROPIC_API_KEY) {
-            console.error('Anthropic API key is missing');
+            console.error('[STREAM] Anthropic API key is missing');
             return res.status(500).json({ error: 'API key configuration error' });
         }
 
-        console.log('Preparing streaming request to Claude API');
-        console.log('System prompt length:', systemPrompt ? systemPrompt.length : 0);
-        console.log('User message:', userMessage);
+        console.log('[STREAM] Preparing streaming request to Claude API');
+        console.log('[STREAM] System prompt length:', systemPrompt ? systemPrompt.length : 0);
+        console.log('[STREAM] User message:', userMessage);
         
         // Set up headers for SSE
         res.writeHead(200, {
@@ -320,6 +334,43 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
             'Cache-Control': 'no-cache',
             'Connection': 'keep-alive'
         });
+        
+        // Use a mock user ID if req.user is not available
+        const userId = req.user ? req.user.id : 'mock-user-id';
+        console.log('[STREAM] Using user ID:', userId);
+        
+        // Extract character name from system prompt if available
+        let characterName = null;
+        if (systemPrompt) {
+            const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+            if (characterMatch && characterMatch[1]) {
+                characterName = characterMatch[1];
+            }
+        }
+        console.log('[STREAM] Character name extracted:', characterName || 'None');
+        
+        // Save user message to Airtable immediately
+        try {
+            console.log('[STREAM] Saving user message to Airtable...');
+            
+            const savedUserMessage = await airtableService.saveMessage(
+                userId,
+                'user',
+                userMessage || "*the user did not type a specific message at this time*",
+                characterName
+            );
+            
+            if (savedUserMessage) {
+                console.log('[STREAM] User message saved to Airtable successfully with ID:', savedUserMessage.id);
+            } else {
+                console.error('[STREAM] Failed to save user message to Airtable - returned null');
+            }
+        } catch (saveError) {
+            console.error('[STREAM] Error saving user message to Airtable:', saveError);
+            console.error('[STREAM] Error message:', saveError.message);
+            console.error('[STREAM] Error stack:', saveError.stack);
+            // Don't fail the request if saving messages fails
+        }
         
         // Prepare the request payload for Claude API with streaming
         const payload = {
@@ -339,7 +390,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
                         },
                         {
                             type: 'text',
-                            text: userMessage || "What do you see in this screenshot? Can you provide any gaming advice based on what you see?"
+                            text: userMessage || "*the user did not type a specific message at this time*"
                         }
                     ]
                 }
@@ -348,7 +399,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
             stream: true
         };
 
-        console.log('Sending streaming request to Claude API');
+        console.log('[STREAM] Sending streaming request to Claude API');
         
         // Call Claude API with streaming
         const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
@@ -359,6 +410,8 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
             },
             responseType: 'stream'
         });
+        
+        console.log('[STREAM] Received streaming response from Claude API');
         
         // Process the stream
         response.data.on('data', (chunk) => {
@@ -385,53 +438,52 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
         
         // Handle end of stream
         response.data.on('end', async () => {
-            // Save the user message and Claude's response to Airtable
+            console.log('[STREAM] Stream ended, full response length:', fullResponse.length);
+            
+            // Save assistant message to Airtable
             try {
-                if (req.user && req.user.id) {
-                    // Extract character name from system prompt if available
-                    let characterName = null;
-                    if (systemPrompt) {
-                        const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
-                        if (characterMatch && characterMatch[1]) {
-                            characterName = characterMatch[1];
-                        }
-                    }
-                    
-                    // Save user message
-                    await airtableService.saveMessage(
-                        req.user.id,
-                        'user',
-                        userMessage || "What do you see in this screenshot?",
-                        characterName
-                    );
-                    
-                    // Save assistant message
-                    await airtableService.saveMessage(
-                        req.user.id,
+                console.log('[STREAM] Saving assistant message to Airtable...');
+                console.log('[STREAM] User ID:', userId);
+                console.log('[STREAM] Character:', characterName || 'None');
+                console.log('[STREAM] Message length:', fullResponse.length);
+                
+                if (fullResponse.length > 0) {
+                    const savedAssistantMessage = await airtableService.saveMessage(
+                        userId,
                         'assistant',
                         fullResponse,
                         characterName
                     );
                     
-                    console.log('Messages saved to Airtable');
+                    if (savedAssistantMessage) {
+                        console.log('[STREAM] Assistant message saved to Airtable successfully with ID:', savedAssistantMessage.id);
+                    } else {
+                        console.error('[STREAM] Failed to save assistant message to Airtable - returned null');
+                    }
+                } else {
+                    console.error('[STREAM] No response text to save to Airtable');
                 }
             } catch (saveError) {
-                console.error('Error saving messages to Airtable:', saveError);
-                // Don't fail the request if saving messages fails
+                console.error('[STREAM] Error saving assistant message to Airtable:', saveError);
+                console.error('[STREAM] Error message:', saveError.message);
+                console.error('[STREAM] Error stack:', saveError.stack);
             }
+            
+            // End the response
+            res.write('event: message_stop\ndata: {"type": "message_stop"}\n\n');
+            res.end();
+            console.log('[STREAM] Response ended');
         });
-        
-        // Pipe the stream directly to the client
-        response.data.pipe(res);
         
         // Handle errors in the stream
         response.data.on('error', (error) => {
-            console.error('Stream error:', error);
+            console.error('[STREAM] Stream error:', error);
             res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
             res.end();
         });
     } catch (error) {
-        console.error('Error calling Claude API streaming:', error.message);
+        console.error('[STREAM] Error calling Claude API streaming:', error.message);
+        console.error('[STREAM] Error stack:', error.stack);
         
         // Try to send an error response if possible
         try {
@@ -445,7 +497,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
                 res.end();
             }
         } catch (responseError) {
-            console.error('Error sending error response:', responseError);
+            console.error('[STREAM] Error sending error response:', responseError);
         }
     }
 });

@@ -258,13 +258,14 @@ async function getSubscription(recordId) {
  * @returns {Promise<Object>} - The created message object
  */
 async function saveMessage(userId, role, content, characterName = null) {
-    console.log(`Attempting to save ${role} message for user ${userId}`);
-    console.log(`Message length: ${content ? content.length : 0} characters`);
-    console.log(`Character: ${characterName || 'None'}`);
+    console.log(`[AIRTABLE] Attempting to save ${role} message for user ${userId}`);
+    console.log(`[AIRTABLE] Message length: ${content ? content.length : 0} characters`);
+    console.log(`[AIRTABLE] Character: ${characterName || 'None'}`);
+    console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
     
     if (!airtableEnabled) {
         // Return mock message data
-        console.log('Airtable not enabled, saving mock message');
+        console.log('[AIRTABLE] Airtable not enabled, saving mock message');
         return {
             id: 'mock-message-' + Date.now(),
             UserId: userId,
@@ -278,12 +279,12 @@ async function saveMessage(userId, role, content, characterName = null) {
     try {
         // Validate inputs
         if (!userId) {
-            console.error('No user ID provided for message');
+            console.error('[AIRTABLE] No user ID provided for message');
             return null;
         }
         
         if (!content) {
-            console.error('No content provided for message');
+            console.error('[AIRTABLE] No content provided for message');
             return null;
         }
         
@@ -292,39 +293,63 @@ async function saveMessage(userId, role, content, characterName = null) {
             ? content.substring(0, 95000) + '... [truncated]' 
             : content;
         
-        console.log('Creating message in Airtable...');
+        console.log('[AIRTABLE] Creating message in Airtable...');
+        console.log('[AIRTABLE] Base ID:', process.env.AIRTABLE_BASE_ID ? process.env.AIRTABLE_BASE_ID.substring(0, 5) + '...' : 'undefined');
+        console.log('[AIRTABLE] API Key exists:', !!process.env.AIRTABLE_API_KEY);
         
-        const messagesTable = base('MESSAGES');
-        
-        const records = await messagesTable.create([
-            {
-                fields: {
-                    UserId: userId,
-                    Role: role,
-                    Content: truncatedContent,
-                    Character: characterName || '',
-                    Timestamp: new Date().toISOString()
-                }
-            }
-        ]);
-        
-        if (records && records.length > 0) {
-            console.log(`Message saved successfully with ID: ${records[0].id}`);
-            return {
-                id: records[0].id,
-                ...records[0].fields
-            };
+        // Check if base is initialized
+        if (!base) {
+            console.error('[AIRTABLE] Airtable base not initialized');
+            return null;
         }
         
-        console.error('Failed to save message - no records returned');
-        throw new Error('Failed to save message');
+        const messagesTable = base('MESSAGES');
+        console.log('[AIRTABLE] Messages table accessed');
+        
+        // Log the record we're trying to create
+        const recordToCreate = {
+            fields: {
+                UserId: userId,
+                Role: role,
+                Content: truncatedContent,
+                Character: characterName || '',
+                Timestamp: new Date().toISOString()
+            }
+        };
+        console.log('[AIRTABLE] Record to create:', JSON.stringify(recordToCreate, null, 2));
+        
+        try {
+            const records = await messagesTable.create([recordToCreate]);
+            
+            if (records && records.length > 0) {
+                console.log(`[AIRTABLE] Message saved successfully with ID: ${records[0].id}`);
+                return {
+                    id: records[0].id,
+                    ...records[0].fields
+                };
+            }
+            
+            console.error('[AIRTABLE] Failed to save message - no records returned');
+            throw new Error('Failed to save message - no records returned');
+        } catch (airtableError) {
+            console.error('[AIRTABLE] Error in Airtable create operation:', airtableError);
+            console.error('[AIRTABLE] Error message:', airtableError.message);
+            console.error('[AIRTABLE] Error stack:', airtableError.stack);
+            
+            if (airtableError.error) {
+                console.error('[AIRTABLE] Airtable error details:', airtableError.error);
+            }
+            
+            throw airtableError;
+        }
     } catch (error) {
-        console.error('Error saving message to Airtable:', error);
-        console.error('Error message:', error.message);
+        console.error('[AIRTABLE] Error saving message to Airtable:', error);
+        console.error('[AIRTABLE] Error message:', error.message);
+        console.error('[AIRTABLE] Error stack:', error.stack);
         
         // Log more details if available
         if (error.response) {
-            console.error('Airtable API response:', error.response.data);
+            console.error('[AIRTABLE] Airtable API response:', error.response.data);
         }
         
         // Return null instead of throwing to prevent breaking the main flow
@@ -339,27 +364,36 @@ async function saveMessage(userId, role, content, characterName = null) {
  * @returns {Promise<Array>} - Array of message objects
  */
 async function getUserMessages(userId, limit = 100) {
+    console.log(`[AIRTABLE] Getting messages for user: ${userId}, limit: ${limit}`);
+    console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
+    
     if (!airtableEnabled) {
         // Return mock message data
-        console.log('Getting mock messages for user:', userId);
+        console.log('[AIRTABLE] Airtable not enabled, returning empty messages array');
         return [];
     }
     
     try {
+        console.log('[AIRTABLE] Accessing messages table');
         const messagesTable = base('MESSAGES');
         
+        console.log(`[AIRTABLE] Querying messages with filter: {UserId} = '${userId}'`);
         const records = await messagesTable.select({
             filterByFormula: `{UserId} = '${userId}'`,
             sort: [{ field: 'Timestamp', direction: 'desc' }],
             maxRecords: limit
         }).firstPage();
         
+        console.log(`[AIRTABLE] Found ${records.length} messages`);
+        
         return records.map(record => ({
             id: record.id,
             ...record.fields
         }));
     } catch (error) {
-        console.error('Error getting user messages:', error);
+        console.error('[AIRTABLE] Error getting user messages:', error);
+        console.error('[AIRTABLE] Error message:', error.message);
+        console.error('[AIRTABLE] Error stack:', error.stack);
         throw error;
     }
 }
