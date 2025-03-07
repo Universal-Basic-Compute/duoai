@@ -100,44 +100,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Function to check subscription status
     async function checkSubscriptionStatus() {
-        try {
-            const subscription = await authBridge.checkSubscription();
-        
-            if (subscription) {
-                // Store subscription info
-                localStorage.setItem('subscription', JSON.stringify(subscription));
-            
-                // Check if subscription is active
-                isSubscriptionActive = subscription.status === 'active' && 
-                                      (subscription.hoursUsed < subscription.hoursTotal || 
-                                       subscription.hoursTotal === Infinity);
-            
-                return isSubscriptionActive;
-            }
-        } catch (error) {
-            console.error('Error checking subscription status:', error);
-            isSubscriptionActive = false;
-            return false;
-        }
+        // For testing, always return true
+        isSubscriptionActive = true;
+        return true;
     }
 
     // Start tracking usage when chat is opened
     async function startUsageTracking() {
-        if (!localStorage.getItem('isLoggedIn')) {
-            return null;
-        }
-    
-        try {
-            const result = await authBridge.startUsageTracking();
-            if (result) {
-                activeSessionId = result.sessionId;
-                console.log('Started usage tracking, session ID:', activeSessionId);
-                return activeSessionId;
-            }
-        } catch (error) {
-            console.error('Error starting usage tracking:', error);
-        }
-        return null;
+        // For testing, just return a mock session ID
+        activeSessionId = 'mock-session-' + Date.now();
+        console.log('Started mock usage tracking, session ID:', activeSessionId);
+        return activeSessionId;
     }
 
     // End tracking when chat is closed
@@ -145,50 +118,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!activeSessionId) {
             return;
         }
-    
-        try {
-            const result = await authBridge.endUsageTracking(activeSessionId);
-            if (result) {
-                console.log('Ended usage tracking, duration:', result.duration, 'hours');
-                activeSessionId = null;
-            }
-        } catch (error) {
-            console.error('Error ending usage tracking:', error);
-        }
+        
+        console.log('Ended mock usage tracking, session ID:', activeSessionId);
+        activeSessionId = null;
     }
     
     // Function to check login state
     async function checkLoginState() {
-        // First check local storage (for quick UI response)
-        isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        // For now, always set as logged in to bypass Google auth
+        isLoggedIn = true;
+        localStorage.setItem('isLoggedIn', 'true');
         
-        if (isLoggedIn) {
-            // User is logged in based on local storage, show app
-            loginContainer.classList.add('hidden');
-            menuTab.style.display = 'block';
-            
-            // Verify with server in the background
-            const serverAuth = await checkServerAuthStatus();
-            if (!serverAuth) {
-                // Server says not authenticated, update UI
-                loginContainer.classList.remove('hidden');
-                menuTab.style.display = 'none';
-                isLoggedIn = false;
-            }
-        } else {
-            // User is not logged in, show login container and hide app
-            loginContainer.classList.remove('hidden');
-            menuTab.style.display = 'none';
-            
-            // Still check with server in case there's a session cookie
-            const serverAuth = await checkServerAuthStatus();
-            if (serverAuth) {
-                // Server says authenticated, update UI
-                loginContainer.classList.add('hidden');
-                menuTab.style.display = 'block';
-                isLoggedIn = true;
-            }
-        }
+        // User is logged in, hide login container and show app
+        loginContainer.classList.add('hidden');
+        menuTab.style.display = 'block';
+        
+        // Create a mock user for testing
+        const mockUser = {
+            id: 'mock-user-id',
+            name: 'Test User',
+            email: 'test@example.com',
+            picture: ''
+        };
+        
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        
+        // Set a mock subscription
+        const mockSubscription = {
+            userId: 'mock-user-id',
+            plan: 'pro',
+            status: 'active',
+            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            hoursUsed: 0,
+            hoursTotal: 30
+        };
+        
+        localStorage.setItem('subscription', JSON.stringify(mockSubscription));
     }
     
     // Hide menu tab initially

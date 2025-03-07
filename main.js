@@ -102,26 +102,25 @@ function createWindow() {
     }
     
     const mainWindow = new BrowserWindow({
-        width: 350,  // Wider initially to show login
-        height: 500,
-        frame: false,  // Remove window frame
-        transparent: true,  // Make window background transparent
-        alwaysOnTop: true,  // Always on top of other windows
+        width: 350,  // Width for the menu
+        height: 600, // Height for the app
+        frame: false,
+        transparent: true,
+        alwaysOnTop: true,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
             enableRemoteModule: true
         },
-        // Add these properties
         resizable: false,
         fullscreenable: false,
         skipTaskbar: true
     });
 
-    // Position the window at the center of the screen initially
+    // Position the window at the right edge of the screen
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
-    mainWindow.setPosition(Math.floor(width / 2) - 175, Math.floor(height / 2) - 250);
+    mainWindow.setPosition(width - 350, Math.floor(height / 2) - 300);
     
     mainWindow.loadFile('index.html');
     
