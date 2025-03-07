@@ -51,11 +51,13 @@
       "**/*",
       "!website{,/**/*}",
       "!dist{,/**/*}",
+      "!api{,/**/*}",
       "!node_modules/.cache{,/**/*}",
       "!**/*.{iml,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,suo,xproj,cc,d.ts,pdb}",
       "!server.js",
       "!server-builder.js",
-      "!airtable-service.js"
+      "!airtable-service.js",
+      "!vercel.json"
     ],
     "extraResources": [
       {

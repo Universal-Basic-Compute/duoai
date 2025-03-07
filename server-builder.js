@@ -60,8 +60,8 @@ async function buildServer() {
             const target = path.join(targetSubdir, subFile);
             fs.copyFileSync(source, target);
           }
-        } else {
-          // Copy file
+        } else if (file.name !== 'package.json') {
+          // Copy file, but skip the api-specific package.json
           const source = path.join('api', file.name);
           const target = path.join('dist/server/api', file.name);
           fs.copyFileSync(source, target);

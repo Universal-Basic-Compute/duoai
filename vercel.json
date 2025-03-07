@@ -2,13 +2,16 @@
   "version": 2,
   "builds": [
     { "src": "website/**", "use": "@vercel/static" },
-    { "src": "server.js", "use": "@vercel/node" },
-    { "src": "airtable-service.js", "use": "@vercel/node" }
+    { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/server.js" },
-    { "src": "/auth/(.*)", "dest": "/server.js" },
-    { "src": "/health", "dest": "/server.js" },
+    { "src": "/api/claude-base64", "dest": "/api/claude-base64.js" },
+    { "src": "/api/elevenlabs/key", "dest": "/api/elevenlabs/key.js" },
+    { "src": "/api/elevenlabs/tts", "dest": "/api/elevenlabs/tts.js" },
+    { "src": "/api/whisper", "dest": "/api/whisper.js" },
+    { "src": "/api/subscription", "dest": "/api/subscription.js" },
+    { "src": "/api/auth/status", "dest": "/api/auth/status.js" },
+    { "src": "/health", "dest": "/api/health.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
   ],
   "env": {

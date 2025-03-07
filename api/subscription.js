@@ -1,9 +1,4 @@
-// This is a simplified version for Vercel deployment
-// In a production environment, you would connect to your database
 module.exports = async (req, res) => {
-  // For Vercel deployment, we'll return mock subscription data
-  // In production, fetch this from your database
-  
   // Check for authentication
   const authHeader = req.headers.authorization;
   
