@@ -93,6 +93,19 @@ module.exports = async (req, res) => {
             console.log('Received audio from ElevenLabs, size:', audioSize);
             
             if (audioSize < 1000) {
+              console.error('Audio size is too small:', audioSize, 'bytes');
+              console.error('This is likely not a valid audio file');
+              
+              // Try to log the first few bytes to see what we're getting
+              if (audio && audio.slice) {
+                const firstBytes = audio.slice(0, Math.min(20, audioSize));
+                console.error('First bytes of response:', firstBytes);
+              }
+              
+              throw new Error('Received invalid or too small audio from ElevenLabs');
+            }
+            
+            if (audioSize < 1000) {
               console.error('Received too small audio from ElevenLabs (size:', audioSize, 'bytes)');
               throw new Error('Received invalid or too small audio from ElevenLabs');
             }
