@@ -1,5 +1,6 @@
 const axios = require('axios');
 const sharp = require('sharp');
+const airtableService = require('../../airtable-service');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -76,6 +77,41 @@ module.exports = async (req, res) => {
     
     // Return Claude's response
     res.json({ response: response.data.content[0].text });
+    
+    // Save the user message and Claude's response to Airtable
+    try {
+        if (req.user && req.user.id) {
+            // Extract character name from system prompt if available
+            let characterName = null;
+            if (systemPrompt) {
+                const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+                if (characterMatch && characterMatch[1]) {
+                    characterName = characterMatch[1];
+                }
+            }
+            
+            // Save user message
+            await airtableService.saveMessage(
+                req.user.id,
+                'user',
+                userMessage || "What do you see in this screenshot?",
+                characterName
+            );
+            
+            // Save assistant message
+            await airtableService.saveMessage(
+                req.user.id,
+                'assistant',
+                response.data.content[0].text,
+                characterName
+            );
+            
+            console.log('Messages saved to Airtable');
+        }
+    } catch (saveError) {
+        console.error('Error saving messages to Airtable:', saveError);
+        // Don't fail the request if saving messages fails
+    }
   } catch (error) {
     res.status(500).json({ 
       error: 'Error processing request',

@@ -239,6 +239,41 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
             
             // Return Claude's response
             res.json({ response: response.data.content[0].text });
+            
+            // Save the user message and Claude's response to Airtable
+            try {
+                if (req.user && req.user.id) {
+                    // Extract character name from system prompt if available
+                    let characterName = null;
+                    if (systemPrompt) {
+                        const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+                        if (characterMatch && characterMatch[1]) {
+                            characterName = characterMatch[1];
+                        }
+                    }
+                    
+                    // Save user message
+                    await airtableService.saveMessage(
+                        req.user.id,
+                        'user',
+                        userMessage || "What do you see in this screenshot?",
+                        characterName
+                    );
+                    
+                    // Save assistant message
+                    await airtableService.saveMessage(
+                        req.user.id,
+                        'assistant',
+                        response.data.content[0].text,
+                        characterName
+                    );
+                    
+                    console.log('Messages saved to Airtable');
+                }
+            } catch (saveError) {
+                console.error('Error saving messages to Airtable:', saveError);
+                // Don't fail the request if saving messages fails
+            }
         } catch (apiError) {
             console.error('Error from Claude API:', apiError.message);
             if (apiError.response) {
@@ -262,6 +297,7 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
         console.log('Received request to /api/claude-stream');
         
         const { systemPrompt, userMessage, base64Image } = req.body;
+        let fullResponse = '';
 
         if (!base64Image) {
             console.error('No base64 image in request');
@@ -322,6 +358,67 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
                 'anthropic-version': '2023-06-01'
             },
             responseType: 'stream'
+        });
+        
+        // Process the stream
+        response.data.on('data', (chunk) => {
+            const text = chunk.toString();
+            res.write(text);
+            
+            // Try to extract content from the chunk
+            try {
+                const lines = text.split('\n');
+                for (const line of lines) {
+                    if (line.startsWith('data:')) {
+                        const data = JSON.parse(line.substring(5).trim());
+                        if (data.type === 'content_block_delta' && 
+                            data.delta && 
+                            data.delta.type === 'text_delta') {
+                            fullResponse += data.delta.text;
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignore parsing errors in chunks
+            }
+        });
+        
+        // Handle end of stream
+        response.data.on('end', async () => {
+            // Save the user message and Claude's response to Airtable
+            try {
+                if (req.user && req.user.id) {
+                    // Extract character name from system prompt if available
+                    let characterName = null;
+                    if (systemPrompt) {
+                        const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+                        if (characterMatch && characterMatch[1]) {
+                            characterName = characterMatch[1];
+                        }
+                    }
+                    
+                    // Save user message
+                    await airtableService.saveMessage(
+                        req.user.id,
+                        'user',
+                        userMessage || "What do you see in this screenshot?",
+                        characterName
+                    );
+                    
+                    // Save assistant message
+                    await airtableService.saveMessage(
+                        req.user.id,
+                        'assistant',
+                        fullResponse,
+                        characterName
+                    );
+                    
+                    console.log('Messages saved to Airtable');
+                }
+            } catch (saveError) {
+                console.error('Error saving messages to Airtable:', saveError);
+                // Don't fail the request if saving messages fails
+            }
         });
         
         // Pipe the stream directly to the client
@@ -675,6 +772,23 @@ app.post('/api/whisper', express.json({ limit: '10mb' }), async (req, res) => {
             error: 'Error processing audio',
             details: error.response ? error.response.data : error.message
         });
+    }
+});
+
+// Get user message history
+app.get('/api/messages', async (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ error: 'Not authenticated' });
+    }
+    
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit) : 100;
+        const messages = await airtableService.getUserMessages(req.user.id, limit);
+        
+        res.json({ messages });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch message history' });
     }
 });
 

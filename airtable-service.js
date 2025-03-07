@@ -249,6 +249,88 @@ async function getSubscription(recordId) {
     }
 }
 
+/**
+ * Save a message to Airtable
+ * @param {string} userId - The user ID
+ * @param {string} role - The message role ('user' or 'assistant')
+ * @param {string} content - The message content
+ * @param {string} characterName - The AI character name
+ * @returns {Promise<Object>} - The created message object
+ */
+async function saveMessage(userId, role, content, characterName = null) {
+    if (!airtableEnabled) {
+        // Return mock message data
+        console.log('Saving mock message for user:', userId);
+        return {
+            id: 'mock-message-' + Date.now(),
+            UserId: userId,
+            Role: role,
+            Content: content,
+            Character: characterName,
+            Timestamp: new Date().toISOString()
+        };
+    }
+    
+    try {
+        const messagesTable = base('MESSAGES');
+        
+        const records = await messagesTable.create([
+            {
+                fields: {
+                    UserId: userId,
+                    Role: role,
+                    Content: content,
+                    Character: characterName || '',
+                    Timestamp: new Date().toISOString()
+                }
+            }
+        ]);
+        
+        if (records && records.length > 0) {
+            return {
+                id: records[0].id,
+                ...records[0].fields
+            };
+        }
+        throw new Error('Failed to save message');
+    } catch (error) {
+        console.error('Error saving message:', error);
+        throw error;
+    }
+}
+
+/**
+ * Get messages for a user
+ * @param {string} userId - The user ID
+ * @param {number} limit - Maximum number of messages to return
+ * @returns {Promise<Array>} - Array of message objects
+ */
+async function getUserMessages(userId, limit = 100) {
+    if (!airtableEnabled) {
+        // Return mock message data
+        console.log('Getting mock messages for user:', userId);
+        return [];
+    }
+    
+    try {
+        const messagesTable = base('MESSAGES');
+        
+        const records = await messagesTable.select({
+            filterByFormula: `{UserId} = '${userId}'`,
+            sort: [{ field: 'Timestamp', direction: 'desc' }],
+            maxRecords: limit
+        }).firstPage();
+        
+        return records.map(record => ({
+            id: record.id,
+            ...record.fields
+        }));
+    } catch (error) {
+        console.error('Error getting user messages:', error);
+        throw error;
+    }
+}
+
 module.exports = {
     findUserByGoogleId,
     createUser,
@@ -256,5 +338,7 @@ module.exports = {
     updateLastLogin,
     updateSubscription,
     updateUsageHours,
-    getSubscription
+    getSubscription,
+    saveMessage,
+    getUserMessages
 };

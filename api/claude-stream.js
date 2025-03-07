@@ -1,5 +1,6 @@
 const axios = require('axios');
 const sharp = require('sharp');
+const airtableService = require('../../airtable-service');
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -8,6 +9,7 @@ module.exports = async (req, res) => {
 
   try {
     const { systemPrompt, userMessage, base64Image } = req.body;
+    let fullResponse = '';
 
     if (!base64Image) {
       return res.status(400).json({ error: 'No image provided' });
@@ -81,6 +83,67 @@ module.exports = async (req, res) => {
         'anthropic-version': '2023-06-01'
       },
       responseType: 'stream'
+    });
+    
+    // Process the stream
+    response.data.on('data', (chunk) => {
+      const text = chunk.toString();
+      res.write(text);
+      
+      // Try to extract content from the chunk
+      try {
+        const lines = text.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data:')) {
+            const data = JSON.parse(line.substring(5).trim());
+            if (data.type === 'content_block_delta' && 
+                data.delta && 
+                data.delta.type === 'text_delta') {
+              fullResponse += data.delta.text;
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore parsing errors in chunks
+      }
+    });
+    
+    // Handle end of stream
+    response.data.on('end', async () => {
+      // Save the user message and Claude's response to Airtable
+      try {
+        if (req.user && req.user.id) {
+          // Extract character name from system prompt if available
+          let characterName = null;
+          if (systemPrompt) {
+            const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+            if (characterMatch && characterMatch[1]) {
+              characterName = characterMatch[1];
+            }
+          }
+          
+          // Save user message
+          await airtableService.saveMessage(
+            req.user.id,
+            'user',
+            userMessage || "What do you see in this screenshot?",
+            characterName
+          );
+          
+          // Save assistant message
+          await airtableService.saveMessage(
+            req.user.id,
+            'assistant',
+            fullResponse,
+            characterName
+          );
+          
+          console.log('Messages saved to Airtable');
+        }
+      } catch (saveError) {
+        console.error('Error saving messages to Airtable:', saveError);
+        // Don't fail the request if saving messages fails
+      }
     });
     
     // Pipe the stream directly to the client
