@@ -133,27 +133,63 @@ document.addEventListener('DOMContentLoaded', () => {
         loginContainer.classList.add('hidden');
         menuTab.style.display = 'block';
         
-        // Create a mock user for testing
+        // Generate random mock user data
+        const randomNames = [
+            "Alex Johnson", "Taylor Smith", "Jordan Lee", 
+            "Casey Williams", "Morgan Brown", "Riley Davis",
+            "Quinn Miller", "Avery Wilson", "Jamie Garcia",
+            "Dakota Martinez"
+        ];
+        
+        const randomEmails = [
+            "gamer@example.com", "player1@gmail.com", "gamemaster@outlook.com",
+            "esports@mail.com", "rpgfan@example.net", "strategist@gmail.com",
+            "speedrunner@example.org", "casual_gamer@mail.com", "pro_player@example.com",
+            "achievement_hunter@gmail.com"
+        ];
+        
+        // Select random name and email
+        const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
+        const randomEmail = randomEmails[Math.floor(Math.random() * randomEmails.length)];
+        
+        // Generate random user ID
+        const randomId = 'user_' + Math.random().toString(36).substring(2, 10);
+        
+        // Create mock user with random data
         const mockUser = {
-            id: 'mock-user-id',
-            name: 'Test User',
-            email: 'test@example.com',
+            id: randomId,
+            name: randomName,
+            email: randomEmail,
             picture: ''
         };
         
         localStorage.setItem('user', JSON.stringify(mockUser));
         
-        // Set a mock subscription
+        // Generate random subscription data
+        const plans = ['basic', 'pro', 'ultimate'];
+        const randomPlan = plans[Math.floor(Math.random() * plans.length)];
+        const randomHoursUsed = Math.floor(Math.random() * 20);
+        const randomHoursTotal = randomPlan === 'basic' ? 10 : 
+                                randomPlan === 'pro' ? 30 : 100;
+        
+        // Set expiry date to a random date between 1 and 60 days from now
+        const randomDays = Math.floor(Math.random() * 60) + 1;
+        const expiryDate = new Date(Date.now() + randomDays * 24 * 60 * 60 * 1000);
+        
         const mockSubscription = {
-            userId: 'mock-user-id',
-            plan: 'pro',
+            userId: randomId,
+            plan: randomPlan,
             status: 'active',
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-            hoursUsed: 0,
-            hoursTotal: 30
+            currentPeriodEnd: expiryDate.toISOString(),
+            hoursUsed: randomHoursUsed,
+            hoursTotal: randomHoursTotal
         };
         
         localStorage.setItem('subscription', JSON.stringify(mockSubscription));
+        
+        // Log the random user data for debugging
+        console.log('Generated random user:', mockUser);
+        console.log('Generated random subscription:', mockSubscription);
     }
     
     // Hide menu tab initially
