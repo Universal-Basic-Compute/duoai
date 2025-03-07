@@ -8,11 +8,23 @@ class SpeechManager {
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.volume = 0.5; // Default volume
-        this.audioElement = new Audio();
+        this.audioElement = null;
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
         this.modelId = "eleven_flash_v2_5"; // Using flash model
         this.serverUrl = 'http://localhost:3000'; // Local server URL
+        
+        // Initialize audio element if in browser environment
+        if (typeof Audio !== 'undefined') {
+            try {
+                this.audioElement = new Audio();
+                console.log('Audio element initialized');
+            } catch (error) {
+                console.warn('Failed to initialize Audio element:', error);
+            }
+        } else {
+            console.warn('Audio API not available in this environment');
+        }
         
         // Initialize ElevenLabs client if API key is available
         this.initElevenLabs();
@@ -197,9 +209,13 @@ class SpeechManager {
                 // Create a reference to the old audio element
                 const oldAudio = this.audioElement;
                 
-                // Pause and reset the old audio
-                oldAudio.pause();
-                oldAudio.currentTime = 0;
+                try {
+                    // Pause and reset the old audio
+                    oldAudio.pause();
+                    oldAudio.currentTime = 0;
+                } catch (error) {
+                    console.warn('Error pausing audio:', error);
+                }
                 
                 // Remove any event listeners to prevent memory leaks
                 oldAudio.oncanplaythrough = null;
@@ -295,9 +311,19 @@ class SpeechManager {
                 
                 // Play the audio with better error handling
                 return new Promise((resolve) => {
-                    // Create a new audio element each time
-                    this.audioElement = new Audio();
-                    this.audioElement.volume = this.volume;
+                    // Create a new audio element each time if Audio is available
+                    if (typeof Audio !== 'undefined') {
+                        try {
+                            this.audioElement = new Audio();
+                            this.audioElement.volume = this.volume;
+                        } catch (error) {
+                            console.warn('Error creating Audio element:', error);
+                            return resolve();
+                        }
+                    } else {
+                        console.warn('Audio API not available, cannot play audio');
+                        return resolve();
+                    }
                 
                     // Log audio element creation
                     console.log('Created new Audio element for playback');
@@ -399,7 +425,11 @@ class SpeechManager {
             this.volume = Math.max(0, Math.min(1, parseFloat(volume) || 0.5));
             console.log(`Setting volume to ${this.volume}`);
             if (this.audioElement) {
-                this.audioElement.volume = this.volume;
+                try {
+                    this.audioElement.volume = this.volume;
+                } catch (error) {
+                    console.warn('Error setting audio element volume:', error);
+                }
             }
         } catch (error) {
             console.error('Error setting volume:', error);
@@ -496,7 +526,7 @@ class SpeechManager {
             // Create a local reference to the audio element
             const audioEl = this.audioElement;
             
-            if (audioEl) {
+            if (audioEl && typeof audioEl === 'object') {
                 console.log('Cleaning up audio element');
                 
                 // First remove event listeners to prevent any callbacks during cleanup
