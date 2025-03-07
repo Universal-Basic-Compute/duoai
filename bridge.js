@@ -3,8 +3,8 @@ const axios = require('axios');
 
 class AuthBridge {
     constructor() {
-        // Change the base URL to the remote server
-        this.baseUrl = 'https://duoai.vercel.app';
+        // Change the base URL to the local server
+        this.baseUrl = 'http://localhost:3000';
         this.user = null;
         this.subscription = null;
     }

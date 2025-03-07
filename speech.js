@@ -12,7 +12,7 @@ class SpeechManager {
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (Rachel)
         this.modelId = "eleven_flash_v2_5"; // Default model
-        this.serverUrl = 'https://duoai.vercel.app'; // Remote server URL
+        this.serverUrl = 'http://localhost:3000'; // Local server URL
         
         // Initialize ElevenLabs client if API key is available
         this.initElevenLabs();

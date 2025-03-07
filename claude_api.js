@@ -34,9 +34,9 @@ try {
 
 class ClaudeAPI {
     constructor() {
-        // Use the remote server URL instead of localhost
-        this.apiUrl = 'https://duoai.vercel.app/api/claude';
-        this.base64ApiUrl = 'https://duoai.vercel.app/api/claude-base64';
+        // Use the local server URL
+        this.apiUrl = 'http://localhost:3000/api/claude';
+        this.base64ApiUrl = 'http://localhost:3000/api/claude-base64';
     }
 
     /**
@@ -45,16 +45,16 @@ class ClaudeAPI {
      */
     async checkServerStatus() {
         try {
-            // Try the remote server
-            const response = await axios.get('https://duoai.vercel.app/health', { timeout: 5000 });
+            // Try the local server
+            const response = await axios.get('http://localhost:3000/health', { timeout: 5000 });
             if (response.status === 200) {
                 // Server is running
-                this.apiUrl = 'https://duoai.vercel.app/api/claude';
-                this.base64ApiUrl = 'https://duoai.vercel.app/api/claude-base64';
+                this.apiUrl = 'http://localhost:3000/api/claude';
+                this.base64ApiUrl = 'http://localhost:3000/api/claude-base64';
                 return true;
             }
             
-            console.error('Remote server health check failed');
+            console.error('Local server health check failed');
             return false;
         } catch (error) {
             console.error('Error checking server status:', error.message);
@@ -223,8 +223,8 @@ class ClaudeAPI {
             
             while (retries <= maxRetries) {
                 try {
-                    // Use hardcoded URL for the streaming endpoint
-                    const streamUrl = 'https://duoai.vercel.app/api/claude-stream';
+                    // Use local server URL for the streaming endpoint
+                    const streamUrl = 'http://localhost:3000/api/claude-stream';
                     console.log('Using stream URL:', streamUrl);
                     
                     // Send the request to the backend server using the streaming endpoint
