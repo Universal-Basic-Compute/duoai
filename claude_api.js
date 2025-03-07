@@ -224,7 +224,7 @@ class ClaudeAPI {
             while (retries <= maxRetries) {
                 try {
                     // Send the request to the backend server using the streaming endpoint
-                    const response = await axios.post(`${this.serverUrl}/api/claude-stream`, {
+                    const response = await axios.post(`${this.baseUrl}/api/claude-stream`, {
                         systemPrompt: systemPrompt || '',
                         userMessage: userMessage || '',
                         base64Image: base64Image
