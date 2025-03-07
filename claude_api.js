@@ -34,7 +34,10 @@ try {
 
 class ClaudeAPI {
     constructor() {
-        this.apiUrl = 'http://localhost:3000/api/claude'; // Your backend server URL
+        // Try to get the port from localStorage, or default to 3000
+        const serverPort = localStorage.getItem('serverPort') || 3000;
+        this.apiUrl = `http://localhost:${serverPort}/api/claude`;
+        this.base64ApiUrl = `http://localhost:${serverPort}/api/claude-base64`;
     }
 
     /**
@@ -43,11 +46,28 @@ class ClaudeAPI {
      */
     async checkServerStatus() {
         try {
-            // Simple GET request to check if server is running
-            await axios.get('http://localhost:3000/health');
-            return true;
+            // Try ports 3000, 3001, 3002
+            for (let port = 3000; port <= 3002; port++) {
+                try {
+                    const response = await axios.get(`http://localhost:${port}/health`, { timeout: 1000 });
+                    if (response.status === 200) {
+                        // Found the correct port, update the API URLs
+                        this.apiUrl = `http://localhost:${port}/api/claude`;
+                        this.base64ApiUrl = `http://localhost:${port}/api/claude-base64`;
+                        // Save the port for future use
+                        localStorage.setItem('serverPort', port);
+                        return true;
+                    }
+                } catch (portError) {
+                    // This port didn't work, try the next one
+                    continue;
+                }
+            }
+            
+            console.error('Could not find server on ports 3000-3002');
+            return false;
         } catch (error) {
-            console.error('Backend server is not running:', error.message);
+            console.error('Error checking server status:', error.message);
             return false;
         }
     }
@@ -121,7 +141,7 @@ class ClaudeAPI {
             console.log('Image size (base64):', Math.round(base64Image.length / 1024), 'KB');
             
             // Send the request to the backend server using the base64 endpoint
-            const response = await axios.post('http://localhost:3000/api/claude-base64', {
+            const response = await axios.post(this.base64ApiUrl, {
                 systemPrompt: systemPrompt || '',
                 userMessage: userMessage || '',
                 base64Image: base64Image

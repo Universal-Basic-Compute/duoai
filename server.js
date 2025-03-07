@@ -602,7 +602,22 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'website', 'index.html'));
 });
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+// Start the server with error handling for port in use
+const startServer = (port) => {
+    app.listen(port)
+        .on('listening', () => {
+            console.log(`Server running on port ${port}`);
+        })
+        .on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                console.log(`Port ${port} is already in use, trying port ${port + 1}`);
+                // Try the next port
+                startServer(port + 1);
+            } else {
+                console.error('Server error:', err);
+            }
+        });
+};
+
+// Start with the default port
+startServer(port);

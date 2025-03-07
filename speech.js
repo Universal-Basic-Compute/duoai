@@ -22,8 +22,11 @@ class SpeechManager {
      */
     async initElevenLabs() {
         try {
+            // Get the server port from localStorage or default to 3000
+            const serverPort = localStorage.getItem('serverPort') || 3000;
+            
             // Get API key from server
-            const response = await axios.get('http://localhost:3000/api/elevenlabs/key');
+            const response = await axios.get(`http://localhost:${serverPort}/api/elevenlabs/key`);
             if (response.data && response.data.key) {
                 this.elevenLabsClient = new ElevenLabsClient({
                     apiKey: response.data.key
@@ -86,8 +89,11 @@ class SpeechManager {
                     // Convert blob to base64
                     const base64Audio = await this.blobToBase64(audioBlob);
                     
+                    // Get the server port from localStorage or default to 3000
+                    const serverPort = localStorage.getItem('serverPort') || 3000;
+                    
                     // Send to Whisper API
-                    const response = await axios.post('http://localhost:3000/api/whisper', {
+                    const response = await axios.post(`http://localhost:${serverPort}/api/whisper`, {
                         audioData: base64Audio
                     });
                     
@@ -162,8 +168,11 @@ class SpeechManager {
         try {
             console.log('Converting text to speech with ElevenLabs:', text);
             
+            // Get the server port from localStorage or default to 3000
+            const serverPort = localStorage.getItem('serverPort') || 3000;
+            
             // Use the server as a proxy to avoid exposing API key in client
-            const response = await axios.post('http://localhost:3000/api/elevenlabs/tts', {
+            const response = await axios.post(`http://localhost:${serverPort}/api/elevenlabs/tts`, {
                 text: text,
                 voiceId: this.voiceId,
                 modelId: this.modelId
