@@ -1,3 +1,7 @@
+// Force load dotenv at the top of the file
+require('dotenv').config();
+console.log('Dotenv loaded directly');
+
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
@@ -7,6 +11,7 @@ const path = require('path');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const os = require('os');
 
 // Load configuration
 try {
@@ -17,18 +22,24 @@ try {
 } catch (error) {
   // Fallback to dotenv (for development)
   console.log('Failed to load from config.js, falling back to dotenv:', error.message);
-  require('dotenv').config();
+  // dotenv already loaded at the top
 }
 
-// Log environment variables status
+// Debug environment variables
+console.log('All environment variables:', Object.keys(process.env));
 console.log('Environment variables check:');
 console.log('AIRTABLE_API_KEY exists:', !!process.env.AIRTABLE_API_KEY);
 console.log('AIRTABLE_BASE_ID exists:', !!process.env.AIRTABLE_BASE_ID);
 console.log('ANTHROPIC_API_KEY exists:', !!process.env.ANTHROPIC_API_KEY);
 console.log('ELEVENLABS_API_KEY exists:', !!process.env.ELEVENLABS_API_KEY);
+console.log('GOOGLE_CLIENT_ID exists:', !!process.env.GOOGLE_CLIENT_ID);
+console.log('GOOGLE_CLIENT_SECRET exists:', !!process.env.GOOGLE_CLIENT_SECRET ? 'Yes' : 'No');
 
 // Add this new code to check for .env file
 const envFilePath = path.join(__dirname, '.env');
+console.log('Checking if .env exists at:', envFilePath);
+console.log('.env file exists:', fs.existsSync(envFilePath));
+
 if (!fs.existsSync(envFilePath)) {
   console.warn('\x1b[33m%s\x1b[0m', 'WARNING: No .env file found in project root!');
   console.warn('\x1b[33m%s\x1b[0m', 'Create a .env file with the following variables:');
@@ -41,6 +52,25 @@ if (!fs.existsSync(envFilePath)) {
   console.warn('\x1b[33m%s\x1b[0m', '  SESSION_SECRET=your_session_secret');
 } else {
   console.log('\x1b[32m%s\x1b[0m', '.env file found in project root');
+  
+  // Try loading the .env file manually to debug
+  try {
+    const envContent = fs.readFileSync(envFilePath, 'utf8');
+    console.log('.env file content (first 10 chars):', envContent.substring(0, 10) + '...');
+    
+    // Parse manually
+    const envVars = envContent.split('\n').reduce((acc, line) => {
+      const match = line.match(/^([^=]+)=(.*)$/);
+      if (match) {
+        acc[match[1].trim()] = match[2].trim();
+      }
+      return acc;
+    }, {});
+    
+    console.log('Manually parsed env vars:', Object.keys(envVars));
+  } catch (error) {
+    console.error('Error reading .env file:', error);
+  }
 }
 
 const app = express();
@@ -91,6 +121,18 @@ app.use(passport.session());
 const airtableService = require('./airtable-service');
 
 // Passport configuration
+console.log('Setting up Google Strategy with:');
+console.log('- Client ID:', process.env.GOOGLE_CLIENT_ID ? process.env.GOOGLE_CLIENT_ID.substring(0, 5) + '...' : 'undefined');
+console.log('- Client Secret:', process.env.GOOGLE_CLIENT_SECRET ? '[REDACTED]' : 'undefined');
+
+// Temporary workaround if environment variables are not loading
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  console.warn('\x1b[33m%s\x1b[0m', 'WARNING: Using fallback values for Google OAuth credentials');
+  // These are just placeholders and won't work for actual authentication
+  process.env.GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'fallback-client-id';
+  process.env.GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || 'fallback-client-secret';
+}
+
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
