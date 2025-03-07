@@ -2,11 +2,35 @@ const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell } = require(
 const path = require('path');
 const { spawn } = require('child_process');
 
+// Environment variables
+const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
+const isMac = process.platform === 'darwin';
+
+// Helper function to get asset paths
+function getAssetPath(...paths) {
+  return path.join(app.isPackaged ? process.resourcesPath : __dirname, ...paths);
+}
+
 // Start the Express server
 let serverProcess = null;
 
 function startServer() {
-    serverProcess = spawn('node', ['server.js'], {
+    let serverPath;
+    let serverArgs;
+    
+    if (app.isPackaged) {
+        // Use the packaged server executable
+        const platform = process.platform;
+        const extension = platform === 'win32' ? '.exe' : '';
+        serverPath = path.join(process.resourcesPath, 'server', `duoai-server${extension}`);
+        serverArgs = [];
+    } else {
+        // Use Node.js to run the server script in development
+        serverPath = 'node';
+        serverArgs = ['server.js'];
+    }
+    
+    serverProcess = spawn(serverPath, serverArgs, {
         stdio: 'inherit',
         detached: false
     });
@@ -122,13 +146,15 @@ function createWindow() {
     const { width, height } = primaryDisplay.workAreaSize;
     mainWindow.setPosition(width - 350, Math.floor(height / 2) - 300);
     
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile(getAssetPath('index.html'));
     
     // Allow the window to be moved during login
     mainWindow.setMovable(true);
     
-    // Open DevTools for debugging
-    mainWindow.webContents.openDevTools({ mode: 'detach' });
+    // Open DevTools for debugging in development mode only
+    if (isDev) {
+        mainWindow.webContents.openDevTools({ mode: 'detach' });
+    }
 }
 
 app.whenReady().then(() => {
@@ -159,4 +185,76 @@ app.on('will-quit', () => {
 // Handle opening external URLs
 ipcMain.on('open-external-url', (event, url) => {
     shell.openExternal(url);
+});
+
+// Load and save configuration
+const configManager = require('./config');
+
+// Settings window
+let settingsWindow = null;
+
+function createSettingsWindow() {
+    if (settingsWindow) {
+        settingsWindow.focus();
+        return;
+    }
+    
+    settingsWindow = new BrowserWindow({
+        width: 600,
+        height: 700,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false
+        },
+        parent: BrowserWindow.getFocusedWindow(),
+        modal: true,
+        show: false
+    });
+    
+    settingsWindow.loadFile(getAssetPath('settings.html'));
+    
+    settingsWindow.once('ready-to-show', () => {
+        settingsWindow.show();
+    });
+    
+    settingsWindow.on('closed', () => {
+        settingsWindow = null;
+    });
+}
+
+// IPC handlers for settings
+ipcMain.handle('get-config', async () => {
+    return configManager.loadConfig();
+});
+
+ipcMain.handle('save-config', async (event, newConfig) => {
+    const result = configManager.saveConfig(newConfig);
+    
+    // Restart the server to apply new settings
+    if (result && serverProcess) {
+        if (serverProcess) {
+            if (process.platform === 'win32') {
+                spawn('taskkill', ['/pid', serverProcess.pid, '/f', '/t']);
+            } else {
+                serverProcess.kill();
+            }
+            serverProcess = null;
+        }
+        
+        // Start the server with new config
+        startServer();
+    }
+    
+    return result;
+});
+
+ipcMain.on('close-settings', () => {
+    if (settingsWindow) {
+        settingsWindow.close();
+    }
+});
+
+// Add menu item for settings
+ipcMain.on('open-settings', () => {
+    createSettingsWindow();
 });

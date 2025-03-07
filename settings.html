@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>DUOAI Settings</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .settings-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+        }
+        
+        .settings-card {
+            background: var(--card-gradient);
+            border-radius: 12px;
+            padding: 30px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(126, 87, 194, 0.3);
+        }
+        
+        .settings-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .settings-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: white;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(126, 87, 194, 0.3);
+            color: var(--text-color);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .settings-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-save {
+            background: var(--button-gradient);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            background: var(--button-hover-gradient);
+            transform: translateY(-2px);
+        }
+        
+        .btn-cancel {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid rgba(126, 87, 194, 0.3);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cancel:hover {
+            background: rgba(126, 87, 194, 0.1);
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .status-success {
+            background: rgba(0, 230, 118, 0.1);
+            color: #00e676;
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+        
+        .status-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-card">
+            <div class="settings-header">
+                <h1>DUOAI Settings</h1>
+            </div>
+            <div id="statusMessage" class="status-message" style="display: none;"></div>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="anthropicApiKey">Anthropic API Key</label>
+                    <input type="password" id="anthropicApiKey" placeholder="Enter your Anthropic API key">
+                </div>
+                <div class="form-group">
+                    <label for="elevenLabsApiKey">ElevenLabs API Key</label>
+                    <input type="password" id="elevenLabsApiKey" placeholder="Enter your ElevenLabs API key">
+                </div>
+                <div class="form-group">
+                    <label for="googleClientId">Google Client ID</label>
+                    <input type="text" id="googleClientId" placeholder="Enter your Google Client ID">
+                </div>
+                <div class="form-group">
+                    <label for="googleClientSecret">Google Client Secret</label>
+                    <input type="password" id="googleClientSecret" placeholder="Enter your Google Client Secret">
+                </div>
+                <div class="form-group">
+                    <label for="airtableApiKey">Airtable API Key</label>
+                    <input type="password" id="airtableApiKey" placeholder="Enter your Airtable API key">
+                </div>
+                <div class="form-group">
+                    <label for="airtableBaseId">Airtable Base ID</label>
+                    <input type="text" id="airtableBaseId" placeholder="Enter your Airtable Base ID">
+                </div>
+                <div class="settings-actions">
+                    <button type="button" id="cancelButton" class="btn-cancel">Cancel</button>
+                    <button type="submit" class="btn-save">Save Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load current settings
+            const config = await ipcRenderer.invoke('get-config');
+            
+            // Populate form fields
+            document.getElementById('anthropicApiKey').value = config.ANTHROPIC_API_KEY || '';
+            document.getElementById('elevenLabsApiKey').value = config.ELEVENLABS_API_KEY || '';
+            document.getElementById('googleClientId').value = config.GOOGLE_CLIENT_ID || '';
+            document.getElementById('googleClientSecret').value = config.GOOGLE_CLIENT_SECRET || '';
+            document.getElementById('airtableApiKey').value = config.AIRTABLE_API_KEY || '';
+            document.getElementById('airtableBaseId').value = config.AIRTABLE_BASE_ID || '';
+            
+            // Form submission
+            document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const newConfig = {
+                    ANTHROPIC_API_KEY: document.getElementById('anthropicApiKey').value,
+                    ELEVENLABS_API_KEY: document.getElementById('elevenLabsApiKey').value,
+                    GOOGLE_CLIENT_ID: document.getElementById('googleClientId').value,
+                    GOOGLE_CLIENT_SECRET: document.getElementById('googleClientSecret').value,
+                    AIRTABLE_API_KEY: document.getElementById('airtableApiKey').value,
+                    AIRTABLE_BASE_ID: document.getElementById('airtableBaseId').value
+                };
+                
+                try {
+                    await ipcRenderer.invoke('save-config', newConfig);
+                    showStatus('Settings saved successfully!', 'success');
+                    
+                    // Close settings after a delay
+                    setTimeout(() => {
+                        ipcRenderer.send('close-settings');
+                    }, 2000);
+                } catch (error) {
+                    showStatus(`Error saving settings: ${error.message}`, 'error');
+                }
+            });
+            
+            // Cancel button
+            document.getElementById('cancelButton').addEventListener('click', () => {
+                ipcRenderer.send('close-settings');
+            });
+        });
+        
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = 'status-message';
+            statusElement.classList.add(`status-${type}`);
+            statusElement.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

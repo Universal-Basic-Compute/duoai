@@ -4,13 +4,19 @@ const cors = require('cors');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const dotenv = require('dotenv');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
 
-// Load environment variables
-dotenv.config();
+// Load configuration
+try {
+  // Try to load from config.js (when packaged)
+  const config = require('./config');
+  config.setupEnv();
+} catch (error) {
+  // Fallback to dotenv (for development)
+  require('dotenv').config();
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
