@@ -391,9 +391,13 @@ class SpeechManager {
      * @param {number} volume - Volume level (0.0 to 1.0)
      */
     setVolume(volume) {
-        this.volume = Math.max(0, Math.min(1, volume));
-        if (this.audioElement) {
-            this.audioElement.volume = this.volume;
+        try {
+            this.volume = Math.max(0, Math.min(1, volume));
+            if (this.audioElement) {
+                this.audioElement.volume = this.volume;
+            }
+        } catch (error) {
+            console.error('Error setting volume:', error);
         }
     }
     
@@ -402,8 +406,13 @@ class SpeechManager {
      * @param {string} voiceId - ElevenLabs voice ID
      */
     setVoice(voiceId) {
-        if (voiceId) {
-            this.voiceId = voiceId;
+        try {
+            if (voiceId) {
+                this.voiceId = voiceId;
+                console.log(`Voice set to: ${voiceId}`);
+            }
+        } catch (error) {
+            console.error('Error setting voice:', error);
         }
     }
 
@@ -413,7 +422,9 @@ class SpeechManager {
      */
     isSpeechRecognitionSupported() {
         try {
-            return !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+            const isSupported = !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+            console.log(`Speech recognition supported: ${isSupported}`);
+            return isSupported;
         } catch (error) {
             console.error('Error checking speech recognition support:', error);
             return false;
@@ -426,7 +437,9 @@ class SpeechManager {
      */
     isElevenLabsAvailable() {
         try {
-            return !!this.elevenLabsClient;
+            const isAvailable = !!this.elevenLabsClient;
+            console.log(`ElevenLabs available: ${isAvailable}`);
+            return isAvailable;
         } catch (error) {
             console.error('Error checking ElevenLabs availability:', error);
             return false;
@@ -437,6 +450,7 @@ class SpeechManager {
      * Clean up resources
      */
     cleanup() {
+        console.log('Cleaning up SpeechManager resources');
         try {
             if (this.audioElement) {
                 // Pause and reset
@@ -458,16 +472,21 @@ class SpeechManager {
                 this.audioElement.onloadedmetadata = null;
                 this.audioElement.onended = null;
                 this.audioElement.onerror = null;
+            } else {
+                console.log('No audio element to clean up');
             }
             
             // Also clean up any recording resources
             if (this.isListening && this.mediaRecorder) {
                 try {
+                    console.log('Stopping active listening session');
                     this.stopListening();
                 } catch (e) {
                     console.warn('Error stopping listening during cleanup:', e);
                 }
             }
+            
+            console.log('Cleanup completed successfully');
         } catch (error) {
             console.error('Error during cleanup:', error);
         }
@@ -477,10 +496,14 @@ class SpeechManager {
 // Create a singleton instance with error handling
 let instance;
 try {
+    console.log('Creating SpeechManager instance');
     instance = new SpeechManager();
+    console.log('SpeechManager instance created successfully');
 } catch (error) {
     console.error('Error creating SpeechManager instance:', error);
+    console.error('Stack trace:', error.stack);
     // Provide a minimal fallback implementation
+    console.warn('Using fallback implementation for SpeechManager');
     instance = {
         speak: () => Promise.resolve(),
         setVolume: () => {},
