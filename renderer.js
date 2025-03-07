@@ -29,4 +29,22 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('DuoAI started!');
         // Add your start functionality here
     });
+    
+    // Add click event listeners to character items
+    document.querySelectorAll('.character-item').forEach(item => {
+        item.addEventListener('click', () => {
+            // Remove active class from all items
+            document.querySelectorAll('.character-item').forEach(i => {
+                i.classList.remove('character-active');
+            });
+            
+            // Add active class to clicked item
+            item.classList.add('character-active');
+            
+            // Get character name
+            const characterName = item.querySelector('.character-name').textContent;
+            console.log(`Selected character: ${characterName}`);
+            // You can add more functionality here
+        });
+    });
 });
