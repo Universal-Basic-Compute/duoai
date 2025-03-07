@@ -852,14 +852,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to check server connection
     async function checkServerConnection() {
         try {
+            console.log('Checking server connection...');
             const serverRunning = await claudeAPI.checkServerStatus();
             const statusIndicator = document.getElementById('serverStatus');
             
             if (serverRunning) {
+                console.log('Server is connected');
                 statusIndicator.classList.remove('offline');
                 statusIndicator.classList.add('online');
                 statusIndicator.textContent = 'Server connected';
             } else {
+                console.log('Server is disconnected');
                 statusIndicator.classList.remove('online');
                 statusIndicator.classList.add('offline');
                 statusIndicator.textContent = 'Server disconnected';

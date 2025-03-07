@@ -16,7 +16,8 @@
     { "src": "/api/messages", "dest": "/api/messages.js" },
     { "src": "/api/usage/start", "dest": "/api/usage/start.js" },
     { "src": "/api/usage/end", "dest": "/api/usage/end.js" },
-    { "src": "/health", "dest": "/api/health.js" },
+    { "src": "/api/health", "dest": "/api/health.js" },
+    { "src": "/api/test", "dest": "/api/test.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
   ],
   "env": {

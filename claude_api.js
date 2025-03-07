@@ -61,8 +61,15 @@ class ClaudeAPI {
      */
     async checkServerStatus() {
         try {
+            console.log(`Checking server status at ${this.baseUrl}/api/health`);
             // Try the serverless health endpoint with base URL
-            const response = await axios.get(`${this.baseUrl}/health`, { timeout: 5000 });
+            const response = await axios.get(`${this.baseUrl}/api/health`, { 
+                timeout: 5000,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            console.log('Health check response:', response.status, response.data);
             if (response.status === 200) {
                 // Server is running
                 this.apiUrl = `${this.baseUrl}/api/claude`;
@@ -74,6 +81,10 @@ class ClaudeAPI {
             return false;
         } catch (error) {
             console.error('Error checking server status:', error.message);
+            if (error.response) {
+                console.error('Response status:', error.response.status);
+                console.error('Response data:', error.response.data);
+            }
             return false;
         }
     }
