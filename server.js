@@ -870,6 +870,32 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                     
                     if (!audioData || audioData.length < 1000) {
                         console.error('Received invalid or empty audio from ElevenLabs');
+                        
+                        // Try to decode the response if it's small (likely JSON error)
+                        if (audioData && audioData.length < 1000) {
+                            try {
+                                // Try to decode as UTF-8 text (likely JSON error)
+                                const errorText = audioData.toString('utf-8');
+                                console.error('Error response content:', errorText);
+                                
+                                // Try to parse as JSON
+                                try {
+                                    const errorJson = JSON.parse(errorText);
+                                    console.error('Parsed error JSON:', errorJson);
+                                    
+                                    // Return the error to the client
+                                    return res.status(500).json({ 
+                                        error: 'ElevenLabs API error',
+                                        details: errorJson
+                                    });
+                                } catch (jsonError) {
+                                    console.error('Error response is not valid JSON');
+                                }
+                            } catch (decodeError) {
+                                console.error('Could not decode error response as text');
+                            }
+                        }
+                        
                         throw new Error('Received invalid or empty audio from ElevenLabs');
                     }
                 } catch (elevenlabsError) {
