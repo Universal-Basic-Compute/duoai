@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const volumeSlider = document.getElementById('volumeSlider');
     const micButton = document.getElementById('micButton');
     const speechStatus = document.getElementById('speechStatus');
+    const voiceSelector = document.getElementById('voiceSelector');
     let isLoggedIn = false; // Track login state
     
     // Select Nova by default
@@ -579,8 +580,6 @@ document.addEventListener('DOMContentLoaded', () => {
         speechStatus.textContent = '';
     }
 
-    const voiceSelector = document.getElementById('voiceSelector');
-    
     // Load saved settings
     function loadSavedSettings() {
         const savedVolume = localStorage.getItem('speechVolume');
