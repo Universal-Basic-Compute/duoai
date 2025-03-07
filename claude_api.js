@@ -223,8 +223,12 @@ class ClaudeAPI {
             
             while (retries <= maxRetries) {
                 try {
+                    // Use hardcoded URL for the streaming endpoint
+                    const streamUrl = 'https://duoai.vercel.app/api/claude-stream';
+                    console.log('Using stream URL:', streamUrl);
+                    
                     // Send the request to the backend server using the streaming endpoint
-                    const response = await axios.post(`${this.baseUrl}/api/claude-stream`, {
+                    const response = await axios.post(streamUrl, {
                         systemPrompt: systemPrompt || '',
                         userMessage: userMessage || '',
                         base64Image: base64Image
@@ -235,60 +239,47 @@ class ClaudeAPI {
                         maxContentLength: Infinity,
                         maxBodyLength: Infinity,
                         timeout: 120000, // 2 minute timeout
-                        responseType: 'stream' // Important for streaming
+                        // Use 'text' instead of 'stream' for browser compatibility
+                        responseType: 'text'
                     });
 
-                    // Process the stream
-                    let fullResponse = '';
-                    
-                    response.data.on('data', (chunk) => {
-                        try {
-                            const text = chunk.toString();
-                            
-                            // Parse SSE format
-                            const lines = text.split('\n\n');
-                            
-                            for (const line of lines) {
-                                if (!line.trim()) continue;
-                                
-                                // Extract the data part
-                                const match = line.match(/^data: (.+)$/m);
-                                if (!match) continue;
-                                
-                                try {
-                                    const data = JSON.parse(match[1]);
-                                    
-                                    // Handle different event types
-                                    if (data.type === 'content_block_delta' && 
-                                        data.delta && 
-                                        data.delta.type === 'text_delta') {
-                                        
-                                        const textChunk = data.delta.text;
-                                        fullResponse += textChunk;
-                                        
-                                        // Call the callback with the text chunk
-                                        if (onChunk) onChunk(textChunk);
-                                    }
-                                } catch (parseError) {
-                                    console.warn('Error parsing SSE data:', parseError);
-                                }
-                            }
-                        } catch (chunkError) {
-                            console.error('Error processing chunk:', chunkError);
-                        }
-                    });
-                    
-                    return new Promise((resolve, reject) => {
-                        response.data.on('end', () => {
-                            if (onComplete) onComplete(fullResponse);
-                            resolve(fullResponse);
-                        });
+                    // Process the response text as SSE
+                    if (response.data) {
+                        let fullResponse = '';
+                        const lines = response.data.split('\n\n');
                         
-                        response.data.on('error', (error) => {
-                            console.error('Stream error:', error);
-                            reject(error);
-                        });
-                    });
+                        for (const line of lines) {
+                            if (!line.trim()) continue;
+                            
+                            // Extract the data part
+                            const match = line.match(/^data: (.+)$/m);
+                            if (!match) continue;
+                            
+                            try {
+                                const data = JSON.parse(match[1]);
+                                
+                                // Handle different event types
+                                if (data.type === 'content_block_delta' && 
+                                    data.delta && 
+                                    data.delta.type === 'text_delta') {
+                                    
+                                    const textChunk = data.delta.text;
+                                    fullResponse += textChunk;
+                                    
+                                    // Call the callback with the text chunk
+                                    if (onChunk) onChunk(textChunk);
+                                }
+                            } catch (parseError) {
+                                console.warn('Error parsing SSE data:', parseError);
+                            }
+                        }
+                        
+                        // Call the complete callback
+                        if (onComplete) onComplete(fullResponse);
+                        return fullResponse;
+                    }
+                    
+                    return '';
                 } catch (requestError) {
                     retries++;
                     
