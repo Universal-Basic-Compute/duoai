@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM fully loaded');
+    
     const menuTab = document.getElementById('menuTab');
     const sideMenu = document.getElementById('sideMenu');
     const startButton = document.getElementById('startButton');
@@ -8,6 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('sendButton');
     const closeChatButton = document.getElementById('closeChatButton');
     const selectedCharacter = document.getElementById('selectedCharacter');
+    
+    console.log('Menu tab element:', menuTab);
+    menuTab.style.pointerEvents = 'auto';
     
     let menuOpen = false;
     let currentCharacter = null;
