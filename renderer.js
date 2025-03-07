@@ -18,30 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const speechStatus = document.getElementById('speechStatus');
     let isLoggedIn = false; // Track login state
     
-    // Select Nova by default
-    const selectDefaultCharacter = () => {
-        // Find the Nova character item
-        const novaCharacterItem = Array.from(document.querySelectorAll('.character-item'))
-            .find(item => item.querySelector('.character-name').textContent === 'Nova');
-        
-        if (novaCharacterItem) {
-            console.log('Selecting Nova by default');
-            
-            // Add active class
-            novaCharacterItem.classList.add('character-active');
-            
-            // Build the system prompt for Nova
-            const systemPrompt = systemPromptBuilder.buildSystemPrompt('Nova');
-            console.log('Default system prompt built for Nova');
-            
-            // Store the system prompt for later use
-            localStorage.setItem('currentSystemPrompt', systemPrompt);
-            localStorage.setItem('currentCharacter', 'Nova');
-            
-            // Set current character
-            currentCharacter = 'Nova';
-        }
-    };
     
     console.log('Menu tab found:', menuTab !== null);
     if (menuTab === null) {
