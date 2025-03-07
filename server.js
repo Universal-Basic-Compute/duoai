@@ -384,6 +384,34 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
         // Use character name from request
         console.log('[STREAM] Character name from request:', characterName || 'None');
         
+        // Fetch previous messages for context
+        console.log('[STREAM] Fetching previous messages for context...');
+        let previousMessages = [];
+        try {
+            // Get previous messages from Airtable (limit to 10 for context)
+            const messages = await airtableService.getUserMessages(userId, 10);
+            
+            if (messages && messages.length > 0) {
+                console.log(`[STREAM] Found ${messages.length} previous messages for context`);
+                
+                // Convert Airtable messages to Claude message format
+                // Sort by timestamp ascending (oldest first)
+                previousMessages = messages
+                    .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
+                    .map(msg => ({
+                        role: msg.Role === 'user' ? 'user' : 'assistant',
+                        content: msg.Role === 'user' 
+                            ? [{ type: 'text', text: msg.Content }]
+                            : [{ type: 'text', text: msg.Content }]
+                    }));
+            } else {
+                console.log('[STREAM] No previous messages found for context');
+            }
+        } catch (historyError) {
+            console.error('[STREAM] Error fetching message history:', historyError);
+            // Continue without history if there's an error
+        }
+        
         // Save user message to Airtable immediately
         try {
             console.log('[STREAM] Saving user message to Airtable...');
@@ -412,6 +440,9 @@ app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res
             model: 'claude-3-7-sonnet-latest',
             system: systemPrompt,
             messages: [
+                // Include previous messages for context
+                ...previousMessages,
+                // Add the current message with screenshot
                 {
                     role: 'user',
                     content: [
