@@ -1,5 +1,9 @@
-// Try to import Electron's ipcRenderer safely
+// Try to import dependencies safely
 let ipcRenderer;
+let axios;
+let ElevenLabsClient;
+
+// Safely import Electron
 try {
     const electron = require('electron');
     ipcRenderer = electron.ipcRenderer;
@@ -7,8 +11,32 @@ try {
     console.warn('Electron not available:', error.message);
     ipcRenderer = null;
 }
-const axios = require('axios');
-const { ElevenLabsClient } = require('elevenlabs');
+
+// Safely import axios
+try {
+    axios = require('axios');
+} catch (error) {
+    console.warn('axios not available:', error.message);
+    // Create a minimal axios fallback
+    axios = {
+        get: () => Promise.reject(new Error('axios not available')),
+        post: () => Promise.reject(new Error('axios not available'))
+    };
+}
+
+// Safely import ElevenLabs
+try {
+    const elevenlabs = require('elevenlabs');
+    ElevenLabsClient = elevenlabs.ElevenLabsClient;
+} catch (error) {
+    console.warn('ElevenLabs not available:', error.message);
+    // Create a minimal ElevenLabsClient fallback
+    ElevenLabsClient = class {
+        constructor() {
+            this.voices = { getAll: () => Promise.reject(new Error('ElevenLabs not available')) };
+        }
+    };
+}
 
 class SpeechManager {
     constructor() {
@@ -22,15 +50,38 @@ class SpeechManager {
         this.modelId = "eleven_flash_v2_5"; // Using flash model
         this.serverUrl = 'http://localhost:3000'; // Local server URL
         
-        // Safely detect environment
-        this.isBrowserEnv = typeof window !== 'undefined';
-        this.hasAudioAPI = typeof Audio !== 'undefined';
-        this.isNodeEnv = typeof process !== 'undefined' && 
-                        process.versions && 
-                        process.versions.node;
-        this.isElectronEnv = typeof process !== 'undefined' && 
+        // Safely detect environment with try-catch for each check
+        try {
+            this.isBrowserEnv = typeof window !== 'undefined';
+        } catch (e) {
+            console.warn('Error detecting browser environment:', e.message);
+            this.isBrowserEnv = false;
+        }
+        
+        try {
+            this.hasAudioAPI = typeof Audio !== 'undefined';
+        } catch (e) {
+            console.warn('Error detecting Audio API:', e.message);
+            this.hasAudioAPI = false;
+        }
+        
+        try {
+            this.isNodeEnv = typeof process !== 'undefined' && 
                             process.versions && 
-                            process.versions.electron;
+                            process.versions.node;
+        } catch (e) {
+            console.warn('Error detecting Node.js environment:', e.message);
+            this.isNodeEnv = false;
+        }
+        
+        try {
+            this.isElectronEnv = typeof process !== 'undefined' && 
+                                process.versions && 
+                                process.versions.electron;
+        } catch (e) {
+            console.warn('Error detecting Electron environment:', e.message);
+            this.isElectronEnv = false;
+        }
         
         console.log(`SpeechManager environment: Browser: ${this.isBrowserEnv}, Audio API: ${this.hasAudioAPI}, Node: ${this.isNodeEnv}, Electron: ${this.isElectronEnv}`);
         
@@ -41,13 +92,16 @@ class SpeechManager {
                 console.log('Audio element initialized');
             } catch (error) {
                 console.warn('Failed to initialize Audio element:', error);
+                this.hasAudioAPI = false; // Update flag since Audio failed
             }
         } else {
             console.warn('Audio API not available in this environment');
         }
         
         // Initialize ElevenLabs client if API key is available
-        this.initElevenLabs();
+        this.initElevenLabs().catch(err => {
+            console.warn('Failed to initialize ElevenLabs during construction:', err.message);
+        });
     }
     
     /**
@@ -55,13 +109,40 @@ class SpeechManager {
      * @returns {Promise<boolean>} - True if initialization was successful
      */
     async initElevenLabs() {
+        // Skip if we're not in an environment with network capabilities
+        if (!this.isBrowserEnv && !this.isNodeEnv && !this.isElectronEnv) {
+            console.log('No network capabilities detected, skipping ElevenLabs initialization');
+            return false;
+        }
+        
         try {
+            // Check if axios is available
+            if (!axios || typeof axios.get !== 'function') {
+                console.error('axios is not available, cannot initialize ElevenLabs');
+                return false;
+            }
+            
+            // Check if ElevenLabsClient is available
+            if (!ElevenLabsClient) {
+                console.error('ElevenLabsClient is not available, cannot initialize ElevenLabs');
+                return false;
+            }
+            
             console.log(`Checking for ElevenLabs API key at ${this.serverUrl}/api/elevenlabs/key`);
             
-            // Get API key from server
-            const response = await axios.get(`${this.serverUrl}/api/elevenlabs/key`, {
-                timeout: 5000 // 5 second timeout
-            });
+            // Get API key from server with better error handling
+            let response;
+            try {
+                response = await axios.get(`${this.serverUrl}/api/elevenlabs/key`, {
+                    timeout: 5000 // 5 second timeout
+                });
+            } catch (axiosError) {
+                console.error('Error fetching ElevenLabs API key:', axiosError.message);
+                if (axiosError.response) {
+                    console.error('Response status:', axiosError.response.status);
+                }
+                return false;
+            }
             
             console.log('ElevenLabs key response:', response.data ? 'Received' : 'Empty');
             
@@ -85,7 +166,7 @@ class SpeechManager {
                         this.modelId = "eleven_flash_v2_5"; // Using flash model
                         
                         // Get available voices
-                        this.loadVoices();
+                        this.loadVoices().catch(e => console.warn('Error loading voices:', e.message));
                         return true;
                     } catch (voicesError) {
                         console.error('Error verifying ElevenLabs client with voices call:', voicesError);
@@ -438,11 +519,27 @@ class SpeechManager {
      */
     setVolume(volume) {
         try {
+            // Validate input
             if (volume === undefined || volume === null) {
                 console.warn('Volume value is undefined or null, using default');
                 volume = 0.5;
             }
-            this.volume = Math.max(0, Math.min(1, parseFloat(volume) || 0.5));
+            
+            // Parse and clamp volume value
+            let parsedVolume;
+            try {
+                parsedVolume = parseFloat(volume);
+                if (isNaN(parsedVolume)) {
+                    console.warn(`Invalid volume value: ${volume}, using default`);
+                    parsedVolume = 0.5;
+                }
+            } catch (parseError) {
+                console.warn(`Error parsing volume value: ${volume}`, parseError);
+                parsedVolume = 0.5;
+            }
+            
+            // Clamp volume between 0 and 1
+            this.volume = Math.max(0, Math.min(1, parsedVolume));
             console.log(`Setting volume to ${this.volume}`);
             
             // Only try to set volume on audio element if we're in a browser environment
@@ -455,6 +552,10 @@ class SpeechManager {
             }
         } catch (error) {
             console.error('Error setting volume:', error);
+            // Ensure volume has a valid value even after error
+            if (typeof this.volume !== 'number' || isNaN(this.volume)) {
+                this.volume = 0.5;
+            }
         }
     }
     
@@ -495,16 +596,38 @@ class SpeechManager {
                 return false;
             }
             
-            // More comprehensive check for speech recognition support
-            const hasMediaDevices = typeof navigator !== 'undefined' && 
-                                   !!navigator.mediaDevices && 
-                                   !!navigator.mediaDevices.getUserMedia;
+            // Safely check for navigator
+            let hasNavigator = false;
+            try {
+                hasNavigator = typeof navigator !== 'undefined';
+            } catch (e) {
+                console.warn('Error checking navigator:', e.message);
+            }
+            
+            if (!hasNavigator) {
+                console.log('Navigator API not available, speech recognition not supported');
+                return false;
+            }
+            
+            // More comprehensive check for speech recognition support with safe property access
+            let hasMediaDevices = false;
+            try {
+                hasMediaDevices = !!navigator.mediaDevices && 
+                                 !!navigator.mediaDevices.getUserMedia;
+            } catch (e) {
+                console.warn('Error checking mediaDevices:', e.message);
+            }
             
             // Check for getUserMedia support
-            const hasGetUserMedia = !!(navigator.getUserMedia || 
-                                     navigator.webkitGetUserMedia || 
-                                     navigator.mozGetUserMedia || 
-                                     navigator.msGetUserMedia);
+            let hasGetUserMedia = false;
+            try {
+                hasGetUserMedia = !!(navigator.getUserMedia || 
+                                   navigator.webkitGetUserMedia || 
+                                   navigator.mozGetUserMedia || 
+                                   navigator.msGetUserMedia);
+            } catch (e) {
+                console.warn('Error checking getUserMedia:', e.message);
+            }
             
             const isSupported = hasMediaDevices || hasGetUserMedia;
             console.log(`Speech recognition supported: ${isSupported}`);
@@ -532,13 +655,36 @@ class SpeechManager {
                 return false;
             }
             
+            // Check if axios is available for API calls
+            let hasAxios = false;
+            try {
+                hasAxios = !!axios && typeof axios.post === 'function';
+            } catch (e) {
+                console.warn('Error checking axios availability:', e.message);
+            }
+            
+            if (!hasAxios) {
+                console.log('axios not available, ElevenLabs not available');
+                return false;
+            }
+            
             // Check if the client exists and is properly initialized
-            const clientExists = !!this.elevenLabsClient;
+            let clientExists = false;
+            try {
+                clientExists = !!this.elevenLabsClient;
+            } catch (e) {
+                console.warn('Error checking ElevenLabs client:', e.message);
+            }
             
             // Additional check for required properties/methods on the client
-            const clientHasVoices = clientExists && 
-                                   !!this.elevenLabsClient.voices && 
-                                   typeof this.elevenLabsClient.voices.getAll === 'function';
+            let clientHasVoices = false;
+            try {
+                clientHasVoices = clientExists && 
+                                 !!this.elevenLabsClient.voices && 
+                                 typeof this.elevenLabsClient.voices.getAll === 'function';
+            } catch (e) {
+                console.warn('Error checking ElevenLabs client voices API:', e.message);
+            }
             
             const isAvailable = clientExists && clientHasVoices;
             
@@ -645,48 +791,108 @@ class SpeechManager {
     }
 }
 
-// Create a fallback implementation that can be used in any environment
+// Create a more comprehensive fallback implementation
 const fallbackImplementation = {
-    speak: () => Promise.resolve(),
-    setVolume: () => {},
-    setVoice: () => {},
-    cleanup: () => {},
-    isElevenLabsAvailable: () => false,
-    isSpeechRecognitionSupported: () => false,
-    startListening: () => {},
-    stopListening: () => {},
-    initElevenLabs: () => Promise.resolve(false)
+    speak: () => {
+        console.log('Fallback implementation: speak called');
+        return Promise.resolve();
+    },
+    setVolume: (volume) => {
+        console.log(`Fallback implementation: setVolume called with ${volume}`);
+    },
+    setVoice: (voiceId) => {
+        console.log(`Fallback implementation: setVoice called with ${voiceId}`);
+    },
+    cleanup: () => {
+        console.log('Fallback implementation: cleanup called');
+    },
+    isElevenLabsAvailable: () => {
+        console.log('Fallback implementation: isElevenLabsAvailable called');
+        return false;
+    },
+    isSpeechRecognitionSupported: () => {
+        console.log('Fallback implementation: isSpeechRecognitionSupported called');
+        return false;
+    },
+    startListening: (onResult, onEnd) => {
+        console.log('Fallback implementation: startListening called');
+        if (onEnd) setTimeout(() => onEnd('Speech recognition not available'), 0);
+    },
+    stopListening: () => {
+        console.log('Fallback implementation: stopListening called');
+    },
+    initElevenLabs: () => {
+        console.log('Fallback implementation: initElevenLabs called');
+        return Promise.resolve(false);
+    }
 };
 
-// Create a singleton instance with error handling
+// Create a singleton instance with better error handling
 let instance;
+
+// Wrap the entire initialization in a try-catch
 try {
     console.log('Creating SpeechManager instance');
     
-    // More robust environment detection
-    const isBrowser = typeof window !== 'undefined';
-    const hasAudioAPI = typeof Audio !== 'undefined';
-    const isNode = typeof process !== 'undefined' && 
-                  process.versions && 
-                  process.versions.node;
-    const isElectron = typeof process !== 'undefined' && 
-                      process.versions && 
-                      process.versions.electron;
+    // More robust environment detection with defaults
+    let isBrowser = false;
+    let hasAudioAPI = false;
+    let isNode = false;
+    let isElectron = false;
+    
+    // Safely detect browser environment
+    try {
+        isBrowser = typeof window !== 'undefined';
+    } catch (e) {
+        console.warn('Error detecting browser environment:', e.message);
+    }
+    
+    // Safely detect Audio API
+    try {
+        hasAudioAPI = typeof Audio !== 'undefined';
+    } catch (e) {
+        console.warn('Error detecting Audio API:', e.message);
+    }
+    
+    // Safely detect Node.js
+    try {
+        isNode = typeof process !== 'undefined' && 
+                process.versions && 
+                process.versions.node;
+    } catch (e) {
+        console.warn('Error detecting Node.js environment:', e.message);
+    }
+    
+    // Safely detect Electron
+    try {
+        isElectron = typeof process !== 'undefined' && 
+                    process.versions && 
+                    process.versions.electron;
+    } catch (e) {
+        console.warn('Error detecting Electron environment:', e.message);
+    }
     
     console.log(`Environment detection: Browser: ${isBrowser}, Audio API: ${hasAudioAPI}, Node: ${isNode}, Electron: ${isElectron}`);
     
+    // Create the appropriate instance based on environment
     if (isBrowser && hasAudioAPI) {
-        console.log('Audio API is available, creating full implementation');
-        instance = new SpeechManager();
-        console.log('SpeechManager instance created successfully');
+        try {
+            console.log('Audio API is available, creating full implementation');
+            instance = new SpeechManager();
+            console.log('SpeechManager instance created successfully');
+        } catch (instanceError) {
+            console.error('Error creating SpeechManager instance:', instanceError);
+            console.warn('Falling back to fallback implementation due to instance creation error');
+            instance = fallbackImplementation;
+        }
     } else {
         console.warn('Audio API is not available in this environment, using fallback implementation');
         instance = fallbackImplementation;
     }
 } catch (error) {
-    console.error('Error creating SpeechManager instance:', error);
+    console.error('Critical error during SpeechManager initialization:', error);
     console.error('Stack trace:', error.stack);
-    console.warn('Using fallback implementation for SpeechManager due to error');
+    console.warn('Using fallback implementation for SpeechManager due to critical error');
     instance = fallbackImplementation;
 }
 
