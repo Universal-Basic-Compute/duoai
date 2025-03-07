@@ -3,8 +3,8 @@ const axios = require('axios');
 
 class AuthBridge {
     constructor() {
-        // Change the base URL to the local server
-        this.baseUrl = 'http://localhost:3000';
+        // Use relative URLs for serverless functions
+        this.baseUrl = '';
         this.user = null;
         this.subscription = null;
     }
@@ -19,7 +19,7 @@ class AuthBridge {
             }
             
             // Add token to request headers
-            const response = await axios.get(`${this.baseUrl}/api/auth/status`, { 
+            const response = await axios.get(`/api/auth/status`, { 
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -66,7 +66,7 @@ class AuthBridge {
                 return false;
             }
             
-            const response = await axios.post(`${this.baseUrl}/api/auth/refresh`, {
+            const response = await axios.post(`/api/auth/refresh`, {
                 refreshToken: refreshToken
             });
             
@@ -90,7 +90,7 @@ class AuthBridge {
 
     async checkSubscription() {
         try {
-            const response = await axios.get(`${this.baseUrl}/api/subscription`, { withCredentials: true });
+            const response = await axios.get(`/api/subscription`, { withCredentials: true });
             this.subscription = response.data;
             return response.data;
         } catch (error) {
@@ -101,7 +101,7 @@ class AuthBridge {
 
     async startUsageTracking() {
         try {
-            const response = await axios.post(`${this.baseUrl}/api/usage/start`, {}, { withCredentials: true });
+            const response = await axios.post(`/api/usage/start`, {}, { withCredentials: true });
             return response.data;
         } catch (error) {
             console.error('Error starting usage tracking:', error);
@@ -111,7 +111,7 @@ class AuthBridge {
 
     async endUsageTracking(sessionId) {
         try {
-            const response = await axios.post(`${this.baseUrl}/api/usage/end`, { sessionId }, { withCredentials: true });
+            const response = await axios.post(`/api/usage/end`, { sessionId }, { withCredentials: true });
             return response.data;
         } catch (error) {
             console.error('Error ending usage tracking:', error);
@@ -120,11 +120,11 @@ class AuthBridge {
     }
 
     getLoginUrl() {
-        return `${this.baseUrl}/auth/google`;
+        return `/auth/google`;
     }
 
     getLogoutUrl() {
-        return `${this.baseUrl}/api/auth/logout`;
+        return `/api/auth/logout`;
     }
 }
 

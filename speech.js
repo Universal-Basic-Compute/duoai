@@ -48,7 +48,7 @@ class SpeechManager {
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
         this.modelId = "eleven_flash_v2_5"; // Using flash model
-        this.serverUrl = 'http://localhost:3000'; // Local server URL
+        this.serverUrl = ''; // Empty string for relative URLs
         
         // Safely detect environment with try-catch for each check
         try {
@@ -128,12 +128,12 @@ class SpeechManager {
                 return false;
             }
             
-            console.log(`Checking for ElevenLabs API key at ${this.serverUrl}/api/elevenlabs/key`);
+            console.log(`Checking for ElevenLabs API key at /api/elevenlabs/key`);
             
             // Get API key from server with better error handling
             let response;
             try {
-                response = await axios.get(`${this.serverUrl}/api/elevenlabs/key`, {
+                response = await axios.get(`/api/elevenlabs/key`, {
                     timeout: 5000 // 5 second timeout
                 });
             } catch (axiosError) {
@@ -358,12 +358,12 @@ class SpeechManager {
             const useModel = "eleven_flash_v2_5";
             console.log(`Using model for this request: ${useModel}`);
             
-            console.log(`Sending TTS request to ${this.serverUrl}/api/elevenlabs/tts`);
+            console.log(`Sending TTS request to /api/elevenlabs/tts`);
             
             // Use the server as a proxy to avoid exposing API key in client
             try {
                 console.log(`Sending TTS request to server with voice ID: ${this.voiceId}`);
-                const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
+                const response = await axios.post(`/api/elevenlabs/tts`, {
                     text: text,
                     voiceId: this.voiceId,
                     modelId: useModel

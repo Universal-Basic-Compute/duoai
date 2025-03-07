@@ -230,8 +230,9 @@ module.exports = async (req, res) => {
 // Function to generate system prompts based on character
 async function generateSystemPrompt(characterName) {
     try {
-        // Base prompt path
-        const basePromptPath = path.join(__dirname, '..', 'prompts', 'base_prompt.txt');
+        // Base prompt path - use process.cwd() for Vercel
+        const rootDir = process.env.VERCEL ? process.cwd() : __dirname;
+        const basePromptPath = path.join(rootDir, '..', 'prompts', 'base_prompt.txt');
         
         // Read base prompt
         let basePrompt = '';
@@ -250,7 +251,7 @@ async function generateSystemPrompt(characterName) {
         }
         
         // Character-specific prompt path
-        const characterPromptPath = path.join(__dirname, '..', 'prompts', 'characters', `${characterName.toLowerCase()}.txt`);
+        const characterPromptPath = path.join(rootDir, '..', 'prompts', 'characters', `${characterName.toLowerCase()}.txt`);
         
         // Read character-specific prompt
         let characterPrompt = '';
