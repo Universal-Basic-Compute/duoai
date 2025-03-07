@@ -392,7 +392,12 @@ class SpeechManager {
      */
     setVolume(volume) {
         try {
-            this.volume = Math.max(0, Math.min(1, volume));
+            if (volume === undefined || volume === null) {
+                console.warn('Volume value is undefined or null, using default');
+                volume = 0.5;
+            }
+            this.volume = Math.max(0, Math.min(1, parseFloat(volume) || 0.5));
+            console.log(`Setting volume to ${this.volume}`);
             if (this.audioElement) {
                 this.audioElement.volume = this.volume;
             }
@@ -407,12 +412,22 @@ class SpeechManager {
      */
     setVoice(voiceId) {
         try {
-            if (voiceId) {
+            if (!voiceId) {
+                console.warn('Voice ID is empty or undefined, keeping current voice');
+                return;
+            }
+            
+            // Validate voice ID format (basic check)
+            if (typeof voiceId !== 'string' || voiceId.length < 5) {
+                console.warn(`Invalid voice ID format: ${voiceId}, using default`);
+                this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default to George
+            } else {
                 this.voiceId = voiceId;
                 console.log(`Voice set to: ${voiceId}`);
             }
         } catch (error) {
             console.error('Error setting voice:', error);
+            // Keep the previous voice ID in case of error
         }
     }
 
@@ -422,8 +437,22 @@ class SpeechManager {
      */
     isSpeechRecognitionSupported() {
         try {
-            const isSupported = !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia;
+            // More comprehensive check for speech recognition support
+            const hasMediaDevices = typeof navigator !== 'undefined' && 
+                                   !!navigator.mediaDevices && 
+                                   !!navigator.mediaDevices.getUserMedia;
+            
+            // Check for getUserMedia support
+            const hasGetUserMedia = !!(navigator.getUserMedia || 
+                                     navigator.webkitGetUserMedia || 
+                                     navigator.mozGetUserMedia || 
+                                     navigator.msGetUserMedia);
+            
+            const isSupported = hasMediaDevices || hasGetUserMedia;
             console.log(`Speech recognition supported: ${isSupported}`);
+            console.log(`- Media devices API: ${hasMediaDevices}`);
+            console.log(`- getUserMedia API: ${hasGetUserMedia}`);
+            
             return isSupported;
         } catch (error) {
             console.error('Error checking speech recognition support:', error);
@@ -437,8 +466,20 @@ class SpeechManager {
      */
     isElevenLabsAvailable() {
         try {
-            const isAvailable = !!this.elevenLabsClient;
+            // Check if the client exists and is properly initialized
+            const clientExists = !!this.elevenLabsClient;
+            
+            // Additional check for required properties/methods on the client
+            const clientHasVoices = clientExists && 
+                                   !!this.elevenLabsClient.voices && 
+                                   typeof this.elevenLabsClient.voices.getAll === 'function';
+            
+            const isAvailable = clientExists && clientHasVoices;
+            
             console.log(`ElevenLabs available: ${isAvailable}`);
+            console.log(`- Client exists: ${clientExists}`);
+            console.log(`- Client has voices API: ${clientHasVoices}`);
+            
             return isAvailable;
         } catch (error) {
             console.error('Error checking ElevenLabs availability:', error);
@@ -452,37 +493,76 @@ class SpeechManager {
     cleanup() {
         console.log('Cleaning up SpeechManager resources');
         try {
-            if (this.audioElement) {
-                // Pause and reset
-                this.audioElement.pause();
-                this.audioElement.currentTime = 0;
+            // Create a local reference to the audio element
+            const audioEl = this.audioElement;
+            
+            if (audioEl) {
+                console.log('Cleaning up audio element');
                 
-                // Clear source if it exists
-                if (this.audioElement.src) {
-                    try {
-                        URL.revokeObjectURL(this.audioElement.src);
-                    } catch (e) {
-                        console.warn('Error revoking object URL:', e);
-                    }
-                    this.audioElement.src = '';
+                // First remove event listeners to prevent any callbacks during cleanup
+                try {
+                    audioEl.oncanplaythrough = null;
+                    audioEl.onloadedmetadata = null;
+                    audioEl.onended = null;
+                    audioEl.onerror = null;
+                    audioEl.onpause = null;
+                    audioEl.onplay = null;
+                    console.log('Removed event listeners from audio element');
+                } catch (listenerError) {
+                    console.warn('Error removing event listeners:', listenerError);
                 }
                 
-                // Remove event listeners
-                this.audioElement.oncanplaythrough = null;
-                this.audioElement.onloadedmetadata = null;
-                this.audioElement.onended = null;
-                this.audioElement.onerror = null;
+                // Then pause and reset
+                try {
+                    audioEl.pause();
+                    audioEl.currentTime = 0;
+                    console.log('Paused and reset audio element');
+                } catch (pauseError) {
+                    console.warn('Error pausing audio:', pauseError);
+                }
+                
+                // Clear source if it exists
+                if (audioEl.src && audioEl.src !== '') {
+                    try {
+                        // Check if it's an object URL
+                        if (audioEl.src.startsWith('blob:')) {
+                            URL.revokeObjectURL(audioEl.src);
+                            console.log('Revoked object URL');
+                        }
+                    } catch (urlError) {
+                        console.warn('Error revoking object URL:', urlError);
+                    }
+                    
+                    try {
+                        audioEl.src = '';
+                        audioEl.load(); // Force the browser to apply the change
+                        console.log('Cleared audio source');
+                    } catch (srcError) {
+                        console.warn('Error clearing audio source:', srcError);
+                    }
+                }
             } else {
                 console.log('No audio element to clean up');
             }
             
-            // Also clean up any recording resources
+            // Clean up any recording resources
             if (this.isListening && this.mediaRecorder) {
                 try {
                     console.log('Stopping active listening session');
                     this.stopListening();
                 } catch (e) {
                     console.warn('Error stopping listening during cleanup:', e);
+                }
+            }
+            
+            // Clean up any media streams
+            if (this.mediaRecorder && this.mediaRecorder.stream) {
+                try {
+                    const tracks = this.mediaRecorder.stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                    console.log(`Stopped ${tracks.length} media tracks`);
+                } catch (trackError) {
+                    console.warn('Error stopping media tracks:', trackError);
                 }
             }
             
@@ -497,8 +577,15 @@ class SpeechManager {
 let instance;
 try {
     console.log('Creating SpeechManager instance');
-    instance = new SpeechManager();
-    console.log('SpeechManager instance created successfully');
+    
+    // Check if Audio API is available
+    if (typeof Audio !== 'undefined') {
+        console.log('Audio API is available');
+        instance = new SpeechManager();
+        console.log('SpeechManager instance created successfully');
+    } else {
+        throw new Error('Audio API is not available in this environment');
+    }
 } catch (error) {
     console.error('Error creating SpeechManager instance:', error);
     console.error('Stack trace:', error.stack);
