@@ -23,6 +23,11 @@ class SpeechManager {
      * @returns {Promise<boolean>} - True if initialization was successful
      */
     async initElevenLabs() {
+        // Skip initialization and return false to use browser TTS
+        console.log('Skipping ElevenLabs initialization, using browser TTS');
+        return false;
+        
+        /* Disabled ElevenLabs initialization temporarily
         try {
             console.log(`Checking for ElevenLabs API key at ${this.serverUrl}/api/elevenlabs/key`);
             
@@ -56,6 +61,7 @@ class SpeechManager {
             }
             return false;
         }
+        */
     }
     
     /**
@@ -174,6 +180,11 @@ class SpeechManager {
         this.audioElement.pause();
         this.audioElement.currentTime = 0;
         
+        // Always use browser TTS for now due to ElevenLabs API issues
+        console.log('Using browser TTS instead of ElevenLabs');
+        return this.fallbackSpeak(text);
+        
+        /* Disabled ElevenLabs integration temporarily
         if (!this.elevenLabsClient) {
             console.warn('ElevenLabs client not initialized, attempting to initialize now...');
             await this.initElevenLabs();
@@ -203,48 +214,49 @@ class SpeechManager {
             });
                 
                 
-                console.log('Received TTS response, size:', response.data.byteLength);
+            console.log('Received TTS response, size:', response.data.byteLength);
+            
+            // Create blob from array buffer
+            const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            console.log('Created audio URL:', audioUrl);
+            
+            // Play the audio
+            return new Promise((resolve) => {
+                this.audioElement.src = audioUrl;
+                this.audioElement.volume = this.volume;
                 
-                // Create blob from array buffer
-                const audioBlob = new Blob([response.data], { type: 'audio/mpeg' });
-                const audioUrl = URL.createObjectURL(audioBlob);
+                this.audioElement.onended = () => {
+                    console.log('Audio playback ended');
+                    URL.revokeObjectURL(audioUrl);
+                    resolve();
+                };
                 
-                console.log('Created audio URL:', audioUrl);
+                this.audioElement.onerror = (error) => {
+                    console.error('Error playing audio:', error);
+                    URL.revokeObjectURL(audioUrl);
+                    resolve();
+                };
                 
-                // Play the audio
-                return new Promise((resolve) => {
-                    this.audioElement.src = audioUrl;
-                    this.audioElement.volume = this.volume;
-                    
-                    this.audioElement.onended = () => {
-                        console.log('Audio playback ended');
-                        URL.revokeObjectURL(audioUrl);
-                        resolve();
-                    };
-                    
-                    this.audioElement.onerror = (error) => {
-                        console.error('Error playing audio:', error);
-                        URL.revokeObjectURL(audioUrl);
-                        resolve();
-                    };
-                    
-                    console.log('Starting audio playback');
-                    this.audioElement.play().catch(error => {
-                        console.error('Error playing audio:', error);
-                        resolve();
-                    });
+                console.log('Starting audio playback');
+                this.audioElement.play().catch(error => {
+                    console.error('Error playing audio:', error);
+                    resolve();
                 });
-            } catch (error) {
-                console.error('Error with ElevenLabs TTS:', error);
-                console.error('Error details:', error.message);
-                if (error.response) {
-                    console.error('Response status:', error.response.status);
-                    console.error('Response headers:', error.response.headers);
-                }
-                
-                // Fall back to browser's built-in TTS
-                return this.fallbackSpeak(text);
+            });
+        } catch (error) {
+            console.error('Error with ElevenLabs TTS:', error);
+            console.error('Error details:', error.message);
+            if (error.response) {
+                console.error('Response status:', error.response.status);
+                console.error('Response headers:', error.response.headers);
             }
+            
+            // Fall back to browser's built-in TTS
+            return this.fallbackSpeak(text);
+        }
+        */
     }
     
     /**

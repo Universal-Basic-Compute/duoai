@@ -639,8 +639,8 @@ document.addEventListener('DOMContentLoaded', () => {
         speechManager.setVoice(voiceId);
         localStorage.setItem('selectedVoice', voiceId);
         
-        // Test the selected voice
-        speechManager.speak("Hello, I'm your gaming assistant.").catch(error => {
+        // Test the selected voice with browser TTS
+        speechManager.fallbackSpeak("Hello, I'm your gaming assistant.").catch(error => {
             console.error('Error testing voice:', error);
         });
     });
