@@ -1,17 +1,22 @@
 {
-  "name": "xforge-frontend",
+  "name": "duoai",
   "version": "0.1.0",
   "private": true,
+  "main": "main.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "electron .",
+    "electron-dev": "electron .",
     "lint": "next lint"
   },
   "dependencies": {
     "airtable": "^0.12.2",
+    "axios": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "electron": "^35.0.0",
+    "elevenlabs": "^1.53.0",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "multer": "^1.4.5-lts.1",
@@ -19,16 +24,14 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "axios": "^1.8.2",
-    "electron": "^35.0.0",
-    "elevenlabs": "^1.53.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
