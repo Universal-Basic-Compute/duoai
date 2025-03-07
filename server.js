@@ -862,7 +862,7 @@ app.post('/api/elevenlabs/tts', async (req, res) => {
                         {
                             text: trimmedText,
                             model_id: modelId || "eleven_flash_v2_5", // Use a more stable model
-                            output_format: "mp3_44100_128"
+                            output_format: "mp3_44100"
                         }
                     );
                     

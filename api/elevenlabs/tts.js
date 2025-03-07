@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
               {
                 text: trimmedText,
                 model_id: finalModelId,
-                output_format: "mp3_44100_128"
+                output_format: "mp3_44100"
               }
             );
             
