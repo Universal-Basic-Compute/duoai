@@ -10,7 +10,7 @@ class SpeechManager {
         this.volume = 0.5; // Default volume
         this.audioElement = new Audio();
         this.elevenLabsClient = null;
-        this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (Rachel)
+        this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
         this.modelId = "eleven_flash_v2_5"; // Default model
         this.serverUrl = 'http://localhost:3000'; // Local server URL
         

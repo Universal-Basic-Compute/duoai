@@ -247,6 +247,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide menu tab initially
     menuTab.style.display = 'none';
     
+    // Function to select Nova by default
+    const selectDefaultCharacter = () => {
+        // Find the Nova character item
+        const novaCharacterItem = Array.from(document.querySelectorAll('.character-item'))
+            .find(item => item.querySelector('.character-name').textContent === 'Nova');
+        
+        if (novaCharacterItem) {
+            console.log('Selecting Nova by default');
+            
+            // Add active class
+            novaCharacterItem.classList.add('character-active');
+            
+            // Build the system prompt for Nova
+            const systemPrompt = systemPromptBuilder.buildSystemPrompt('Nova');
+            console.log('Default system prompt built for Nova');
+            
+            // Store the system prompt for later use
+            localStorage.setItem('currentSystemPrompt', systemPrompt);
+            localStorage.setItem('currentCharacter', 'Nova');
+            
+            // Set current character
+            currentCharacter = 'Nova';
+            
+            // Set the voice for Nova
+            const voiceId = getVoiceIdForCharacter('Nova');
+            speechManager.setVoice(voiceId);
+            localStorage.setItem('selectedVoice', voiceId);
+            
+            // Update the voice selector to match Nova's voice
+            if (voiceSelector) {
+                voiceSelector.value = voiceId;
+            }
+        }
+    };
+    
     // Call the function to select Nova by default
     selectDefaultCharacter();
     
@@ -881,6 +916,19 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage("You're offline. Limited functionality is available with cached responses.", 'ai');
     });
     
+    // Function to get the voice ID for a character
+    function getVoiceIdForCharacter(characterName) {
+        const characterVoices = {
+            'Nova': 'EXAVITQu4vr4xnSDxMaL', // Sarah - analytical and supportive
+            'Orion': 'TX3LPaxmHKxFdv7VOQHJ', // Liam - motivational coach
+            'Lyra': 'XB0fDUnXU5powFXDhCwa', // Charlotte - patient teacher
+            'Zephyr': 'pFZP5JQG7iQjIQuC4Bku', // Lily - playful companion
+            'Thorne': 'JBFqnCBsd6RMkjVDRZzb'  // George - protective mentor
+        };
+        
+        return characterVoices[characterName] || 'JBFqnCBsd6RMkjVDRZzb'; // Default to George
+    }
+
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -903,6 +951,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // Store the system prompt for later use
             localStorage.setItem('currentSystemPrompt', systemPrompt);
             localStorage.setItem('currentCharacter', characterName);
+            
+            // Set the voice for the selected character
+            const voiceId = getVoiceIdForCharacter(characterName);
+            speechManager.setVoice(voiceId);
+            localStorage.setItem('selectedVoice', voiceId);
+            
+            // Update the voice selector to match the character's voice
+            if (voiceSelector) {
+                voiceSelector.value = voiceId;
+            }
             
             // Optional: Close the submenu after selection
             // charactersSubmenu.style.right = '-300px';
