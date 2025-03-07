@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Get electron API
     const { ipcRenderer } = require('electron');
+    const systemPromptBuilder = require('./system_prompt_builder');
     
     // Toggle menu when clicking on the tab
     menuTab.addEventListener('click', () => {
@@ -59,6 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get character name
             const characterName = item.querySelector('.character-name').textContent;
             console.log(`Selected character: ${characterName}`);
+            
+            // Build the system prompt for the selected character
+            const systemPrompt = systemPromptBuilder.buildSystemPrompt(characterName);
+            console.log('System prompt built successfully');
+            
+            // Store the system prompt for later use
+            localStorage.setItem('currentSystemPrompt', systemPrompt);
+            localStorage.setItem('currentCharacter', characterName);
+            
             // Optional: Close the submenu after selection
             // charactersSubmenu.style.right = '-300px';
         });
