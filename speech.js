@@ -54,7 +54,7 @@ class SpeechManager {
         
         // Load config to get API URL
         const config = loadConfig();
-        this.serverUrl = config.API_URL || 'https://duoai.vercel.app';
+        this.serverUrl = config.API_URL || 'https://duoai-9febs9khj-ubc4ai.vercel.app';
         
         // Safely detect environment with try-catch for each check
         try {

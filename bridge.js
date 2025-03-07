@@ -6,7 +6,7 @@ class AuthBridge {
     constructor() {
         // Load config to get API URL
         const config = loadConfig();
-        this.baseUrl = config.API_URL || 'https://duoai.vercel.app';
+        this.baseUrl = config.API_URL || 'https://duoai-9febs9khj-ubc4ai.vercel.app';
         this.user = null;
         this.subscription = null;
     }
