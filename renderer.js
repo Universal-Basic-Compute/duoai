@@ -341,9 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Start usage tracking
             await startUsageTracking();
             
-            // Show loading indicator
-            addLoadingIndicator();
-            
             // Get system prompt
             const systemPrompt = localStorage.getItem('currentSystemPrompt');
             console.log('System prompt retrieved:', systemPrompt ? 'Yes' : 'No');
@@ -354,33 +351,71 @@ document.addEventListener('DOMContentLoaded', () => {
                 const screenshotPath = await screenshotUtil.captureScreenshot();
                 console.log('Screenshot captured:', screenshotPath);
                 
-                // Call Claude API
-                console.log('Sending message to Claude API...');
-                const response = await claudeAPI.sendMessageWithScreenshot(
+                // Create a message element for the AI response
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'ai-message');
+                
+                // Create a text element that will be updated as we receive chunks
+                const textElement = document.createElement('div');
+                textElement.textContent = ''; // Start empty
+                messageElement.appendChild(textElement);
+                
+                // Add the message element to the chat
+                chatMessages.appendChild(messageElement);
+                
+                // Add typing indicator
+                messageElement.classList.add('typing');
+                
+                // Call Claude API with streaming
+                console.log('Sending message to Claude API with streaming...');
+                let fullResponse = '';
+                
+                await claudeAPI.sendMessageWithScreenshotStreaming(
                     systemPrompt,
                     "I just started the app. What do you see in this screenshot? Can you provide any gaming advice based on what you see?",
-                    screenshotPath
+                    screenshotPath,
+                    // On chunk callback
+                    (chunk) => {
+                        // Update the text element with the new chunk
+                        textElement.textContent += chunk;
+                        
+                        // Scroll to bottom as new text arrives
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    },
+                    // On complete callback
+                    (completeResponse) => {
+                        // Remove typing indicator
+                        messageElement.classList.remove('typing');
+                        
+                        // Store the full response
+                        fullResponse = completeResponse;
+                        
+                        // Cache the response for offline use
+                        cacheResponse('initial_message', fullResponse);
+                        
+                        // Speak the response
+                        speechManager.speak(fullResponse).catch(error => {
+                            console.error('Error speaking message:', error);
+                        });
+                    }
                 );
                 
-                console.log('Received response from Claude API');
-                
-                // Remove loading indicator
-                removeLoadingIndicator();
-                
-                // Add AI message to chat
-                addMessage(response, 'ai');
+                console.log('Streaming response from Claude API completed');
                 
                 // Clean up old screenshots
                 screenshotUtil.cleanupOldScreenshots();
             } catch (error) {
                 console.error('Error in API call or screenshot:', error);
                 
-                // Remove loading indicator
-                removeLoadingIndicator();
+                // Add error message to chat
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'ai-message');
                 
-                // Show error message with details
-                const errorMessage = `I'm sorry, I encountered an error: ${error.message}. Please make sure the backend server is running.`;
-                addMessage(errorMessage, 'ai');
+                const textElement = document.createElement('div');
+                textElement.textContent = `I'm sorry, I encountered an error: ${error.message}. Please make sure the backend server is running.`;
+                messageElement.appendChild(textElement);
+                
+                chatMessages.appendChild(messageElement);
             }
         } catch (error) {
             console.error('Unexpected error in start button handler:', error);
@@ -437,8 +472,20 @@ document.addEventListener('DOMContentLoaded', () => {
         userInput.value = '';
         userInput.style.height = 'auto';
         
-        // Show loading indicator
-        addLoadingIndicator();
+        // Create a message element for the AI response
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', 'ai-message');
+        
+        // Create a text element that will be updated as we receive chunks
+        const textElement = document.createElement('div');
+        textElement.textContent = ''; // Start empty
+        messageElement.appendChild(textElement);
+        
+        // Add the message element to the chat
+        chatMessages.appendChild(messageElement);
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
         
         try {
             // Check if we're online
@@ -449,14 +496,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cachedResponse = getCachedResponse(`message_${sanitizedMessage.substring(0, 50)}`);
                 
                 if (cachedResponse) {
-                    // Remove loading indicator
-                    removeLoadingIndicator();
-                    
                     // Add cached AI message to chat
-                    addMessage(cachedResponse, 'ai', true);
+                    textElement.textContent = cachedResponse;
+                    messageElement.classList.add('cached');
+                    
+                    // Add cached indicator
+                    const cachedIndicator = document.createElement('div');
+                    cachedIndicator.classList.add('cached-indicator');
+                    cachedIndicator.textContent = 'Offline response';
+                    messageElement.insertBefore(cachedIndicator, textElement);
+                    
+                    // Speak the response
+                    speechManager.speak(cachedResponse).catch(error => {
+                        console.error('Error speaking message:', error);
+                    });
+                    
                     return;
                 } else {
-                    throw new Error('You are currently offline and no cached response is available.');
+                    textElement.textContent = 'You are currently offline and no cached response is available.';
+                    return;
                 }
             }
             
@@ -466,38 +524,61 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get system prompt
             const systemPrompt = localStorage.getItem('currentSystemPrompt');
             
-            // Call Claude API
-            const response = await claudeAPI.sendMessageWithScreenshot(
+            // Call Claude API with streaming
+            let fullResponse = '';
+            
+            // Add typing indicator
+            messageElement.classList.add('typing');
+            
+            await claudeAPI.sendMessageWithScreenshotStreaming(
                 systemPrompt,
                 sanitizedMessage,
-                screenshotPath
+                screenshotPath,
+                // On chunk callback
+                (chunk) => {
+                    // Update the text element with the new chunk
+                    textElement.textContent += chunk;
+                    
+                    // Scroll to bottom as new text arrives
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                },
+                // On complete callback
+                (completeResponse) => {
+                    // Remove typing indicator
+                    messageElement.classList.remove('typing');
+                    
+                    // Store the full response
+                    fullResponse = completeResponse;
+                    
+                    // Cache the response for offline use
+                    cacheResponse(`message_${sanitizedMessage.substring(0, 50)}`, fullResponse);
+                    
+                    // Speak the response
+                    speechManager.speak(fullResponse).catch(error => {
+                        console.error('Error speaking message:', error);
+                    });
+                }
             );
-            
-            // Cache the response for offline use
-            cacheResponse(`message_${sanitizedMessage.substring(0, 50)}`, response);
-            
-            // Remove loading indicator
-            removeLoadingIndicator();
-            
-            // Add AI message to chat
-            addMessage(response, 'ai');
             
             // Clean up old screenshots
             screenshotUtil.cleanupOldScreenshots();
         } catch (error) {
             console.error('Error sending message:', error);
             
-            // Remove loading indicator
-            removeLoadingIndicator();
-            
-            // Show specific error message based on error type
-            if (error.message.includes('offline')) {
-                addMessage("You're currently offline. Please check your internet connection and try again.", 'ai');
-            } else if (error.message.includes('server')) {
-                addMessage("I'm having trouble connecting to the server. Please try again in a moment.", 'ai');
-            } else {
-                addMessage("I'm sorry, I encountered an error. Please try again later.", 'ai');
-            }
+            // Update the message with the error
+            textElement.textContent = getErrorMessage(error);
+            messageElement.classList.remove('typing');
+        }
+    }
+    
+    // Helper function to get appropriate error message
+    function getErrorMessage(error) {
+        if (error.message.includes('offline')) {
+            return "You're currently offline. Please check your internet connection and try again.";
+        } else if (error.message.includes('server')) {
+            return "I'm having trouble connecting to the server. Please try again in a moment.";
+        } else {
+            return "I'm sorry, I encountered an error. Please try again later.";
         }
     }
     
@@ -509,6 +590,32 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to add a message to the chat
     function addMessage(text, sender, isCached = false) {
+        // If text is empty, don't add a message
+        if (!text) return;
+        
+        // For streaming AI messages, we handle this differently in sendMessage
+        if (sender === 'ai' && !isCached) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', `${sender}-message`);
+            
+            const textElement = document.createElement('div');
+            textElement.textContent = text;
+            messageElement.appendChild(textElement);
+            
+            chatMessages.appendChild(messageElement);
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Speak AI messages
+            speechManager.speak(text).catch(error => {
+                console.error('Error speaking message:', error);
+            });
+            
+            return messageElement;
+        }
+        
+        // For user messages and cached AI responses
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', `${sender}-message`);
         
@@ -535,6 +642,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error speaking message:', error);
             });
         }
+        
+        return messageElement;
     }
     
     // Function to add loading indicator
