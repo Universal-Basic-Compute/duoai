@@ -256,6 +256,103 @@ app.post('/api/claude-base64', express.json({ limit: '100mb' }), async (req, res
     }
 });
 
+// Claude streaming API endpoint
+app.post('/api/claude-stream', express.json({ limit: '100mb' }), async (req, res) => {
+    try {
+        console.log('Received request to /api/claude-stream');
+        
+        const { systemPrompt, userMessage, base64Image } = req.body;
+
+        if (!base64Image) {
+            console.error('No base64 image in request');
+            return res.status(400).json({ error: 'No image provided' });
+        }
+
+        // Check if API key is available
+        if (!process.env.ANTHROPIC_API_KEY) {
+            console.error('Anthropic API key is missing');
+            return res.status(500).json({ error: 'API key configuration error' });
+        }
+
+        console.log('Preparing streaming request to Claude API');
+        console.log('System prompt length:', systemPrompt ? systemPrompt.length : 0);
+        console.log('User message:', userMessage);
+        
+        // Set up headers for SSE
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+        });
+        
+        // Prepare the request payload for Claude API with streaming
+        const payload = {
+            model: 'claude-3-7-sonnet-latest',
+            system: systemPrompt || '',
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'image',
+                            source: {
+                                type: 'base64',
+                                media_type: 'image/jpeg',
+                                data: base64Image
+                            }
+                        },
+                        {
+                            type: 'text',
+                            text: userMessage || "What do you see in this screenshot? Can you provide any gaming advice based on what you see?"
+                        }
+                    ]
+                }
+            ],
+            max_tokens: 4000,
+            stream: true
+        };
+
+        console.log('Sending streaming request to Claude API');
+        
+        // Call Claude API with streaming
+        const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': process.env.ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            },
+            responseType: 'stream'
+        });
+        
+        // Pipe the stream directly to the client
+        response.data.pipe(res);
+        
+        // Handle errors in the stream
+        response.data.on('error', (error) => {
+            console.error('Stream error:', error);
+            res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+            res.end();
+        });
+    } catch (error) {
+        console.error('Error calling Claude API streaming:', error.message);
+        
+        // Try to send an error response if possible
+        try {
+            if (!res.headersSent) {
+                res.status(500).json({ 
+                    error: 'Error processing streaming request',
+                    details: error.response ? error.response.data : error.message
+                });
+            } else {
+                res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+                res.end();
+            }
+        } catch (responseError) {
+            console.error('Error sending error response:', responseError);
+        }
+    }
+});
+
 // Claude API endpoint
 app.post('/api/claude', upload.single('screenshot'), async (req, res) => {
     try {
