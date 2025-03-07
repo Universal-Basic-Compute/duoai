@@ -41,9 +41,36 @@ module.exports = async (req, res) => {
       processedBase64 = processedImageBuffer.toString('base64');
     }
     
+    // Save user message to Airtable immediately
+    try {
+      // Extract character name from system prompt if available
+      let characterName = null;
+      if (systemPrompt) {
+        const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+        if (characterMatch && characterMatch[1]) {
+          characterName = characterMatch[1];
+        }
+      }
+      
+      // Save user message - use a mock user ID if req.user is not available
+      const userId = req.user ? req.user.id : 'mock-user-id';
+      
+      await airtableService.saveMessage(
+        userId,
+        'user',
+        userMessage || "What do you see in this screenshot?",
+        characterName
+      );
+      
+      console.log('User message saved to Airtable');
+    } catch (saveError) {
+      console.error('Error saving user message to Airtable:', saveError);
+      // Don't fail the request if saving messages fails
+    }
+    
     // Prepare the request payload for Claude API with streaming enabled
     const payload = {
-      model: 'claude-3-opus-20240229',
+      model: 'claude-3-7-sonnet-latest',
       system: systemPrompt || '',
       messages: [
         {
@@ -74,6 +101,8 @@ module.exports = async (req, res) => {
       'Cache-Control': 'no-cache',
       'Connection': 'keep-alive'
     });
+    
+    console.log('Sending streaming request to Claude API with model:', payload.model);
     
     // Call Claude API with streaming
     const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
@@ -110,44 +139,42 @@ module.exports = async (req, res) => {
     
     // Handle end of stream
     response.data.on('end', async () => {
-      // Save the user message and Claude's response to Airtable
+      console.log('Stream ended, full response length:', fullResponse.length);
+      
+      // Save assistant message to Airtable
       try {
-        if (req.user && req.user.id) {
-          // Extract character name from system prompt if available
-          let characterName = null;
-          if (systemPrompt) {
-            const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
-            if (characterMatch && characterMatch[1]) {
-              characterName = characterMatch[1];
-            }
+        // Extract character name from system prompt if available
+        let characterName = null;
+        if (systemPrompt) {
+          const characterMatch = systemPrompt.match(/You are playing the role of (\w+)/i);
+          if (characterMatch && characterMatch[1]) {
+            characterName = characterMatch[1];
           }
-          
-          // Save user message
+        }
+        
+        // Save assistant message - use a mock user ID if req.user is not available
+        const userId = req.user ? req.user.id : 'mock-user-id';
+        
+        if (fullResponse.length > 0) {
           await airtableService.saveMessage(
-            req.user.id,
-            'user',
-            userMessage || "What do you see in this screenshot?",
-            characterName
-          );
-          
-          // Save assistant message
-          await airtableService.saveMessage(
-            req.user.id,
+            userId,
             'assistant',
             fullResponse,
             characterName
           );
           
-          console.log('Messages saved to Airtable');
+          console.log('Assistant message saved to Airtable');
+        } else {
+          console.error('No response text to save to Airtable');
         }
       } catch (saveError) {
-        console.error('Error saving messages to Airtable:', saveError);
-        // Don't fail the request if saving messages fails
+        console.error('Error saving assistant message to Airtable:', saveError);
       }
+      
+      // End the response
+      res.write('event: message_stop\ndata: {"type": "message_stop"}\n\n');
+      res.end();
     });
-    
-    // Pipe the stream directly to the client
-    response.data.pipe(res);
     
     // Handle errors in the stream
     response.data.on('error', (error) => {
