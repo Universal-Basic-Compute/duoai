@@ -30,6 +30,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add your start functionality here
     });
     
+    // Characters button functionality
+    const charactersButton = document.getElementById('charactersButton');
+    const charactersSubmenu = document.getElementById('charactersSubmenu');
+    const backButton = document.getElementById('backButton');
+
+    charactersButton.addEventListener('click', () => {
+        // Show the characters submenu
+        charactersSubmenu.style.right = '0';
+    });
+
+    backButton.addEventListener('click', () => {
+        // Hide the characters submenu
+        charactersSubmenu.style.right = '-300px';
+    });
+    
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
         item.addEventListener('click', () => {
@@ -44,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get character name
             const characterName = item.querySelector('.character-name').textContent;
             console.log(`Selected character: ${characterName}`);
-            // You can add more functionality here
+            // Optional: Close the submenu after selection
+            // charactersSubmenu.style.right = '-300px';
         });
     });
 });
