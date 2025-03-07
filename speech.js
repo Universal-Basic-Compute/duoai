@@ -191,15 +191,35 @@ class SpeechManager {
      * @returns {Promise} - Resolves when speech is complete
      */
     async speak(text) {
-        // Stop any currently playing audio
-        this.audioElement.pause();
-        this.audioElement.currentTime = 0;
-        
-        // For very short text, just skip it
-        if (!text || text.length < 10) {
-            console.log('Text is very short or empty, skipping TTS');
-            return Promise.resolve();
-        }
+        try {
+            // Stop any currently playing audio and ensure it's properly disposed
+            if (this.audioElement) {
+                // Create a reference to the old audio element
+                const oldAudio = this.audioElement;
+                
+                // Pause and reset the old audio
+                oldAudio.pause();
+                oldAudio.currentTime = 0;
+                
+                // Remove any event listeners to prevent memory leaks
+                oldAudio.oncanplaythrough = null;
+                oldAudio.onloadedmetadata = null;
+                oldAudio.onended = null;
+                oldAudio.onerror = null;
+                
+                // Clear the source
+                if (oldAudio.src) {
+                    URL.revokeObjectURL(oldAudio.src);
+                    oldAudio.src = '';
+                    oldAudio.load(); // Force the browser to apply the change
+                }
+            }
+            
+            // For very short text, just skip it
+            if (!text || text.length < 10) {
+                console.log('Text is very short or empty, skipping TTS');
+                return Promise.resolve();
+            }
         
         if (!this.elevenLabsClient) {
             console.warn('ElevenLabs client not initialized, attempting to initialize now...');
@@ -275,13 +295,13 @@ class SpeechManager {
                 
                 // Play the audio with better error handling
                 return new Promise((resolve) => {
-                    // Create a new audio element each time to avoid issues with reusing
+                    // Create a new audio element each time
                     this.audioElement = new Audio();
                     this.audioElement.volume = this.volume;
-                    
+                
                     // Log audio element creation
                     console.log('Created new Audio element for playback');
-                    
+                
                     // Set the source before attaching event handlers
                     this.audioElement.src = audioUrl;
                     
@@ -397,6 +417,27 @@ class SpeechManager {
      */
     isElevenLabsAvailable() {
         return !!this.elevenLabsClient;
+    }
+    
+    /**
+     * Clean up resources
+     */
+    cleanup() {
+        if (this.audioElement) {
+            this.audioElement.pause();
+            this.audioElement.currentTime = 0;
+            
+            if (this.audioElement.src) {
+                URL.revokeObjectURL(this.audioElement.src);
+                this.audioElement.src = '';
+            }
+            
+            // Remove event listeners
+            this.audioElement.oncanplaythrough = null;
+            this.audioElement.onloadedmetadata = null;
+            this.audioElement.onended = null;
+            this.audioElement.onerror = null;
+        }
     }
 }
 

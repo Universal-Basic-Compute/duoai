@@ -430,6 +430,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // End usage tracking
         await endUsageTracking();
         
+        // Clean up speech resources
+        speechManager.cleanup();
+        
         // Hide the chat container
         chatContainer.style.right = '-350px';
         
