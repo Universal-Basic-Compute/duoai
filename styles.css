@@ -726,3 +726,23 @@ body {
     display: block;
     background-color: rgba(244, 67, 54, 0.8);
 }
+
+.server-status {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 9999;
+}
+
+.server-status.online {
+    background-color: rgba(0, 230, 118, 0.8);
+}
+
+.server-status.offline {
+    background-color: rgba(244, 67, 54, 0.8);
+}

@@ -154,6 +154,10 @@
                     <label for="airtableBaseId">Airtable Base ID</label>
                     <input type="text" id="airtableBaseId" placeholder="Enter your Airtable Base ID">
                 </div>
+                <div class="form-group">
+                    <label for="apiUrl">API Server URL</label>
+                    <input type="text" id="apiUrl" placeholder="https://duoai.vercel.app">
+                </div>
                 <div class="settings-actions">
                     <button type="button" id="cancelButton" class="btn-cancel">Cancel</button>
                     <button type="submit" class="btn-save">Save Settings</button>
@@ -176,6 +180,7 @@
             document.getElementById('googleClientSecret').value = config.GOOGLE_CLIENT_SECRET || '';
             document.getElementById('airtableApiKey').value = config.AIRTABLE_API_KEY || '';
             document.getElementById('airtableBaseId').value = config.AIRTABLE_BASE_ID || '';
+            document.getElementById('apiUrl').value = config.API_URL || 'https://duoai.vercel.app';
             
             // Form submission
             document.getElementById('settingsForm').addEventListener('submit', async (e) => {
@@ -187,7 +192,8 @@
                     GOOGLE_CLIENT_ID: document.getElementById('googleClientId').value,
                     GOOGLE_CLIENT_SECRET: document.getElementById('googleClientSecret').value,
                     AIRTABLE_API_KEY: document.getElementById('airtableApiKey').value,
-                    AIRTABLE_BASE_ID: document.getElementById('airtableBaseId').value
+                    AIRTABLE_BASE_ID: document.getElementById('airtableBaseId').value,
+                    API_URL: document.getElementById('apiUrl').value
                 };
                 
                 try {

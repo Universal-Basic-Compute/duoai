@@ -32,11 +32,18 @@ try {
     };
 }
 
+// Load config to get API URL
+const { loadConfig } = require('./config');
+
 class ClaudeAPI {
     constructor() {
-        // Use relative URLs for serverless endpoints
-        this.apiUrl = '/api/claude';
-        this.base64ApiUrl = '/api/claude-base64';
+        // Load config to get API URL
+        const config = loadConfig();
+        this.baseUrl = config.API_URL || 'https://duoai.vercel.app';
+        
+        // Use URLs with base URL for serverless endpoints
+        this.apiUrl = `${this.baseUrl}/api/claude`;
+        this.base64ApiUrl = `${this.baseUrl}/api/claude-base64`;
     }
 
     /**
@@ -45,12 +52,12 @@ class ClaudeAPI {
      */
     async checkServerStatus() {
         try {
-            // Try the serverless health endpoint
-            const response = await axios.get('/health', { timeout: 5000 });
+            // Try the serverless health endpoint with base URL
+            const response = await axios.get(`${this.baseUrl}/health`, { timeout: 5000 });
             if (response.status === 200) {
                 // Server is running
-                this.apiUrl = '/api/claude';
-                this.base64ApiUrl = '/api/claude-base64';
+                this.apiUrl = `${this.baseUrl}/api/claude`;
+                this.base64ApiUrl = `${this.baseUrl}/api/claude-base64`;
                 return true;
             }
             
@@ -223,8 +230,8 @@ class ClaudeAPI {
             
             while (retries <= maxRetries) {
                 try {
-                    // Use relative URL for the streaming endpoint
-                    const streamUrl = '/api/claude-stream';
+                    // Use the base URL for the streaming endpoint
+                    const streamUrl = `${this.baseUrl}/api/claude-stream`;
                     console.log('Using stream URL:', streamUrl);
                     
                     // Send the request to the backend server using the streaming endpoint

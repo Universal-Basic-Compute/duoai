@@ -36,7 +36,8 @@ const defaultConfig = {
   AIRTABLE_BASE_ID: '',
   ANTHROPIC_API_KEY: '',
   ELEVENLABS_API_KEY: '',
-  SESSION_SECRET: 'duoai-session-secret'
+  SESSION_SECRET: 'duoai-session-secret',
+  API_URL: 'https://duoai.vercel.app' // Default API URL
 };
 
 // Load or create configuration
