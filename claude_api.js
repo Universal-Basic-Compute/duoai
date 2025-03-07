@@ -70,9 +70,34 @@ class ClaudeAPI {
             
             // Read the file as base64
             const imageBuffer = fs.readFileSync(screenshotPath);
-            const base64Image = imageBuffer.toString('base64');
+            
+            // Further compress the image if it's too large (over 5MB)
+            let base64Image;
+            if (imageBuffer.length > 5 * 1024 * 1024) {
+                console.log('Image is large, compressing further...');
+                // Create a temporary file for the compressed image
+                const tempPath = screenshotPath + '.compressed.jpg';
+                
+                // Compress the image
+                await sharp(imageBuffer)
+                    .resize({ width: 800 }) // Reduce width to 800px
+                    .jpeg({ quality: 70 }) // Convert to JPEG with 70% quality
+                    .toFile(tempPath);
+                    
+                // Read the compressed image
+                const compressedBuffer = fs.readFileSync(tempPath);
+                base64Image = compressedBuffer.toString('base64');
+                
+                // Delete the temporary file
+                fs.unlinkSync(tempPath);
+                
+                console.log('Image compressed successfully');
+            } else {
+                base64Image = imageBuffer.toString('base64');
+            }
             
             console.log('Sending request to backend server...');
+            console.log('Image size (base64):', Math.round(base64Image.length / 1024), 'KB');
             
             // Send the request to the backend server using the base64 endpoint
             const response = await axios.post('http://localhost:3000/api/claude-base64', {

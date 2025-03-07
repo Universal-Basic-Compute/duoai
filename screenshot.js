@@ -43,9 +43,10 @@ class ScreenshotUtil {
                         fs.writeFileSync(originalFilePath, buffer);
                         console.log('Original screenshot saved to:', originalFilePath);
                         
-                        // Resize the image to 1568px width
+                        // Resize the image to 1024px width and reduce quality
                         await sharp(originalFilePath)
-                            .resize({ width: 1568, withoutEnlargement: true })
+                            .resize({ width: 1024, withoutEnlargement: true })
+                            .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
                             .toFile(resizedFilePath);
                         
                         console.log('Resized screenshot saved to:', resizedFilePath);
