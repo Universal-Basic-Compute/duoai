@@ -1,3 +1,11 @@
+// First, import required modules at the very top of the file
+const { ipcRenderer } = require('electron');
+const systemPromptBuilder = require('./system_prompt_builder');
+const screenshotUtil = require('./screenshot');
+const claudeAPI = require('./claude_api');
+const authBridge = require('./bridge');
+const speechManager = require('./speech');
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded');
     
@@ -74,14 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let menuOpen = false;
     let currentCharacter = null;
-    
-    // Get electron API
-    const { ipcRenderer } = require('electron');
-    const systemPromptBuilder = require('./system_prompt_builder');
-    const screenshotUtil = require('./screenshot');
-    const claudeAPI = require('./claude_api');
-    const authBridge = require('./bridge');
-    const speechManager = require('./speech');
     
     // Add offline support utilities
     const responseCache = new Map();
