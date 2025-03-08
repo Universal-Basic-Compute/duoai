@@ -1,4 +1,5 @@
 const airtableService = require('./airtable-service');
+const jwt = require('jsonwebtoken');
 
 module.exports = async (req, res) => {
   // Set CORS headers to allow requests from any origin
@@ -19,15 +20,26 @@ module.exports = async (req, res) => {
   }
   
   try {
+    // Extract token
+    const token = authHeader.substring(7);
+    
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
+    
+    // Get user data from the token
+    const userId = decoded.id;
+    const userEmail = decoded.email;
+    
+    // Get the user from Airtable to get the username
+    const user = await airtableService.findUserByEmail(userEmail);
+    const username = user ? user.Username : userEmail;
+    
     // Extract message data from request body
     const { role, content, character } = req.body;
     
     if (!role || !content) {
       return res.status(400).json({ error: 'Role and content are required' });
     }
-    
-    // Extract username from token or request
-    const username = req.user ? req.user.name : 'mock-user';
     
     // Save message to Airtable
     const message = await airtableService.saveMessage(username, role, content, character);

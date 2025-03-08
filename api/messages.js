@@ -1,4 +1,5 @@
 const airtableService = require('./airtable-service');
+const jwt = require('jsonwebtoken');
 
 module.exports = async (req, res) => {
   // Set CORS headers to allow requests from any origin
@@ -19,8 +20,19 @@ module.exports = async (req, res) => {
   }
   
   try {
-    // Extract username from token or request
-    const username = req.user ? req.user.name : 'mock-user';
+    // Extract token
+    const token = authHeader.substring(7);
+    
+    // Verify and decode the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
+    
+    // Get user data from the token
+    const userId = decoded.id;
+    const userEmail = decoded.email;
+    
+    // Get the user from Airtable to get the username
+    const user = await airtableService.findUserByEmail(userEmail);
+    const username = user ? user.Username : userEmail;
     
     // Get limit from query parameters
     const limit = req.query.limit ? parseInt(req.query.limit) : 100;
