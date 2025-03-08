@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const name = document.getElementById('registerName').value; // Username field
+        const username = document.getElementById('registerName').value; // Username field
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
         const confirmPassword = document.getElementById('registerConfirmPassword').value;
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             
             // Call the registration API through the bridge
-            const response = await authBridge.registerWithCredentials(name, email, password);
+            const response = await authBridge.registerWithCredentials(username, email, password);
             
             if (response.success) {
                 // Show success message

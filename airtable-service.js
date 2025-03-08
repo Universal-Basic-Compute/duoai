@@ -111,7 +111,7 @@ async function findUserByEmail(email) {
  * @param {Object} userData - User data to create
  * @param {string} userData.email - User's email
  * @param {string} userData.password - User's password (will be hashed)
- * @param {string} userData.name - User's name
+ * @param {string} userData.username - User's username
  * @returns {Promise<Object>} - The created user object
  */
 async function createUserWithCredentials(userData) {
@@ -136,7 +136,7 @@ async function createUserWithCredentials(userData) {
             {
                 fields: {
                     Email: userData.email,
-                    Name: userData.name || '',
+                    Name: userData.username || '',
                     PasswordHash: userData.passwordHash, // Already hashed password
                     CreatedAt: new Date().toISOString(),
                     LastLogin: new Date().toISOString(),

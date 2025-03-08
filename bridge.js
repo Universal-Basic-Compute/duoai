@@ -12,15 +12,15 @@ class AuthBridge {
     
     /**
      * Register a new user with email and password
-     * @param {string} name - User's username
+     * @param {string} username - User's username
      * @param {string} email - User's email
      * @param {string} password - User's password
      * @returns {Promise<Object>} - Registration result
      */
-    async registerWithCredentials(name, email, password) {
+    async registerWithCredentials(username, email, password) {
         try {
             const response = await axios.post(`${this.baseUrl}/api/auth/register`, {
-                name,
+                username,
                 email,
                 password
             });

@@ -23,10 +23,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { email, password, name } = req.body; // name is the username
+    const { email, password, username } = req.body;
 
     // Validate input
-    if (!email || !password) {
+    if (!email || !password || !username) {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
@@ -54,7 +54,7 @@ module.exports = async (req, res) => {
     // Create the user
     const user = await airtableService.createUserWithCredentials({
       email,
-      name, // This is now username
+      username,
       passwordHash
     });
 
