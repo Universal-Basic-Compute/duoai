@@ -18,6 +18,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const speechStatus = document.getElementById('speechStatus');
     let isLoggedIn = false; // Track login state
     
+    // Listen for messages from the auth callback page
+    window.addEventListener('message', (event) => {
+        // Check if it's our auth callback
+        if (event.data && event.data.type === 'google-auth-callback') {
+            console.log('Received auth callback message');
+            
+            // Store tokens
+            localStorage.setItem('authToken', event.data.token);
+            localStorage.setItem('refreshToken', event.data.refreshToken);
+            
+            // Store user info
+            localStorage.setItem('user', JSON.stringify(event.data.user));
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            // Update UI
+            isLoggedIn = true;
+            loginContainer.classList.add('hidden');
+            menuTab.style.display = 'block';
+            
+            // Check subscription status
+            checkSubscriptionStatus();
+        }
+    });
+    
     
     console.log('Menu tab found:', menuTab !== null);
     if (menuTab === null) {
@@ -708,100 +732,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initGoogleSignIn();
     });
     
-    // Function to show token input dialog
-    function showTokenInputDialog() {
-        // Create a modal dialog for token input
-        const modal = document.createElement('div');
-        modal.style.position = 'fixed';
-        modal.style.top = '0';
-        modal.style.left = '0';
-        modal.style.width = '100%';
-        modal.style.height = '100%';
-        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        modal.style.display = 'flex';
-        modal.style.justifyContent = 'center';
-        modal.style.alignItems = 'center';
-        modal.style.zIndex = '10000';
-        
-        const dialog = document.createElement('div');
-        dialog.style.backgroundColor = 'white';
-        dialog.style.padding = '20px';
-        dialog.style.borderRadius = '10px';
-        dialog.style.width = '80%';
-        dialog.style.maxWidth = '500px';
-        
-        dialog.innerHTML = `
-            <h2>Enter Authentication Tokens</h2>
-            <p>Please paste the tokens from the browser window:</p>
-            
-            <div style="margin: 10px 0;">
-                <label for="authToken">Auth Token:</label>
-                <input type="text" id="authToken" style="width: 100%; padding: 8px; margin-top: 5px;">
-            </div>
-            
-            <div style="margin: 10px 0;">
-                <label for="refreshToken">Refresh Token:</label>
-                <input type="text" id="refreshToken" style="width: 100%; padding: 8px; margin-top: 5px;">
-            </div>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <button id="cancelTokenInput" style="margin-right: 10px; padding: 8px 15px;">Cancel</button>
-                <button id="submitTokens" style="padding: 8px 15px; background-color: #4285F4; color: white; border: none;">Submit</button>
-            </div>
-        `;
-        
-        modal.appendChild(dialog);
-        document.body.appendChild(modal);
-        
-        // Add event listeners
-        document.getElementById('cancelTokenInput').addEventListener('click', () => {
-            document.body.removeChild(modal);
-        });
-        
-        document.getElementById('submitTokens').addEventListener('click', async () => {
-            const authToken = document.getElementById('authToken').value.trim();
-            const refreshToken = document.getElementById('refreshToken').value.trim();
-            
-            if (!authToken || !refreshToken) {
-                alert('Please enter both tokens');
-                return;
-            }
-            
-            // Store tokens
-            localStorage.setItem('authToken', authToken);
-            localStorage.setItem('refreshToken', refreshToken);
-            
-            // Verify token and get user info
-            try {
-                const authStatus = await authBridge.checkAuthStatus();
-                
-                if (authStatus.isAuthenticated) {
-                    // Store user info
-                    localStorage.setItem('user', JSON.stringify(authStatus.user));
-                    localStorage.setItem('isLoggedIn', 'true');
-                    
-                    // Update UI
-                    isLoggedIn = true;
-                    loginContainer.classList.add('hidden');
-                    menuTab.style.display = 'block';
-                    
-                    // Remove modal
-                    document.body.removeChild(modal);
-                    
-                    // Check subscription status
-                    await checkSubscriptionStatus();
-                } else {
-                    alert('Invalid tokens. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error verifying tokens:', error);
-                alert('Error verifying tokens. Please try again.');
-            }
-        });
-        
-        // Focus the first input
-        document.getElementById('authToken').focus();
-    }
+    // This function is no longer needed as we're using the postMessage approach
     
     // Function to initialize Google Sign-In
     function initGoogleSignIn() {
@@ -814,49 +745,23 @@ document.addEventListener('DOMContentLoaded', () => {
     
         if (!clientId) {
             console.error('Google Client ID not found in configuration');
-        
-            // For development/testing, use a mock login
-            if (confirm('Google Client ID not found. Would you like to use a mock login for testing?')) {
-                console.log('Using mock login for testing');
-            
-                // Simulate successful login with mock data
-                const mockUser = {
-                    id: 'mock-user-id',
-                    name: 'Mock User',
-                    email: 'mock@example.com',
-                    picture: ''
-                };
-            
-                // Store mock tokens
-                localStorage.setItem('authToken', 'mock-token');
-                localStorage.setItem('refreshToken', 'mock-refresh-token');
-                localStorage.setItem('user', JSON.stringify(mockUser));
-                localStorage.setItem('isLoggedIn', 'true');
-            
-                // Update UI for logged in state
-                isLoggedIn = true;
-                loginContainer.classList.add('hidden');
-                menuTab.style.display = 'block';
-            
-                return;
-            } else {
-                alert('Google authentication is not properly configured. Please check your settings.');
-                return;
-            }
+            alert('Google authentication is not properly configured. Please check your environment variables and make sure GOOGLE_CLIENT_ID is set.');
+            return;
         }
     
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
     
-        // Instead of loading the Google Sign-In script directly, open a browser window for authentication
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(config.API_URL + '/api/auth/callback')}&response_type=code&scope=email%20profile&prompt=select_account`;
+        // Build the auth URL with the correct redirect URI
+        const redirectUri = encodeURIComponent(`${config.API_URL}/api/auth/callback`);
+        console.log('Using redirect URI:', redirectUri);
+    
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account`;
     
         // Open the auth URL in the default browser
         ipcRenderer.send('open-external-url', authUrl);
     
-        // Show token input dialog after a short delay
-        setTimeout(() => {
-            showTokenInputDialog();
-        }, 1000);
+        // No fallback dialog - we'll rely on the proper OAuth flow
+        alert('A browser window has been opened for Google authentication. Please complete the sign-in process there and return to the app.');
     }
     
     // Callback function for Google Sign-In

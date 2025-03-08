@@ -34,19 +34,27 @@ module.exports = async (req, res) => {
         // Exchange code for tokens
         const { tokens } = await client.getToken(code);
         
+        // Log successful token exchange
+        console.log('Successfully exchanged code for tokens');
+        
         // Verify ID token
         const ticket = await client.verifyIdToken({
             idToken: tokens.id_token,
             audience: process.env.GOOGLE_CLIENT_ID
         });
         
+        console.log('Successfully verified ID token');
+        
         const payload = ticket.getPayload();
         const googleId = payload.sub;
+        
+        console.log('Google user ID:', googleId);
         
         // Find or create user in Airtable
         let user = await airtableService.findUserByGoogleId(googleId);
         
         if (!user) {
+            console.log('User not found, creating new user');
             // Create new user
             user = await airtableService.createUser({
                 id: googleId,
@@ -55,6 +63,7 @@ module.exports = async (req, res) => {
                 photos: [{ value: payload.picture }]
             });
         } else {
+            console.log('User found, updating last login');
             // Update last login
             await airtableService.updateLastLogin(user.id);
         }
@@ -72,7 +81,9 @@ module.exports = async (req, res) => {
         const token = jwt.sign(jwtPayload, process.env.JWT_SECRET || 'default-secret', { expiresIn: '1h' });
         const refreshToken = jwt.sign({ userId: user.id, googleId }, process.env.JWT_SECRET || 'default-secret', { expiresIn: '7d' });
         
-        // Return a success page with the tokens
+        console.log('Generated JWT tokens');
+        
+        // Return a success page that automatically sends the tokens back to the app
         res.send(`
             <!DOCTYPE html>
             <html>
@@ -96,36 +107,57 @@ module.exports = async (req, res) => {
                     h1 {
                         color: #4285F4;
                     }
-                    .token {
-                        background: #f9f9f9;
-                        padding: 10px;
-                        border-radius: 5px;
+                    .success-message {
                         margin: 20px 0;
-                        word-break: break-all;
-                        text-align: left;
-                        font-family: monospace;
-                        font-size: 12px;
-                    }
-                    button {
-                        background: #4285F4;
-                        color: white;
-                        border: none;
-                        padding: 10px 20px;
-                        border-radius: 5px;
-                        cursor: pointer;
+                        color: #00C853;
+                        font-weight: bold;
                     }
                 </style>
+                <script>
+                    // Store tokens in localStorage
+                    function storeTokensAndClose() {
+                        try {
+                            // Try to send tokens to the Electron app
+                            if (window.opener) {
+                                window.opener.postMessage({
+                                    type: 'google-auth-callback',
+                                    token: '${token}',
+                                    refreshToken: '${refreshToken}',
+                                    user: ${JSON.stringify(jwtPayload.user)}
+                                }, '*');
+                                
+                                document.getElementById('status').textContent = 'Authentication successful! You can close this window.';
+                            } else {
+                                document.getElementById('status').textContent = 'Please copy these tokens to the app:';
+                                document.getElementById('tokens').style.display = 'block';
+                            }
+                        } catch (error) {
+                            console.error('Error sending tokens to app:', error);
+                            document.getElementById('status').textContent = 'Please copy these tokens to the app:';
+                            document.getElementById('tokens').style.display = 'block';
+                        }
+                    }
+                    
+                    // Run when page loads
+                    window.onload = storeTokensAndClose;
+                </script>
             </head>
             <body>
                 <div class="container">
                     <h1>Authentication Successful</h1>
-                    <p>You have successfully authenticated with Google. Please copy the tokens below and paste them in the app.</p>
+                    <p id="status">Processing authentication...</p>
                     
-                    <h3>Auth Token:</h3>
-                    <div class="token">${token}</div>
+                    <div id="tokens" style="display: none;">
+                        <h3>Auth Token:</h3>
+                        <textarea rows="3" style="width: 100%;">${token}</textarea>
+                        
+                        <h3>Refresh Token:</h3>
+                        <textarea rows="3" style="width: 100%;">${refreshToken}</textarea>
+                    </div>
                     
-                    <h3>Refresh Token:</h3>
-                    <div class="token">${refreshToken}</div>
+                    <div class="success-message">
+                        You have successfully authenticated with Google.
+                    </div>
                     
                     <p>You can close this window now and return to the app.</p>
                 </div>
