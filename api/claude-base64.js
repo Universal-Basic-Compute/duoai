@@ -2,6 +2,7 @@ const axios = require('axios');
 const sharp = require('sharp');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const airtableService = require('./airtable-service');
 
 module.exports = async (req, res) => {
@@ -102,8 +103,29 @@ async function generateSystemPrompt(characterName) {
       processedBase64 = processedImageBuffer.toString('base64');
     }
     
-    // Always use mock-user-id for testing
-    const userId = 'mock-user-id';
+    // Extract username from JWT token if available
+    let username = 'anonymous';
+    try {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.substring(7);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
+            
+            // Get user email from token
+            const userEmail = decoded.email;
+            
+            // Get the user from Airtable to get the username
+            const user = await airtableService.findUserByEmail(userEmail);
+            username = user ? user.Username : userEmail;
+            
+            console.log('Extracted username from token:', username);
+        } else {
+            console.log('No auth token, using anonymous username');
+        }
+    } catch (error) {
+        console.error('Error extracting username from token:', error);
+        console.log('Using anonymous username');
+    }
     
     // Extract character name from system prompt if available
     let characterName = null;
@@ -118,7 +140,7 @@ async function generateSystemPrompt(characterName) {
     let previousMessages = [];
     try {
       console.log('Fetching previous messages for context...');
-      const messages = await airtableService.getUserMessages(userId, 20);
+      const messages = await airtableService.getUserMessages(username, 20);
       
       if (messages && messages.length > 0) {
         console.log(`Found ${messages.length} previous messages`);
@@ -187,7 +209,7 @@ async function generateSystemPrompt(characterName) {
     try {
         // Save user message
         await airtableService.saveMessage(
-            userId,
+            username,
             'user',
             userMessage || "*the user did not type a specific message at this time*",
             characterName
@@ -195,7 +217,7 @@ async function generateSystemPrompt(characterName) {
         
         // Save assistant message
         await airtableService.saveMessage(
-            userId,
+            username,
             'assistant',
             response.data.content[0].text,
             characterName

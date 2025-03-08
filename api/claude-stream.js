@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken');
 const airtableService = require('./airtable-service');
 
 module.exports = async (req, res) => {
@@ -46,9 +47,29 @@ module.exports = async (req, res) => {
             'Connection': 'keep-alive'
         });
         
-        // Always use mock-user-id for testing
-        const userId = 'mock-user-id';
-        console.log('[STREAM] Using user ID:', userId);
+        // Extract username from JWT token if available
+        let username = 'anonymous';
+        try {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                const token = authHeader.substring(7);
+                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
+                
+                // Get user email from token
+                const userEmail = decoded.email;
+                
+                // Get the user from Airtable to get the username
+                const user = await airtableService.findUserByEmail(userEmail);
+                username = user ? user.Username : userEmail;
+                
+                console.log('[STREAM] Extracted username from token:', username);
+            } else {
+                console.log('[STREAM] No auth token, using anonymous username');
+            }
+        } catch (error) {
+            console.error('[STREAM] Error extracting username from token:', error);
+            console.log('[STREAM] Using anonymous username');
+        }
         
         // Use character name from request
         console.log('[STREAM] Character name from request:', characterName || 'None');
@@ -86,7 +107,7 @@ module.exports = async (req, res) => {
             console.log('[STREAM] Saving user message to Airtable...');
             
             const savedUserMessage = await airtableService.saveMessage(
-                userId,
+                username,
                 'user',
                 userMessage || "*the user did not type a specific message at this time*",
                 characterName
@@ -184,7 +205,7 @@ module.exports = async (req, res) => {
                 
                 if (fullResponse.length > 0) {
                     const savedAssistantMessage = await airtableService.saveMessage(
-                        userId,
+                        username,
                         'assistant',
                         fullResponse,
                         characterName

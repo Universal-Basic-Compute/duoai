@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const airtableService = require('../airtable-service');
 
 module.exports = async (req, res) => {
@@ -15,9 +16,29 @@ module.exports = async (req, res) => {
         return res.status(405).json({ error: 'Method not allowed' });
     }
     
-    // In a real app, you would authenticate the user here
-    // For now, we'll use a mock user ID
-    const userId = 'mock-user-id';
+    // Extract username from JWT token if available
+    let username = 'anonymous';
+    try {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const token = authHeader.substring(7);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
+            
+            // Get user email from token
+            const userEmail = decoded.email;
+            
+            // Get the user from Airtable to get the username
+            const user = await airtableService.findUserByEmail(userEmail);
+            username = user ? user.Username : userEmail;
+            
+            console.log('Extracted username from token:', username);
+        } else {
+            console.log('No auth token, using anonymous username');
+        }
+    } catch (error) {
+        console.error('Error extracting username from token:', error);
+        console.log('Using anonymous username');
+    }
     
     const { sessionId } = req.body;
     
@@ -31,9 +52,9 @@ module.exports = async (req, res) => {
         const duration = 0.1; // 6 minutes in hours
         
         // Update the user's usage in Airtable
-        await airtableService.updateUsageHours(userId, duration);
+        await airtableService.updateUsageHours(username, duration);
         
-        res.json({ duration });
+        res.json({ duration, username });
     } catch (error) {
         console.error('Error updating usage hours:', error);
         res.status(500).json({ error: 'Failed to update usage hours' });
