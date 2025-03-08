@@ -30,25 +30,35 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Email/Username and password are required' });
     }
 
+    console.log('Login attempt with:', email); // Add logging
+
     // Find user by email or username
     let user;
     // Check if input is an email (contains @ symbol)
     if (email.includes('@')) {
+      console.log('Treating input as email');
       user = await airtableService.findUserByEmail(email);
     } else {
       // If no @ symbol, treat as username
+      console.log('Treating input as username');
       user = await airtableService.findUserByUsername(email);
     }
   
     if (!user) {
+      console.log('User not found');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    console.log('User found, checking password');
 
     // Check if password is correct
     const isMatch = await bcrypt.compare(password, user.PasswordHash);
     if (!isMatch) {
+      console.log('Password does not match');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    
+    console.log('Login successful for user:', user.Username || user.Email);
 
     // Update last login time
     await airtableService.updateLastLogin(user.id);

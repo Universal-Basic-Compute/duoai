@@ -48,12 +48,14 @@ class AuthBridge {
 
     /**
      * Login with email and password
-     * @param {string} email - User's email
+     * @param {string} email - User's email or username
      * @param {string} password - User's password
      * @returns {Promise<Object>} - Login result with tokens
      */
     async loginWithCredentials(email, password) {
         try {
+            console.log('Attempting login with:', email); // Add logging
+            
             const response = await axios.post(`${this.baseUrl}/api/auth/login`, {
                 email,
                 password

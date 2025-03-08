@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginEmailInput = document.getElementById('loginEmail');
     if (loginEmailInput) {
         loginEmailInput.placeholder = 'Email or Username';
+        loginEmailInput.type = 'text'; // Change to text type to allow usernames
     }
 
     // Form toggle
@@ -122,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loginEmailInput = document.getElementById('loginEmail');
         if (loginEmailInput) {
             loginEmailInput.placeholder = 'Email or Username';
+            loginEmailInput.type = 'text'; // Ensure it's text type
         }
         
         // Clear previous errors
@@ -133,6 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const originalButtonText = submitButton.textContent;
             submitButton.textContent = 'Logging in...';
             submitButton.disabled = true;
+            
+            console.log('Attempting login with:', emailOrUsername); // Add logging
             
             // Call the login API through the bridge
             // Pass the input value as is - the backend will determine if it's an email or username
