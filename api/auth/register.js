@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { email, password, name } = req.body; // name is now username
+    const { email, password, name } = req.body; // name is the username
 
     // Validate input
     if (!email || !password) {
