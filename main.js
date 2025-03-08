@@ -350,6 +350,59 @@ app.on('open-url', (event, url) => {
     }
 });
 
+// Handle protocol activation from command line args (Windows)
+if (process.platform === 'win32') {
+    const gotTheLock = app.requestSingleInstanceLock();
+    
+    if (!gotTheLock) {
+        app.quit();
+    } else {
+        app.on('second-instance', (event, commandLine, workingDirectory) => {
+            // Someone tried to run a second instance, focus our window instead
+            const win = BrowserWindow.getAllWindows()[0];
+            if (win) {
+                if (win.isMinimized()) win.restore();
+                win.focus();
+                
+                // Check if this is a protocol handler call
+                const protocolUrl = commandLine.find(arg => arg.startsWith('duoai://'));
+                if (protocolUrl) {
+                    // Handle the protocol URL
+                    if (protocolUrl.startsWith('duoai://auth')) {
+                        const dataStr = decodeURIComponent(protocolUrl.substring(12));
+                        try {
+                            const authData = JSON.parse(dataStr);
+                            win.webContents.send('auth-data-received', authData);
+                        } catch (error) {
+                            console.error('Error parsing auth data:', error);
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Check if app was started with protocol URL
+        const protocolUrl = process.argv.find(arg => arg.startsWith('duoai://'));
+        if (protocolUrl) {
+            // Handle the protocol URL
+            if (protocolUrl.startsWith('duoai://auth')) {
+                const dataStr = decodeURIComponent(protocolUrl.substring(12));
+                try {
+                    const authData = JSON.parse(dataStr);
+                    // We'll need to wait for the window to be created
+                    app.on('browser-window-created', (_, window) => {
+                        window.webContents.on('did-finish-load', () => {
+                            window.webContents.send('auth-data-received', authData);
+                        });
+                    });
+                } catch (error) {
+                    console.error('Error parsing auth data:', error);
+                }
+            }
+        }
+    }
+}
+
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
 });

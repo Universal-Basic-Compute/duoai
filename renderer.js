@@ -6,6 +6,9 @@ const claudeAPI = require('./claude_api');
 const authBridge = require('./bridge');
 const speechManager = require('./speech');
 
+// Debug protocol handler registration
+console.log('Renderer process started, protocol handlers should be registered');
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded');
     
@@ -58,11 +61,43 @@ document.addEventListener('DOMContentLoaded', () => {
         checkSubscriptionStatus();
     }
     
+    // Listen for auth data from main process
+    ipcRenderer.on('auth-data-received', (event, authData) => {
+        console.log('Received auth data from main process');
+        handleAuthData(authData);
+    });
+    
+    // Function to handle auth data
+    function handleAuthData(authData) {
+        if (!authData || !authData.token || !authData.refreshToken) {
+            console.error('Invalid auth data received');
+            return;
+        }
+        
+        console.log('Processing auth data');
+        
+        // Store tokens in localStorage
+        localStorage.setItem('authToken', authData.token);
+        localStorage.setItem('refreshToken', authData.refreshToken);
+        
+        // Store user info
+        localStorage.setItem('user', JSON.stringify(authData.user));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        // Update UI for logged in state
+        isLoggedIn = true;
+        loginContainer.classList.add('hidden');
+        menuTab.style.display = 'block';
+        
+        // Check subscription status
+        checkSubscriptionStatus();
+    }
+    
     // Listen for messages from the auth callback page
     window.addEventListener('message', (event) => {
         // Check if it's our auth callback
         if (event.data && event.data.type === 'google-auth-callback') {
-            console.log('Received auth callback message');
+            console.log('Received auth callback message via postMessage');
             handleAuthData(event.data);
         }
     });
@@ -779,13 +814,15 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
     
         // Always use production URL for authentication - hardcoded for consistency
-        const redirectUri = encodeURIComponent('https://duoai.vercel.app/api/auth/callback');
+        const redirectUri = encodeURIComponent('https://duoai.vercel.app/api/auth/callback?useProtocol=true');
         console.log('Using redirect URI:', redirectUri);
     
         const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account`;
     
         // Open the auth URL in the default browser without confirmation
         ipcRenderer.send('open-external-url', authUrl);
+        
+        console.log('Auth URL opened in browser:', authUrl);
     }
     
     
