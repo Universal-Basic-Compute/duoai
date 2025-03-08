@@ -35,29 +35,25 @@ DUOAI operates on a hybrid cloud-edge architecture:
 ## Platform Compatibility
 
 - PC Gaming (Steam, Epic Games, etc.)
-- PlayStation 5
-- Xbox Series X/S
-- Nintendo Switch
-- Mobile Gaming (iOS and Android)
 
 ## Implementation Roadmap
 
 | Phase | Timeline | Key Deliverables |
 |-------|----------|------------------|
-| Alpha | Q1 2023 | Core engine, limited game support |
-| Beta | Q2 2023 | Expanded game library, voice commands |
-| Release | Q4 2023 | Full platform support, advanced analytics |
-| 2.0 | Q2 2024 | Multiplayer coordination, AR overlay |
+| Alpha | Q1 2023 | Core engine, limited game support on PC |
+| Beta | Q2 2023 | Expanded PC game library, voice commands |
+| Release | Q4 2023 | Full PC platform support, advanced analytics |
+| 2.0 | Q2 2024 | Multiplayer coordination, AR overlay for PC |
 
 ## User Benefits
 
-- **Reduced Learning Curve**: Master new games faster
+- **Reduced Learning Curve**: Master new PC games faster
 - **Enhanced Enjoyment**: Less frustration, more accomplishment
 - **Skill Development**: Structured improvement path based on personal gameplay data
 - **Time Efficiency**: Optimize gaming sessions for maximum enjoyment
 
 ## Conclusion
 
-DUOAI represents the next evolution in gaming assistance technology, combining the latest advances in artificial intelligence with an intuitive user experience. Whether you're a casual gamer looking to enhance your enjoyment or a competitive player seeking to refine your skills, DUOAI adapts to your unique needs.
+DUOAI represents the next evolution in PC gaming assistance technology, combining the latest advances in artificial intelligence with an intuitive user experience. Whether you're a casual PC gamer looking to enhance your enjoyment or a competitive player seeking to refine your skills, DUOAI adapts to your unique needs.
 
 Sign up for our beta today and be among the first to experience the future of intelligent gaming assistance.
