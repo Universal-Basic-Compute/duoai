@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUOAI - Intelligent Gaming Companion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>DUOAI</h1>
+                <p>Your Intelligent Gaming Companion</p>
+            </div>
+            <!-- Email & Password login panel -->
+            <div class="login-panel active" id="credentialsPanel">
+                <div class="form-toggle">
+                    <button class="form-toggle-btn active" id="loginToggle">Login</button>
+                    <button class="form-toggle-btn" id="registerToggle">Register</button>
+                </div>
+                
+                <!-- Login form -->
+                <form id="loginForm" class="auth-form active">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="primary-button">Login</button>
+                    <div class="form-error" id="loginError"></div>
+                </form>
+                
+                <!-- Registration form -->
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <input type="text" id="registerName" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="registerEmail" placeholder="Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="registerPassword" placeholder="Password" required>
+                        <div class="password-strength" id="passwordStrength"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="registerConfirmPassword" placeholder="Confirm Password" required>
+                    </div>
+                    <button type="submit" class="primary-button">Register</button>
+                    <div class="form-error" id="registerError"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="menu-tab" id="menuTab">
+        <div class="tab-handle">DUOAI</div>
+    </div>
+
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-header">
+            <h1>DUOAI</h1>
+        </div>
+        <div class="menu-content">
+            <button id="startButton" class="primary-button">Start Chat</button>
+            
+            <div class="section-header">
+                <h2>Characters</h2>
+            </div>
+            <button id="charactersButton" class="secondary-button">Select Character</button>
+            
+            <button id="logoutButton" class="secondary-button logout-button">Logout</button>
+        </div>
+    </div>
+
+    <div class="submenu" id="charactersSubmenu">
+        <div class="submenu-header">
+            <button id="backButton" class="back-button">←</button>
+            <h2>Characters</h2>
+        </div>
+        <div class="character-list">
+            <div class="character-item">
+                <div class="character-name">Nova</div>
+                <div class="character-desc">Analytical and supportive AI assistant with expertise in strategy games and RPGs.</div>
+            </div>
+            <div class="character-item">
+                <div class="character-name">Orion</div>
+                <div class="character-desc">Motivational coach focused on improving your gameplay skills and performance.</div>
+            </div>
+            <div class="character-item">
+                <div class="character-name">Lyra</div>
+                <div class="character-desc">Patient teacher who excels at explaining game mechanics and tutorials.</div>
+            </div>
+            <div class="character-item">
+                <div class="character-name">Zephyr</div>
+                <div class="character-desc">Playful companion with a focus on making gaming more fun and enjoyable.</div>
+            </div>
+            <div class="character-item">
+                <div class="character-name">Thorne</div>
+                <div class="character-desc">Protective mentor who helps you avoid common pitfalls and mistakes.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <div class="selected-character" id="selectedCharacter">
+                <div class="character-avatar">N</div>
+                <div class="character-info">Nova</div>
+            </div>
+            <button id="closeChatButton" class="close-button">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">Start a conversation by sending a message or taking a screenshot.</div>
+        </div>
+        <div class="audio-controls">
+            <div class="volume-control">
+                <div class="volume-icon">🔊</div>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" class="slider">
+            </div>
+            <div class="speech-controls">
+                <button id="micButton" class="mic-button">🎤</button>
+                <div id="speechStatus" class="speech-status"></div>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <textarea id="userInput" class="chat-input" placeholder="Type your message..."></textarea>
+            <button id="sendButton" class="send-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="networkStatus" class="network-status">You are offline</div>
+    <div id="serverStatus" class="server-status">Checking server...</div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

@@ -146,8 +146,20 @@ function getAssetPath(...paths) {
     // In packaged app, resources are in the resources directory
     return path.join(process.resourcesPath, ...paths);
   } else {
-    // In development, resources are in the project root
-    return path.join(__dirname, ...paths);
+    // In development, try multiple locations
+    const rootPath = path.join(__dirname, ...paths);
+    if (fs.existsSync(rootPath)) {
+      return rootPath;
+    }
+    
+    // Try website directory
+    const websitePath = path.join(__dirname, 'website', ...paths);
+    if (fs.existsSync(websitePath)) {
+      return websitePath;
+    }
+    
+    // Default to root directory
+    return rootPath;
   }
 }
 
