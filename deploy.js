@@ -63,6 +63,14 @@ module.exports = {
   }
 });
 
+// Ensure we copy the file to the api directory
+filesToCopy.forEach(file => {
+  if (fs.existsSync(file)) {
+    fs.copyFileSync(file, path.join('api', file));
+    console.log(`Copied ${file} to api directory`);
+  }
+});
+
 filesToCopy.forEach(file => {
   fs.copyFileSync(file, path.join('api', file));
 });

@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const airtableService = require('../../airtable-service');
+const airtableService = require('../airtable-service');
 
 module.exports = async (req, res) => {
   // Set CORS headers

@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     { "src": "website/**", "use": "@vercel/static" },
-    { "src": "api/**/*.js", "use": "@vercel/node", "config": { "includeFiles": ["api/package.json"] } }
+    { "src": "api/**/*.js", "use": "@vercel/node", "config": { "includeFiles": ["api/package.json", "airtable-service.js"] } }
   ],
   "routes": [
     { "src": "/api/claude-base64", "dest": "/api/claude-base64.js" },
