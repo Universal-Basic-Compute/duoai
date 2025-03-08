@@ -29,6 +29,184 @@ document.addEventListener('DOMContentLoaded', () => {
     const speechStatus = document.getElementById('speechStatus');
     let isLoggedIn = false; // Track login state
     
+    // Get auth form elements
+    const googleTab = document.getElementById('googleTab');
+    const credentialsTab = document.getElementById('credentialsTab');
+    const googlePanel = document.getElementById('googlePanel');
+    const credentialsPanel = document.getElementById('credentialsPanel');
+    const loginToggle = document.getElementById('loginToggle');
+    const registerToggle = document.getElementById('registerToggle');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginError = document.getElementById('loginError');
+    const registerError = document.getElementById('registerError');
+    const passwordStrength = document.getElementById('passwordStrength');
+    const registerPassword = document.getElementById('registerPassword');
+
+    // Tab switching
+    googleTab.addEventListener('click', () => {
+        googleTab.classList.add('active');
+        credentialsTab.classList.remove('active');
+        googlePanel.classList.add('active');
+        credentialsPanel.classList.remove('active');
+    });
+
+    credentialsTab.addEventListener('click', () => {
+        credentialsTab.classList.add('active');
+        googleTab.classList.remove('active');
+        credentialsPanel.classList.add('active');
+        googlePanel.classList.remove('active');
+    });
+
+    // Form toggle
+    loginToggle.addEventListener('click', () => {
+        loginToggle.classList.add('active');
+        registerToggle.classList.remove('active');
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+    });
+
+    registerToggle.addEventListener('click', () => {
+        registerToggle.classList.add('active');
+        loginToggle.classList.remove('active');
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+    });
+
+    // Password strength checker
+    registerPassword.addEventListener('input', () => {
+        const password = registerPassword.value;
+        
+        // Remove all classes
+        passwordStrength.classList.remove('weak', 'medium', 'strong');
+        
+        if (password.length === 0) {
+            return;
+        }
+        
+        // Check password strength
+        let strength = 0;
+        
+        // Length check
+        if (password.length >= 8) strength += 1;
+        
+        // Complexity checks
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        
+        // Set appropriate class
+        if (strength <= 2) {
+            passwordStrength.classList.add('weak');
+        } else if (strength === 3) {
+            passwordStrength.classList.add('medium');
+        } else {
+            passwordStrength.classList.add('strong');
+        }
+    });
+
+    // Login form submission
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        // Clear previous errors
+        loginError.textContent = '';
+        
+        try {
+            // Show loading state
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.textContent = 'Logging in...';
+            submitButton.disabled = true;
+            
+            // Call the login API through the bridge
+            const response = await authBridge.loginWithCredentials(email, password);
+            
+            if (response.success) {
+                // Store tokens in localStorage
+                localStorage.setItem('authToken', response.token);
+                localStorage.setItem('refreshToken', response.refreshToken);
+                
+                // Store user info
+                localStorage.setItem('user', JSON.stringify(response.user));
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                // Update UI for logged in state
+                isLoggedIn = true;
+                loginContainer.classList.add('hidden');
+                menuTab.style.display = 'block';
+                
+                // Check subscription status
+                checkSubscriptionStatus();
+            } else {
+                loginError.textContent = response.message || 'Login failed. Please check your credentials.';
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            loginError.textContent = error.message || 'An error occurred during login.';
+        } finally {
+            // Reset button state
+            const submitButton = loginForm.querySelector('button[type="submit"]');
+            submitButton.textContent = 'Login';
+            submitButton.disabled = false;
+        }
+    });
+
+    // Registration form submission
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const name = document.getElementById('registerName').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        
+        // Clear previous errors
+        registerError.textContent = '';
+        
+        // Validate passwords match
+        if (password !== confirmPassword) {
+            registerError.textContent = 'Passwords do not match.';
+            return;
+        }
+        
+        try {
+            // Show loading state
+            const submitButton = registerForm.querySelector('button[type="submit"]');
+            const originalButtonText = submitButton.textContent;
+            submitButton.textContent = 'Registering...';
+            submitButton.disabled = true;
+            
+            // Call the registration API through the bridge
+            const response = await authBridge.registerWithCredentials(name, email, password);
+            
+            if (response.success) {
+                // Show success message
+                registerError.textContent = '';
+                registerError.innerHTML = '<span style="color: #4caf50;">Registration successful! You can now log in.</span>';
+                
+                // Clear form
+                registerForm.reset();
+                
+                // Switch to login form
+                loginToggle.click();
+            } else {
+                registerError.textContent = response.message || 'Registration failed. Please try again.';
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            registerError.textContent = error.message || 'An error occurred during registration.';
+        } finally {
+            // Reset button state
+            const submitButton = registerForm.querySelector('button[type="submit"]');
+            submitButton.textContent = 'Register';
+            submitButton.disabled = false;
+        }
+    });
+    
     // Listen for auth data from main process
     ipcRenderer.on('auth-data-received', (event, authData) => {
         console.log('Received auth data from main process:', authData ? 'Data received' : 'No data');

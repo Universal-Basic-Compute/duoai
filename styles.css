@@ -114,6 +114,142 @@
     margin-right: 10px;
 }
 
+/* Login tabs styles */
+.login-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(126, 87, 194, 0.3);
+}
+
+.login-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.login-tab.active {
+    color: var(--accent-color);
+}
+
+.login-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--accent-gradient);
+}
+
+.login-panel {
+    display: none;
+}
+
+.login-panel.active {
+    display: block;
+}
+
+/* Form toggle styles */
+.form-toggle {
+    display: flex;
+    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 3px;
+}
+
+.form-toggle-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.form-toggle-btn.active {
+    background: var(--accent-gradient);
+    color: white;
+}
+
+/* Auth form styles */
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(126, 87, 194, 0.3);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.form-error {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+/* Password strength indicator */
+.password-strength {
+    height: 4px;
+    margin-top: 5px;
+    border-radius: 2px;
+    background: #444;
+    position: relative;
+    overflow: hidden;
+}
+
+.password-strength::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength.weak::before {
+    width: 33%;
+    background-color: #f44336;
+}
+
+.password-strength.medium::before {
+    width: 66%;
+    background-color: #ff9800;
+}
+
+.password-strength.strong::before {
+    width: 100%;
+    background-color: #4caf50;
+}
+
 .hidden {
     display: none !important;
 }

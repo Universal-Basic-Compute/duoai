@@ -9,6 +9,76 @@ class AuthBridge {
         this.user = null;
         this.subscription = null;
     }
+    
+    /**
+     * Register a new user with email and password
+     * @param {string} name - User's full name
+     * @param {string} email - User's email
+     * @param {string} password - User's password
+     * @returns {Promise<Object>} - Registration result
+     */
+    async registerWithCredentials(name, email, password) {
+        try {
+            const response = await axios.post(`${this.baseUrl}/api/auth/register`, {
+                name,
+                email,
+                password
+            });
+            
+            return {
+                success: true,
+                ...response.data
+            };
+        } catch (error) {
+            console.error('Registration error:', error);
+            
+            if (error.response && error.response.data) {
+                return {
+                    success: false,
+                    message: error.response.data.error || 'Registration failed'
+                };
+            }
+            
+            return { 
+                success: false, 
+                message: error.message || 'Registration failed. Please try again.' 
+            };
+        }
+    }
+
+    /**
+     * Login with email and password
+     * @param {string} email - User's email
+     * @param {string} password - User's password
+     * @returns {Promise<Object>} - Login result with tokens
+     */
+    async loginWithCredentials(email, password) {
+        try {
+            const response = await axios.post(`${this.baseUrl}/api/auth/login`, {
+                email,
+                password
+            });
+            
+            return {
+                success: true,
+                ...response.data
+            };
+        } catch (error) {
+            console.error('Login error:', error);
+            
+            if (error.response && error.response.data) {
+                return {
+                    success: false,
+                    message: error.response.data.error || 'Login failed'
+                };
+            }
+            
+            return { 
+                success: false, 
+                message: error.message || 'Login failed. Please check your credentials.' 
+            };
+        }
+    }
 
     async checkAuthStatus() {
         try {
