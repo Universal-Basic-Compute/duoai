@@ -130,9 +130,6 @@ function getAssetPath(...paths) {
   return path.join(app.isPackaged ? process.resourcesPath : __dirname, ...paths);
 }
 
-// Add fs module for file existence checks
-const fs = require('fs');
-
 // Check for .env file
 const envFilePath = path.join(__dirname, '.env');
 if (!fs.existsSync(envFilePath)) {
