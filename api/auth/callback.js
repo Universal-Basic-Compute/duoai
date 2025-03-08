@@ -116,54 +116,98 @@ module.exports = async (req, res) => {
                         color: #00C853;
                         font-weight: bold;
                     }
+                    #status {
+                        margin: 20px 0;
+                    }
+                    .spinner {
+                        border: 4px solid rgba(0, 0, 0, 0.1);
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        border-left-color: #4285F4;
+                        animation: spin 1s linear infinite;
+                        margin: 20px auto;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
                 </style>
                 <script>
-                    // Store tokens in localStorage
-                    function storeTokensAndClose() {
+                    // Function to send tokens to the app
+                    function sendTokensToApp() {
                         try {
-                            // Try to send tokens to the Electron app
+                            // Create the data object
+                            const authData = {
+                                type: 'google-auth-callback',
+                                token: '${token}',
+                                refreshToken: '${refreshToken}',
+                                user: ${JSON.stringify(jwtPayload.user)}
+                            };
+                            
+                            // Try different methods to communicate with the app
+                            
+                            // Method 1: Use window.opener if available
                             if (window.opener) {
-                                window.opener.postMessage({
-                                    type: 'google-auth-callback',
-                                    token: '${token}',
-                                    refreshToken: '${refreshToken}',
-                                    user: ${JSON.stringify(jwtPayload.user)}
-                                }, 'https://duoai.vercel.app');
-                                
-                                document.getElementById('status').textContent = 'Authentication successful! You can close this window.';
-                            } else {
-                                document.getElementById('status').textContent = 'Please copy these tokens to the app:';
-                                document.getElementById('tokens').style.display = 'block';
+                                window.opener.postMessage(authData, '*');
+                                document.getElementById('status').textContent = 'Authentication successful! Returning to app...';
+                                setTimeout(() => window.close(), 2000);
+                                return;
                             }
+                            
+                            // Method 2: Try to use a custom protocol
+                            const protocolUrl = 'duoai://auth?' + encodeURIComponent(JSON.stringify(authData));
+                            document.getElementById('status').textContent = 'Redirecting to app...';
+                            
+                            // Create an invisible iframe to try the protocol without leaving this page
+                            const iframe = document.createElement('iframe');
+                            iframe.style.display = 'none';
+                            iframe.src = protocolUrl;
+                            document.body.appendChild(iframe);
+                            
+                            // Set a timeout to check if the protocol handler worked
+                            setTimeout(() => {
+                                // If we're still here, try to redirect
+                                window.location.href = protocolUrl;
+                                
+                                // Show manual copy option after a delay
+                                setTimeout(() => {
+                                    document.getElementById('status').textContent = 'Please copy these tokens to the app:';
+                                    document.getElementById('tokens').style.display = 'block';
+                                    document.getElementById('spinner').style.display = 'none';
+                                }, 3000);
+                            }, 1000);
                         } catch (error) {
                             console.error('Error sending tokens to app:', error);
                             document.getElementById('status').textContent = 'Please copy these tokens to the app:';
                             document.getElementById('tokens').style.display = 'block';
+                            document.getElementById('spinner').style.display = 'none';
                         }
                     }
                     
                     // Run when page loads
-                    window.onload = storeTokensAndClose;
+                    window.onload = sendTokensToApp;
                 </script>
             </head>
             <body>
                 <div class="container">
                     <h1>Authentication Successful</h1>
                     <p id="status">Processing authentication...</p>
+                    <div id="spinner" class="spinner"></div>
                     
                     <div id="tokens" style="display: none;">
                         <h3>Auth Token:</h3>
-                        <textarea rows="3" style="width: 100%;">${token}</textarea>
+                        <textarea rows="3" style="width: 100%;" onclick="this.select()">${token}</textarea>
                         
                         <h3>Refresh Token:</h3>
-                        <textarea rows="3" style="width: 100%;">${refreshToken}</textarea>
+                        <textarea rows="3" style="width: 100%;" onclick="this.select()">${refreshToken}</textarea>
+                        
+                        <p>Copy these tokens and paste them in the app.</p>
                     </div>
                     
                     <div class="success-message">
                         You have successfully authenticated with Google.
                     </div>
-                    
-                    <p>You can close this window now and return to the app.</p>
                 </div>
             </body>
             </html>

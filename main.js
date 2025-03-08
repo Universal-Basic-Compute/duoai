@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 
@@ -171,11 +171,38 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+    // Register custom protocol handler
+    if (process.platform === 'win32') {
+        app.setAsDefaultProtocolClient('duoai');
+    } else {
+        app.setAsDefaultProtocolClient('duoai', process.execPath, [path.resolve(process.argv[1] || '.')]);
+    }
+    
     createWindow();
     
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
+});
+
+// Add this to handle protocol activation
+app.on('open-url', (event, url) => {
+    event.preventDefault();
+    
+    // Parse the URL
+    if (url.startsWith('duoai://auth')) {
+        const dataStr = decodeURIComponent(url.substring(12));
+        try {
+            const authData = JSON.parse(dataStr);
+            // Send to renderer process
+            const win = BrowserWindow.getAllWindows()[0];
+            if (win) {
+                win.webContents.send('auth-data-received', authData);
+            }
+        } catch (error) {
+            console.error('Error parsing auth data:', error);
+        }
+    }
 });
 
 app.on('window-all-closed', function () {

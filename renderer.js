@@ -18,27 +18,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const speechStatus = document.getElementById('speechStatus');
     let isLoggedIn = false; // Track login state
     
+    // Listen for auth data from main process
+    ipcRenderer.on('auth-data-received', (event, authData) => {
+        console.log('Received auth data from main process');
+        handleAuthData(authData);
+    });
+    
+    // Function to handle auth data
+    function handleAuthData(authData) {
+        if (!authData || !authData.token || !authData.refreshToken) {
+            console.error('Invalid auth data received');
+            return;
+        }
+        
+        console.log('Processing auth data');
+        
+        // Store tokens in localStorage
+        localStorage.setItem('authToken', authData.token);
+        localStorage.setItem('refreshToken', authData.refreshToken);
+        
+        // Store user info
+        localStorage.setItem('user', JSON.stringify(authData.user));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        // Update UI for logged in state
+        isLoggedIn = true;
+        loginContainer.classList.add('hidden');
+        menuTab.style.display = 'block';
+        
+        // Check subscription status
+        checkSubscriptionStatus();
+    }
+    
     // Listen for messages from the auth callback page
     window.addEventListener('message', (event) => {
         // Check if it's our auth callback
         if (event.data && event.data.type === 'google-auth-callback') {
             console.log('Received auth callback message');
-            
-            // Store tokens
-            localStorage.setItem('authToken', event.data.token);
-            localStorage.setItem('refreshToken', event.data.refreshToken);
-            
-            // Store user info
-            localStorage.setItem('user', JSON.stringify(event.data.user));
-            localStorage.setItem('isLoggedIn', 'true');
-            
-            // Update UI
-            isLoggedIn = true;
-            loginContainer.classList.add('hidden');
-            menuTab.style.display = 'block';
-            
-            // Check subscription status
-            checkSubscriptionStatus();
+            handleAuthData(event.data);
         }
     });
     
