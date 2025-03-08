@@ -347,7 +347,7 @@ class SpeechManager {
                     
                     // Check if the audio is long enough to be meaningful speech
                     // Typically noise or false detections are very short
-                    const minMeaningfulDuration = 500; // 500ms minimum
+                    const minMeaningfulDuration = 800; // 800ms minimum
                     
                     // Create an audio element to check duration
                     const audioElement = new Audio(URL.createObjectURL(audioBlob));
@@ -486,8 +486,8 @@ class SpeechManager {
             
             // Create analyser with more precise FFT size
             this.analyser = this.audioContext.createAnalyser();
-            this.analyser.fftSize = 1024; // More detailed frequency analysis
-            this.analyser.smoothingTimeConstant = 0.5; // Add some smoothing
+            this.analyser.fftSize = 2048; // Increased from 1024 for more detailed analysis
+            this.analyser.smoothingTimeConstant = 0.7; // Increased from 0.5 for more smoothing
             
             // Create source from stream
             const source = this.audioContext.createMediaStreamSource(stream);
@@ -495,11 +495,17 @@ class SpeechManager {
             // Add a high-pass filter to reduce background noise
             const highpassFilter = this.audioContext.createBiquadFilter();
             highpassFilter.type = 'highpass';
-            highpassFilter.frequency.value = 85; // Filter out low frequency noise
+            highpassFilter.frequency.value = 100; // Increased from 85 to filter more low frequency noise
             
-            // Connect the source to the filter, then to the analyser
+            // Add a low-pass filter to reduce high-frequency noise
+            const lowpassFilter = this.audioContext.createBiquadFilter();
+            lowpassFilter.type = 'lowpass';
+            lowpassFilter.frequency.value = 3000; // Focus on speech frequencies
+            
+            // Connect the source to the filters, then to the analyser
             source.connect(highpassFilter);
-            highpassFilter.connect(this.analyser);
+            highpassFilter.connect(lowpassFilter);
+            lowpassFilter.connect(this.analyser);
             
             // Start silence detection
             this.silenceDetectionRunning = true;
@@ -518,16 +524,21 @@ class SpeechManager {
         const bufferLength = this.analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
         
-        // Add a noise floor threshold - anything below this is considered absolute silence
-        const noiseFloorThreshold = 5;
-        // Add a speech threshold - must be above this to be considered speech
-        const speechThreshold = 15;
+        // Increase noise floor threshold significantly
+        const noiseFloorThreshold = 8; // Increased from 5
+        // Increase speech threshold to require louder sounds
+        const speechThreshold = 20; // Increased from 15
         
-        // Add consecutive frames counter for more stable detection
+        // Increase required consecutive frames for more stable detection
         let consecutiveSilenceFrames = 0;
         let consecutiveSpeechFrames = 0;
-        const requiredSilenceFrames = 5; // About 80-100ms of silence
-        const requiredSpeechFrames = 3; // About 50-60ms of speech
+        const requiredSilenceFrames = 8; // Increased from 5 (about 130-160ms of silence)
+        const requiredSpeechFrames = 5; // Increased from 3 (about 80-100ms of speech)
+        
+        // Add a counter for total frames with potential speech
+        let totalSpeechFrames = 0;
+        // Minimum number of speech frames required to consider it actual speech
+        const minimumSpeechFrames = 15; // About 250ms of total speech required
         
         const checkVolume = () => {
             if (!this.silenceDetectionRunning) return;
@@ -554,9 +565,12 @@ class SpeechManager {
                         this.silenceTimeout = null;
                     }
                     
-                    // Mark that we've detected speech
-                    if (!this.hasSpeech) {
-                        console.log('Speech detected, average volume:', average);
+                    // Increment total speech frames counter
+                    totalSpeechFrames++;
+                    
+                    // Mark that we've detected speech only if we have enough total speech frames
+                    if (totalSpeechFrames >= minimumSpeechFrames && !this.hasSpeech) {
+                        console.log('Speech detected, average volume:', average, 'total frames:', totalSpeechFrames);
                         this.hasSpeech = true;
                     }
                 }
@@ -572,11 +586,19 @@ class SpeechManager {
                     if (!this.silenceTimeout) {
                         console.log('Potential silence detected after speech, average volume:', average);
                         this.silenceTimeout = setTimeout(() => {
-                            console.log('Silence confirmed after speech, stopping recording');
-                            
-                            // Stop current recording to process the audio
-                            if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-                                this.mediaRecorder.stop();
+                            // Only stop recording if we had enough total speech frames
+                            if (totalSpeechFrames >= minimumSpeechFrames) {
+                                console.log('Silence confirmed after speech, stopping recording. Total speech frames:', totalSpeechFrames);
+                                
+                                // Stop current recording to process the audio
+                                if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                                    this.mediaRecorder.stop();
+                                }
+                            } else {
+                                console.log('Ignoring silence after insufficient speech (frames:', totalSpeechFrames, ')');
+                                // Reset speech detection but don't stop recording
+                                this.hasSpeech = false;
+                                totalSpeechFrames = 0;
                             }
                             
                             this.silenceTimeout = null;
