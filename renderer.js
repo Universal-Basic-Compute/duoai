@@ -152,71 +152,72 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to check login state
     async function checkLoginState() {
-        // For now, always set as logged in to bypass Google auth
-        isLoggedIn = true;
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        // User is logged in, hide login container and show app
-        loginContainer.classList.add('hidden');
-        menuTab.style.display = 'block';
-        
-        // Generate random mock user data
-        const randomNames = [
-            "Alex Johnson", "Taylor Smith", "Jordan Lee", 
-            "Casey Williams", "Morgan Brown", "Riley Davis",
-            "Quinn Miller", "Avery Wilson", "Jamie Garcia",
-            "Dakota Martinez"
-        ];
-        
-        const randomEmails = [
-            "gamer@example.com", "player1@gmail.com", "gamemaster@outlook.com",
-            "esports@mail.com", "rpgfan@example.net", "strategist@gmail.com",
-            "speedrunner@example.org", "casual_gamer@mail.com", "pro_player@example.com",
-            "achievement_hunter@gmail.com"
-        ];
-        
-        // Select random name and email
-        const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
-        const randomEmail = randomEmails[Math.floor(Math.random() * randomEmails.length)];
-        
-        // Generate random user ID
-        const randomId = 'user_' + Math.random().toString(36).substring(2, 10);
-        
-        // Create mock user with random data
-        const mockUser = {
-            id: randomId,
-            name: randomName,
-            email: randomEmail,
-            picture: ''
-        };
-        
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        
-        // Generate random subscription data
-        const plans = ['basic', 'pro', 'ultimate'];
-        const randomPlan = plans[Math.floor(Math.random() * plans.length)];
-        const randomHoursUsed = Math.floor(Math.random() * 20);
-        const randomHoursTotal = randomPlan === 'basic' ? 10 : 
-                                randomPlan === 'pro' ? 30 : 100;
-        
-        // Set expiry date to a random date between 1 and 60 days from now
-        const randomDays = Math.floor(Math.random() * 60) + 1;
-        const expiryDate = new Date(Date.now() + randomDays * 24 * 60 * 60 * 1000);
-        
-        const mockSubscription = {
-            userId: randomId,
-            plan: randomPlan,
-            status: 'active',
-            currentPeriodEnd: expiryDate.toISOString(),
-            hoursUsed: randomHoursUsed,
-            hoursTotal: randomHoursTotal
-        };
-        
-        localStorage.setItem('subscription', JSON.stringify(mockSubscription));
-        
-        // Log the random user data for debugging
-        console.log('Generated random user:', mockUser);
-        console.log('Generated random subscription:', mockSubscription);
+        try {
+            // Check if we have a token
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                // No token, user is not logged in
+                isLoggedIn = false;
+                localStorage.removeItem('isLoggedIn');
+                loginContainer.classList.remove('hidden');
+                menuTab.style.display = 'none';
+                return false;
+            }
+            
+            // Verify token with server
+            const serverStatus = await authBridge.checkAuthStatus();
+            
+            if (serverStatus.isAuthenticated) {
+                // User is logged in
+                isLoggedIn = true;
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                // Hide login container and show app
+                loginContainer.classList.add('hidden');
+                menuTab.style.display = 'block';
+                
+                return true;
+            } else if (serverStatus.tokenExpired) {
+                // Token expired, try to refresh
+                const refreshed = await authBridge.refreshToken();
+                
+                if (refreshed) {
+                    // Token refreshed, check again
+                    return checkLoginState();
+                } else {
+                    // Refresh failed, user needs to log in again
+                    isLoggedIn = false;
+                    localStorage.removeItem('isLoggedIn');
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('refreshToken');
+                    loginContainer.classList.remove('hidden');
+                    menuTab.style.display = 'none';
+                    return false;
+                }
+            } else {
+                // Token invalid, user needs to log in again
+                isLoggedIn = false;
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('refreshToken');
+                loginContainer.classList.remove('hidden');
+                menuTab.style.display = 'none';
+                return false;
+            }
+        } catch (error) {
+            console.error('Error checking login state:', error);
+            
+            // For now, always set as logged in to bypass Google auth during development
+            isLoggedIn = true;
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            // User is logged in, hide login container and show app
+            loginContainer.classList.add('hidden');
+            menuTab.style.display = 'block';
+            
+            return true;
+        }
     }
     
     // Hide menu tab initially
@@ -703,23 +704,102 @@ document.addEventListener('DOMContentLoaded', () => {
     googleLoginButton.addEventListener('click', () => {
         console.log('Google login button clicked');
         
-        // Open the login URL in the default browser
-        const loginUrl = authBridge.getLoginUrl();
-        ipcRenderer.send('open-external-url', loginUrl);
+        // Initialize Google Sign-In
+        initGoogleSignIn();
     });
+    
+    // Function to initialize Google Sign-In
+    function initGoogleSignIn() {
+        // Create a Google Sign-In button programmatically
+        const googleSignInDiv = document.createElement('div');
+        googleSignInDiv.id = 'g_id_onload';
+        googleSignInDiv.setAttribute('data-client_id', 'YOUR_GOOGLE_CLIENT_ID'); // Replace with your actual client ID
+        googleSignInDiv.setAttribute('data-callback', 'handleGoogleSignIn');
+        googleSignInDiv.setAttribute('data-auto_prompt', 'false');
+        document.body.appendChild(googleSignInDiv);
+        
+        // Load the Google Sign-In script
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            console.log('Google Sign-In script loaded');
+            // Trigger the Google Sign-In prompt
+            google.accounts.id.prompt();
+        };
+        document.body.appendChild(script);
+    }
+    
+    // Callback function for Google Sign-In
+    window.handleGoogleSignIn = async (response) => {
+        try {
+            console.log('Google Sign-In response received');
+            
+            // Get the ID token from Google
+            const idToken = response.credential;
+            
+            if (!idToken) {
+                console.error('No ID token received from Google');
+                return;
+            }
+            
+            console.log('ID token received, sending to backend');
+            
+            // Get API URL from config
+            const config = require('./config').loadConfig();
+            const apiUrl = config.API_URL || 'https://duoai.vercel.app';
+            
+            // Send the token to our backend
+            const authResponse = await fetch(`${apiUrl}/api/auth/google`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token: idToken })
+            });
+            
+            const data = await authResponse.json();
+            
+            if (authResponse.ok) {
+                console.log('Authentication successful');
+                
+                // Store tokens in localStorage
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                
+                // Store user info
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                // Update UI for logged in state
+                isLoggedIn = true;
+                loginContainer.classList.add('hidden');
+                menuTab.style.display = 'block';
+                
+                // Check subscription status
+                await checkSubscriptionStatus();
+            } else {
+                console.error('Google authentication failed:', data.error);
+                alert('Authentication failed: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error during Google sign-in:', error);
+            alert('Authentication failed. Please try again.');
+        }
+    };
     
     // Logout function
     function logout() {
-        // Open the logout URL in the default browser
-        const logoutUrl = authBridge.getLogoutUrl();
-        ipcRenderer.send('open-external-url', logoutUrl);
-        
-        // Clear local storage
+        // Clear tokens and user data
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         localStorage.removeItem('subscription');
         
         // Update UI
+        isLoggedIn = false;
         loginContainer.classList.remove('hidden');
         menuTab.style.display = 'none';
         
@@ -729,6 +809,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Resize window to show login
         ipcRenderer.send('resize-window', { width: 350, height: 500 });
+        
+        // Notify the server about logout (optional)
+        try {
+            const logoutUrl = authBridge.getLogoutUrl();
+            fetch(logoutUrl, { method: 'POST' }).catch(err => console.error('Logout notification failed:', err));
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
     }
     
     // Add event listener for logout button

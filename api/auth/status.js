@@ -25,21 +25,44 @@ module.exports = async (req, res) => {
     const token = authHeader.substring(7);
     
     try {
-        // In a real app, you would verify the token with your secret
-        // For now, we'll use a mock user
-        const user = {
-            id: 'mock-user-id',
-            name: 'Mock User',
-            email: 'mock@example.com',
-            picture: ''
-        };
+        // Check if we have a JWT_SECRET
+        if (!process.env.JWT_SECRET) {
+            console.warn('JWT_SECRET not set, using mock verification');
+            // In development mode, use a mock user
+            const user = {
+                id: 'mock-user-id',
+                name: 'Mock User',
+                email: 'mock@example.com',
+                picture: ''
+            };
+            
+            return res.json({
+                isAuthenticated: true,
+                user
+            });
+        }
         
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Check if token is expired
+        if (decoded.exp && decoded.exp < Math.floor(Date.now() / 1000)) {
+            return res.json({ isAuthenticated: false, tokenExpired: true });
+        }
+        
+        // Return user info from token
         res.json({
             isAuthenticated: true,
-            user
+            user: decoded.user
         });
     } catch (error) {
         console.error('Error verifying token:', error);
+        
+        // Check if token is expired
+        if (error.name === 'TokenExpiredError') {
+            return res.json({ isAuthenticated: false, tokenExpired: true });
+        }
+        
         res.json({ isAuthenticated: false });
     }
 };

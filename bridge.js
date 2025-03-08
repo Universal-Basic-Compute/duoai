@@ -29,13 +29,7 @@ class AuthBridge {
             
             // If response indicates token expired
             if (response.data.tokenExpired) {
-                // Try to refresh the token
-                const refreshed = await this.refreshToken();
-                if (refreshed) {
-                    // Retry with new token
-                    return this.checkAuthStatus();
-                }
-                return { isAuthenticated: false };
+                return { isAuthenticated: false, tokenExpired: true };
             }
             
             this.user = response.data.isAuthenticated ? response.data.user : null;
@@ -43,13 +37,9 @@ class AuthBridge {
         } catch (error) {
             console.error('Error checking auth status:', error);
             
-            // If unauthorized error (401), try to refresh token
+            // If unauthorized error (401), token might be expired
             if (error.response && error.response.status === 401) {
-                const refreshed = await this.refreshToken();
-                if (refreshed) {
-                    // Retry with new token
-                    return this.checkAuthStatus();
-                }
+                return { isAuthenticated: false, tokenExpired: true };
             }
             
             return { isAuthenticated: false };
@@ -92,7 +82,18 @@ class AuthBridge {
 
     async checkSubscription() {
         try {
-            const response = await axios.get(`${this.baseUrl}/api/subscription`, { withCredentials: true });
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                return null;
+            }
+            
+            const response = await axios.get(`${this.baseUrl}/api/subscription`, { 
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
             this.subscription = response.data;
             return response.data;
         } catch (error) {
@@ -103,7 +104,18 @@ class AuthBridge {
 
     async startUsageTracking() {
         try {
-            const response = await axios.post(`${this.baseUrl}/api/usage/start`, {}, { withCredentials: true });
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                return null;
+            }
+            
+            const response = await axios.post(`${this.baseUrl}/api/usage/start`, {}, { 
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
             return response.data;
         } catch (error) {
             console.error('Error starting usage tracking:', error);
@@ -113,7 +125,18 @@ class AuthBridge {
 
     async endUsageTracking(sessionId) {
         try {
-            const response = await axios.post(`${this.baseUrl}/api/usage/end`, { sessionId }, { withCredentials: true });
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                return null;
+            }
+            
+            const response = await axios.post(`${this.baseUrl}/api/usage/end`, { sessionId }, { 
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
             return response.data;
         } catch (error) {
             console.error('Error ending usage tracking:', error);
