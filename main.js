@@ -1,6 +1,119 @@
 const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
+const fs = require('fs');
+
+// Set up error logging to file
+const logFilePath = path.join(app.getPath('userData'), 'error.log');
+console.log(`Logging errors to: ${logFilePath}`);
+
+// Create a write stream for the log file
+const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
+
+// Redirect console.error to the log file
+const originalConsoleError = console.error;
+console.error = function() {
+    // Convert arguments to string
+    const args = Array.from(arguments).map(arg => {
+        if (typeof arg === 'object') {
+            try {
+                return JSON.stringify(arg);
+            } catch (e) {
+                return String(arg);
+            }
+        }
+        return String(arg);
+    });
+    
+    // Write to log file with timestamp
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${args.join(' ')}\n`;
+    logStream.write(logMessage);
+    
+    // Also log to original console.error
+    originalConsoleError.apply(console, arguments);
+};
+
+// Log unhandled exceptions
+process.on('uncaughtException', (error) => {
+    console.error('Uncaught Exception:', error);
+    console.error('Stack trace:', error.stack);
+    
+    // Show error in dialog if possible
+    if (app.isReady()) {
+        const { dialog } = require('electron');
+        dialog.showErrorBox('Error', `An error occurred: ${error.message}\n\nCheck ${logFilePath} for details.`);
+    }
+    
+    // Don't exit the app immediately to allow the error to be logged
+    setTimeout(() => {
+        app.exit(1);
+    }, 1000);
+});
+
+// Log unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Promise Rejection:', reason);
+    if (reason && reason.stack) {
+        console.error('Stack trace:', reason.stack);
+    }
+});
+
+// Log app errors
+app.on('render-process-gone', (event, webContents, details) => {
+    console.error('Render process gone:', details.reason, details.exitCode);
+});
+
+app.on('child-process-gone', (event, details) => {
+    console.error('Child process gone:', details.type, details.reason, details.exitCode);
+});
+
+// Log startup information
+console.log(`Starting DUOAI application (version ${app.getVersion()})`);
+console.log(`Electron version: ${process.versions.electron}`);
+console.log(`Chrome version: ${process.versions.chrome}`);
+console.log(`Node version: ${process.versions.node}`);
+console.log(`Platform: ${process.platform} (${process.arch})`);
+console.log(`App path: ${app.getAppPath()}`);
+console.log(`User data path: ${app.getPath('userData')}`);
+
+// Check for missing dependencies
+function checkDependencies() {
+    const missingDeps = [];
+    
+    try {
+        require('electron');
+    } catch (e) {
+        missingDeps.push('electron');
+    }
+    
+    try {
+        require('axios');
+    } catch (e) {
+        missingDeps.push('axios');
+    }
+    
+    try {
+        require('dotenv');
+    } catch (e) {
+        missingDeps.push('dotenv');
+    }
+    
+    // Add other critical dependencies here
+    
+    if (missingDeps.length > 0) {
+        console.error(`Missing dependencies: ${missingDeps.join(', ')}`);
+        if (app.isReady()) {
+            const { dialog } = require('electron');
+            dialog.showErrorBox('Missing Dependencies', 
+                `The following dependencies are missing: ${missingDeps.join(', ')}\n\n` +
+                `Please run 'npm install' to install the required dependencies.`);
+        }
+        return false;
+    }
+    
+    return true;
+}
 
 // Environment variables
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
@@ -171,6 +284,12 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+    // Check dependencies before proceeding
+    if (!checkDependencies()) {
+        app.quit();
+        return;
+    }
+    
     // Register custom protocol handler
     if (process.platform === 'win32') {
         app.setAsDefaultProtocolClient('duoai');

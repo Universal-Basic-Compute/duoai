@@ -1,0 +1,3 @@
+@echo off
+echo Opening DUOAI log file...
+start notepad "%APPDATA%\..\Local\duoai\error.log"
