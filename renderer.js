@@ -1034,6 +1034,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize continuous listening when the app starts
     function initializeContinuousListening() {
+        // Don't initialize if speech is playing
+        if (speechManager.isPlayingAudio) {
+            console.log('Audio is playing, not initializing continuous listening');
+            return;
+        }
+        
         if (speechManager.isSpeechRecognitionSupported()) {
             speechManager.startContinuousListening(
                 // On result
@@ -1048,6 +1054,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 // On end
                 (error) => {
                     if (error) {
+                        // Don't show error if it's due to audio playing
+                        if (error === 'Audio is playing') {
+                            speechStatus.textContent = 'Paused during playback';
+                            return;
+                        }
+                        
                         speechStatus.textContent = 'Error: ' + error;
                         setTimeout(() => {
                             speechStatus.textContent = '';
@@ -1055,7 +1067,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Try to restart continuous listening
                         setTimeout(() => {
-                            if (continuousListeningActive) {
+                            if (continuousListeningActive && !speechManager.isPlayingAudio) {
                                 initializeContinuousListening();
                             }
                         }, 5000);

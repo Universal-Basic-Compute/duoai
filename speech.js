@@ -61,6 +61,7 @@ class SpeechManager {
         this.analyser = null;
         this.microphoneStream = null;
         this.silenceDetectionRunning = false;
+        this.isPlayingAudio = false; // Flag to track when audio is playing
         
         // Always use production URL
         this.serverUrl = 'https://duoai.vercel.app';
@@ -298,6 +299,13 @@ class SpeechManager {
      * @returns {Promise<boolean>} - True if started successfully
      */
     async startContinuousListening(onResult, onEnd) {
+        // Don't start listening if audio is playing
+        if (this.isPlayingAudio) {
+            console.log('Audio is playing, not starting continuous listening');
+            if (onEnd) onEnd('Audio is playing');
+            return false;
+        }
+        
         if (!this.isSpeechRecognitionSupported()) {
             console.warn('Speech recognition not supported in this environment');
             if (onEnd) onEnd('Speech recognition not supported');
@@ -464,7 +472,7 @@ class SpeechManager {
      * Detect silence after speech
      */
     detectSilence() {
-        if (!this.silenceDetectionRunning || !this.analyser) return;
+        if (!this.silenceDetectionRunning || !this.analyser || this.isPlayingAudio) return;
         
         const bufferLength = this.analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
@@ -565,6 +573,24 @@ class SpeechManager {
      */
     async speak(text) {
         try {
+            // Set flag that audio is playing
+            this.isPlayingAudio = true;
+            
+            // If continuous listening is active, temporarily pause it
+            let wasListening = false;
+            if (this.isListening && this.isContinuousListening) {
+                console.log('Pausing continuous listening during audio playback');
+                wasListening = true;
+                // Don't call stopListening() as that would reset isContinuousListening
+                // Instead, just stop the current recording session
+                if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                    this.mediaRecorder.stop();
+                }
+                // Clean up silence detection but maintain continuous listening state
+                this.cleanupSilenceDetection();
+                this.isListening = false;
+            }
+            
             // Stop any currently playing audio and ensure it's properly disposed
             if (this.audioElement) {
                 // Create a reference to the old audio element
@@ -758,6 +784,16 @@ class SpeechManager {
                             ipcRenderer.send('keep-app-running', false);
                         }
                         
+                        // Reset audio playing flag
+                        this.isPlayingAudio = false;
+                        
+                        // Resume continuous listening if it was active before
+                        if (wasListening && this.isContinuousListening) {
+                            console.log('Resuming continuous listening after audio playback');
+                            this.startContinuousListening(this.speechCallback, this.endCallback)
+                                .catch(err => console.error('Error resuming continuous listening:', err));
+                        }
+                        
                         resolve();
                     };
                     
@@ -768,6 +804,16 @@ class SpeechManager {
                         // Tell main process we're done with audio
                         if (this.isElectronEnv && ipcRenderer) {
                             ipcRenderer.send('keep-app-running', false);
+                        }
+                        
+                        // Reset audio playing flag
+                        this.isPlayingAudio = false;
+                        
+                        // Resume continuous listening if it was active before
+                        if (wasListening && this.isContinuousListening) {
+                            console.log('Resuming continuous listening after audio error');
+                            this.startContinuousListening(this.speechCallback, this.endCallback)
+                                .catch(err => console.error('Error resuming continuous listening:', err));
                         }
                         
                         resolve();
@@ -782,6 +828,16 @@ class SpeechManager {
                             // Tell main process we're done with audio
                             if (this.isElectronEnv && ipcRenderer) {
                                 ipcRenderer.send('keep-app-running', false);
+                            }
+                            
+                            // Reset audio playing flag
+                            this.isPlayingAudio = false;
+                            
+                            // Resume continuous listening if it was active before
+                            if (wasListening && this.isContinuousListening) {
+                                console.log('Resuming continuous listening after timeout');
+                                this.startContinuousListening(this.speechCallback, this.endCallback)
+                                    .catch(err => console.error('Error resuming continuous listening:', err));
                             }
                             
                             resolve();
@@ -829,6 +885,8 @@ class SpeechManager {
             return Promise.resolve();
         }
     } catch (outerError) {
+        // Reset audio playing flag in case of error
+        this.isPlayingAudio = false;
         // Add this catch block to fix the syntax error
         console.error('Unexpected error in speak method:', outerError);
         return Promise.resolve();
