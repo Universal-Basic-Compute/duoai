@@ -57,6 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (registerNameInput) {
         registerNameInput.placeholder = 'Username';
     }
+    
+    // Update placeholder to reflect email or username
+    const loginEmailInput = document.getElementById('loginEmail');
+    if (loginEmailInput) {
+        loginEmailInput.placeholder = 'Email or Username';
+    }
 
     // Form toggle
     loginToggle.addEventListener('click', () => {
