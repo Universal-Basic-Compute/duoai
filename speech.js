@@ -527,8 +527,6 @@ class SpeechManager {
         return Promise.resolve();
     }
   }
-}
-
     /**
      * Set the volume for speech
      * @param {number} volume - Volume level (0.0 to 1.0)
