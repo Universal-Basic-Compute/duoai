@@ -43,11 +43,8 @@ const { loadConfig } = require('./config');
 
 class ClaudeAPI {
     constructor() {
-        // Load config to get API URL
-        const config = loadConfig();
-        
-        // Default to the Vercel deployment URL if no API URL is configured
-        this.baseUrl = config.API_URL || 'https://duoai.vercel.app';
+        // Always use the production URL
+        this.baseUrl = 'https://duoai.vercel.app';
         console.log(`Using API base URL: ${this.baseUrl}`);
         
         // Use URLs with base URL for serverless endpoints

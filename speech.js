@@ -52,9 +52,8 @@ class SpeechManager {
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
         this.modelId = "eleven_flash_v2_5"; // Using flash model
         
-        // Load config to get API URL
-        const config = loadConfig();
-        this.serverUrl = config.API_URL || 'https://duoai.vercel.app';
+        // Always use production URL
+        this.serverUrl = 'https://duoai.vercel.app';
         
         // Safely detect environment with try-catch for each check
         try {
@@ -134,12 +133,14 @@ class SpeechManager {
                 return false;
             }
             
-            console.log(`Checking for ElevenLabs API key at ${this.serverUrl}/api/elevenlabs/key`);
+            // Always use production URL
+            const apiUrl = 'https://duoai.vercel.app';
+            console.log(`Checking for ElevenLabs API key at ${apiUrl}/api/elevenlabs/key`);
             
             // Get API key from server with better error handling
             let response;
             try {
-                response = await axios.get(`${this.serverUrl}/api/elevenlabs/key`, {
+                response = await axios.get(`${apiUrl}/api/elevenlabs/key`, {
                     timeout: 5000 // 5 second timeout
                 });
             } catch (axiosError) {
@@ -246,8 +247,11 @@ class SpeechManager {
                     // Convert blob to base64
                     const base64Audio = await this.blobToBase64(audioBlob);
                     
-                    // Send to Whisper API on remote server with base URL
-                    const response = await axios.post(`${this.serverUrl}/api/whisper`, {
+                    // Always use production URL
+                    const apiUrl = 'https://duoai.vercel.app';
+                
+                    // Send to Whisper API on remote server with production URL
+                    const response = await axios.post(`${apiUrl}/api/whisper`, {
                         audioData: base64Audio
                     });
                     
@@ -364,12 +368,14 @@ class SpeechManager {
             const useModel = "eleven_flash_v2_5";
             console.log(`Using model for this request: ${useModel}`);
             
-            console.log(`Sending TTS request to ${this.serverUrl}/api/elevenlabs/tts`);
+            // Always use production URL
+            const apiUrl = 'https://duoai.vercel.app';
+            console.log(`Sending TTS request to ${apiUrl}/api/elevenlabs/tts`);
             
             // Use the server as a proxy to avoid exposing API key in client
             try {
                 console.log(`Sending TTS request to server with voice ID: ${this.voiceId}`);
-                const response = await axios.post(`${this.serverUrl}/api/elevenlabs/tts`, {
+                const response = await axios.post(`${apiUrl}/api/elevenlabs/tts`, {
                     text: text,
                     voiceId: this.voiceId,
                     modelId: useModel

@@ -59,21 +59,8 @@ const defaultConfig = {
 // Load or create configuration
 function loadConfig() {
   try {
-    // Get environment
-    const env = process.env.NODE_ENV || 'development';
-    
-    // Environment-specific overrides
-    const envConfigs = {
-      development: {
-        API_URL: 'http://localhost:3000'  // Use local URL for development
-      },
-      production: {
-        API_URL: 'https://duoai.vercel.app'
-      },
-      test: {
-        API_URL: 'https://duoai.vercel.app'
-      }
-    };
+    // Always use production URL regardless of environment
+    const apiUrl = 'https://duoai.vercel.app';
     
     // Load config from file
     let fileConfig = {};
@@ -87,9 +74,11 @@ function loadConfig() {
     // Ensure environment variables take precedence
     const config = { 
       ...defaultConfig, 
-      ...fileConfig, 
-      ...(envConfigs[env] || {}) 
+      ...fileConfig
     };
+    
+    // Always set API_URL to production
+    config.API_URL = apiUrl;
     
     // Explicitly set environment variables if they exist
     if (process.env.GOOGLE_CLIENT_ID) {
@@ -110,11 +99,12 @@ function loadConfig() {
     if (config.ANTHROPIC_API_KEY) console.log('- Anthropic API Key: ' + maskString(config.ANTHROPIC_API_KEY));
     if (config.ELEVENLABS_API_KEY) console.log('- ElevenLabs API Key: ' + maskString(config.ELEVENLABS_API_KEY));
     if (config.JWT_SECRET) console.log('- JWT Secret: ' + maskString(config.JWT_SECRET));
+    console.log('- API URL:', config.API_URL);
     
     return config;
   } catch (error) {
     console.error('Error loading config:', error);
-    return defaultConfig;
+    return { ...defaultConfig, API_URL: 'https://duoai.vercel.app' };
   }
 }
 
