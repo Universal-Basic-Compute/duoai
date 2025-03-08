@@ -31,6 +31,30 @@ filesToCopy.forEach(file => {
   }
 });
 
+// Copy images directory
+const imagesSourceDir = path.join(__dirname, 'images');
+const imagesDestDir = path.join(resourcesDir, 'images');
+
+if (fs.existsSync(imagesSourceDir)) {
+  // Create images directory in resources
+  if (!fs.existsSync(imagesDestDir)) {
+    fs.mkdirSync(imagesDestDir, { recursive: true });
+  }
+  
+  // Copy all files from images directory
+  const imageFiles = fs.readdirSync(imagesSourceDir);
+  
+  imageFiles.forEach(file => {
+    const sourcePath = path.join(imagesSourceDir, file);
+    const destPath = path.join(imagesDestDir, file);
+    
+    if (fs.statSync(sourcePath).isFile()) {
+      fs.copyFileSync(sourcePath, destPath);
+      console.log(`Copied ${file} to resources/images`);
+    }
+  });
+}
+
 // Copy prompts directory
 const promptsSourceDir = path.join(__dirname, 'prompts');
 const promptsDestDir = path.join(resourcesDir, 'prompts');

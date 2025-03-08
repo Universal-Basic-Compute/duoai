@@ -43,6 +43,7 @@
         "filter": [
           "index.html",
           "styles.css",
+          "images/**/*",
           "prompts/**/*"
         ]
       }

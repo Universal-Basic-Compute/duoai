@@ -742,8 +742,21 @@ document.addEventListener('DOMContentLoaded', () => {
     googleLoginButton.addEventListener('click', () => {
         console.log('Google login button clicked');
         
-        // Initialize Google Sign-In
-        initGoogleSignIn();
+        // Add visual feedback
+        const originalButtonContent = googleLoginButton.innerHTML;
+        googleLoginButton.innerHTML = 'Connecting...';
+        googleLoginButton.disabled = true;
+        
+        // Initialize Google Sign-In with a delay to show the button change
+        setTimeout(() => {
+            initGoogleSignIn();
+            
+            // Reset button after a delay in case the auth window doesn't open
+            setTimeout(() => {
+                googleLoginButton.innerHTML = originalButtonContent;
+                googleLoginButton.disabled = false;
+            }, 5000);
+        }, 500);
     });
     
     // This function is no longer needed as we're using the postMessage approach
