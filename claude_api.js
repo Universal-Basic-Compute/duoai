@@ -214,10 +214,11 @@ class ClaudeAPI {
      * @param {string} characterName - The character name
      * @param {Function} onChunk - Callback function for each text chunk
      * @param {Function} onComplete - Callback function when streaming is complete
+     * @param {string} authToken - Authentication token
      * @returns {Promise<void>} - Resolves when streaming is complete
      * @throws {Error} - If the API call fails or the screenshot is invalid
      */
-    async sendMessageWithScreenshotStreaming(userMessage, screenshotPath, characterName, onChunk, onComplete) {
+    async sendMessageWithScreenshotStreaming(userMessage, screenshotPath, characterName, onChunk, onComplete, authToken) {
         try {
             // Check if server is running
             const serverRunning = await this.checkServerStatus().catch(() => false);
@@ -250,17 +251,23 @@ class ClaudeAPI {
                     // Use the base URL for the streaming endpoint
                     const streamUrl = `${this.baseUrl}/api/claude-stream`;
                     console.log('Using stream URL:', streamUrl);
-                    
+                
+                    // Prepare headers with authentication token if provided
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                
+                    if (authToken) {
+                        headers['Authorization'] = `Bearer ${authToken}`;
+                    }
+                
                     // Send the request to the backend server using the streaming endpoint
-                    // Note: We no longer send systemPrompt, only characterName
                     const response = await axios.post(streamUrl, {
                         userMessage: userMessage || '',
                         base64Image: base64Image,
                         characterName: characterName || ''
                     }, {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                        headers: headers,
                         maxContentLength: Infinity,
                         maxBodyLength: Infinity,
                         timeout: 120000, // 2 minute timeout

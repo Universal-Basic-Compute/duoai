@@ -542,6 +542,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Sending message to Claude API with streaming...');
                 let fullResponse = '';
                 
+                // Get the auth token to include in the request
+                const authToken = localStorage.getItem('authToken');
+            
                 await claudeAPI.sendMessageWithScreenshotStreaming(
                     `*${getUsernameForMessage()} did not type a specific message at this time*`,
                     screenshotPath,
@@ -550,7 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     (chunk) => {
                         // Update the text element with the new chunk
                         textElement.textContent += chunk;
-                        
+                    
                         // Scroll to bottom as new text arrives
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     },
@@ -569,7 +572,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         speechManager.speak(fullResponse).catch(error => {
                             console.error('Error speaking message:', error);
                         });
-                    }
+                    },
+                    // Pass the auth token
+                    authToken
                 );
                 
                 console.log('Streaming response from Claude API completed');
@@ -718,16 +723,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get current character
             const currentCharacter = localStorage.getItem('currentCharacter');
             
+            // Get the auth token
+            const authToken = localStorage.getItem('authToken');
+        
             // Call Claude API with streaming
             let fullResponse = '';
-            
+        
             // Add typing indicator
             messageElement.classList.add('typing');
-            
+        
             console.log('Sending message to Claude API with streaming...');
             console.log('Message:', sanitizedMessage);
             console.log('Character:', currentCharacter || 'None');
-            
+        
             await claudeAPI.sendMessageWithScreenshotStreaming(
                 sanitizedMessage || `*${getUsernameForMessage()} did not type a specific message at this time*`,
                 screenshotPath,

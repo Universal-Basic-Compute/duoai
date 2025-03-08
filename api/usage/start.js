@@ -23,21 +23,21 @@ module.exports = async (req, res) => {
         if (authHeader && authHeader.startsWith('Bearer ')) {
             const token = authHeader.substring(7);
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
-            
+                
             // Get user email from token
             const userEmail = decoded.email;
-            
+                
             // Get the user from Airtable to get the username
             const user = await airtableService.findUserByEmail(userEmail);
             username = user ? user.Username : userEmail;
-            
-            console.log('Extracted username from token:', username);
+                
+            console.log('[STREAM] Extracted username from token:', username);
         } else {
-            console.log('No auth token, using anonymous username');
+            console.log('[STREAM] No auth token, using anonymous username');
         }
     } catch (error) {
-        console.error('Error extracting username from token:', error);
-        console.log('Using anonymous username');
+        console.error('[STREAM] Error extracting username from token:', error);
+        console.log('[STREAM] Using anonymous username');
     }
     
     // Start tracking session
