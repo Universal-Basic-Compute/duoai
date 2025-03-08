@@ -214,7 +214,7 @@ class AuthBridge {
     }
 
     getLoginUrl() {
-        return `${this.baseUrl}/auth/google`;
+        return `${this.baseUrl}/auth/login`;
     }
 
     getLogoutUrl() {

@@ -30,10 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isLoggedIn = false; // Track login state
     
     // Get auth form elements
-    const googleTab = document.getElementById('googleTab');
-    const credentialsTab = document.getElementById('credentialsTab');
-    const googlePanel = document.getElementById('googlePanel');
-    const credentialsPanel = document.getElementById('credentialsPanel');
     const loginToggle = document.getElementById('loginToggle');
     const registerToggle = document.getElementById('registerToggle');
     const loginForm = document.getElementById('loginForm');
@@ -42,21 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerError = document.getElementById('registerError');
     const passwordStrength = document.getElementById('passwordStrength');
     const registerPassword = document.getElementById('registerPassword');
-
-    // Tab switching
-    googleTab.addEventListener('click', () => {
-        googleTab.classList.add('active');
-        credentialsTab.classList.remove('active');
-        googlePanel.classList.add('active');
-        credentialsPanel.classList.remove('active');
-    });
-
-    credentialsTab.addEventListener('click', () => {
-        credentialsTab.classList.add('active');
-        googleTab.classList.remove('active');
-        credentialsPanel.classList.add('active');
-        googlePanel.classList.remove('active');
-    });
 
     // Form toggle
     loginToggle.addEventListener('click', () => {
@@ -207,84 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Listen for auth data from main process
-    ipcRenderer.on('auth-data-received', (event, authData) => {
-        console.log('Received auth data from main process:', authData ? 'Data received' : 'No data');
-        if (authData) {
-            console.log('Auth data contains token:', !!authData.token);
-            console.log('Auth data contains refreshToken:', !!authData.refreshToken);
-            console.log('Auth data contains user:', !!authData.user);
-        }
-        
-        handleAuthData(authData);
-    });
-    
-    // Function to handle auth data
-    function handleAuthData(authData) {
-        if (!authData || !authData.token || !authData.refreshToken) {
-            console.error('Invalid auth data received');
-            return;
-        }
-        
-        console.log('Processing auth data');
-        
-        // Store tokens in localStorage
-        localStorage.setItem('authToken', authData.token);
-        localStorage.setItem('refreshToken', authData.refreshToken);
-        
-        // Store user info
-        localStorage.setItem('user', JSON.stringify(authData.user));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        // Update UI for logged in state
-        isLoggedIn = true;
-        loginContainer.classList.add('hidden');
-        menuTab.style.display = 'block';
-        
-        // Check subscription status
-        checkSubscriptionStatus();
-    }
-    
-    // Listen for auth data from main process
-    ipcRenderer.on('auth-data-received', (event, authData) => {
-        console.log('Received auth data from main process');
-        handleAuthData(authData);
-    });
-    
-    // Function to handle auth data
-    function handleAuthData(authData) {
-        if (!authData || !authData.token || !authData.refreshToken) {
-            console.error('Invalid auth data received');
-            return;
-        }
-        
-        console.log('Processing auth data');
-        
-        // Store tokens in localStorage
-        localStorage.setItem('authToken', authData.token);
-        localStorage.setItem('refreshToken', authData.refreshToken);
-        
-        // Store user info
-        localStorage.setItem('user', JSON.stringify(authData.user));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        // Update UI for logged in state
-        isLoggedIn = true;
-        loginContainer.classList.add('hidden');
-        menuTab.style.display = 'block';
-        
-        // Check subscription status
-        checkSubscriptionStatus();
-    }
-    
-    // Listen for messages from the auth callback page
-    window.addEventListener('message', (event) => {
-        // Check if it's our auth callback
-        if (event.data && event.data.type === 'google-auth-callback') {
-            console.log('Received auth callback message via postMessage');
-            handleAuthData(event.data);
-        }
-    });
+    // Auth data handling removed
     
     
     console.log('Menu tab found:', menuTab !== null);
@@ -957,149 +861,13 @@ document.addEventListener('DOMContentLoaded', () => {
         charactersSubmenu.style.right = '-300px';
     });
     
-    // Add event listener for Google login button
-    googleLoginButton.addEventListener('click', () => {
-        console.log('Google login button clicked');
-        
-        // Add visual feedback
-        const originalButtonContent = googleLoginButton.innerHTML;
-        googleLoginButton.innerHTML = 'Connecting...';
-        googleLoginButton.disabled = true;
-        
-        // Initialize Google Sign-In with a delay to show the button change
-        setTimeout(() => {
-            initGoogleSignIn();
-            
-            // Reset button after a delay in case the auth window doesn't open
-            setTimeout(() => {
-                googleLoginButton.innerHTML = originalButtonContent;
-                googleLoginButton.disabled = false;
-            }, 5000);
-        }, 500);
-    });
+    // Google login button removed
     
-    // Create a diagnostic button (only in development mode)
-    const { app } = require('electron');
-    const { shell } = require('electron');
-    
-    if (!app.isPackaged) {
-        const diagnosticButton = document.createElement('button');
-        diagnosticButton.textContent = 'Test Protocol Handler';
-        diagnosticButton.style.marginTop = '10px';
-        diagnosticButton.addEventListener('click', () => {
-            // Test the protocol handler with a mock auth data
-            const mockAuthData = {
-                token: 'mock-token',
-                refreshToken: 'mock-refresh-token',
-                user: { id: 'mock-id', name: 'Mock User', email: 'mock@example.com' }
-            };
-            
-            // Convert to JSON string and encode for URL
-            const dataStr = encodeURIComponent(JSON.stringify(mockAuthData));
-            
-            // Create the protocol URL
-            const protocolUrl = `duoai://auth/${dataStr}`;
-            
-            // Open the URL (this should trigger the protocol handler)
-            shell.openExternal(protocolUrl);
-        });
-        
-        // Add the button to the login card
-        document.querySelector('.login-card').appendChild(diagnosticButton);
-    }
+    // Diagnostic button removed
     
     // This function is no longer needed as we're using the postMessage approach
     
-    // Function to initialize Google Sign-In
-    function initGoogleSignIn() {
-        // Get config to access environment variables
-        const config = require('./config').loadConfig();
-        const clientId = config.GOOGLE_CLIENT_ID;
-    
-        console.log('Config loaded in renderer:', config);
-        console.log('Google Client ID available:', !!clientId);
-    
-        if (!clientId) {
-            console.error('Google Client ID not found in configuration');
-            alert('Google authentication is not properly configured. Please check your environment variables and make sure GOOGLE_CLIENT_ID is set.');
-            return;
-        }
-    
-        console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
-    
-        // Use the exact redirect URI that's authorized in Google Cloud Console
-        const redirectUri = encodeURIComponent('https://duoai.vercel.app/api/auth/callback');
-        console.log('Using redirect URI:', redirectUri);
-    
-        // Add a parameter to indicate this is from the Electron app
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account&state=electron_app`;
-    
-        console.log('Opening auth URL in browser:', authUrl);
-        
-        // Open the auth URL in the default browser
-        ipcRenderer.send('open-external-url', authUrl);
-    }
-    
-    
-    // Callback function for Google Sign-In
-    window.handleGoogleSignIn = async (response) => {
-        try {
-            console.log('Google Sign-In response received');
-            
-            // Get the ID token from Google
-            const idToken = response.credential;
-            
-            if (!idToken) {
-                console.error('No ID token received from Google');
-                return;
-            }
-            
-            console.log('ID token received, sending to backend');
-            
-            // Get API URL and log it
-            const config = require('./config').loadConfig();
-            const apiUrl = config.API_URL || 'https://duoai.vercel.app';
-            
-            console.log('Sending Google token to backend at:', apiUrl);
-            
-            // Send the token to our backend
-            const authResponse = await fetch(`${apiUrl}/api/auth/google`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token: idToken })
-            });
-            
-            const data = await authResponse.json();
-            
-            if (authResponse.ok) {
-                console.log('Authentication successful');
-                
-                // Store tokens in localStorage
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('refreshToken', data.refreshToken);
-                
-                // Store user info
-                localStorage.setItem('user', JSON.stringify(data.user));
-                localStorage.setItem('isLoggedIn', 'true');
-                
-                // Update UI for logged in state
-                isLoggedIn = true;
-                loginContainer.classList.add('hidden');
-                menuTab.style.display = 'block';
-                
-                // Check subscription status
-                await checkSubscriptionStatus();
-            } else {
-                console.error('Google authentication failed:', data.error);
-                alert('Authentication failed: ' + data.error);
-            }
-        } catch (error) {
-            console.error('Error during Google sign-in:', error);
-            alert('Authentication failed. Please try again.');
-        }
-    };
+    // Google Sign-In functions removed
     
     // Logout function
     function logout() {

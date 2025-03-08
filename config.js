@@ -44,8 +44,6 @@ if (!fs.existsSync(userDataPath)) {
 
 // Default configuration
 const defaultConfig = {
-  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',
   AIRTABLE_API_KEY: process.env.AIRTABLE_API_KEY || '',
   AIRTABLE_BASE_ID: process.env.AIRTABLE_BASE_ID || '',
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || '',
@@ -95,7 +93,6 @@ function loadConfig() {
     
     // Log available credentials (for debugging)
     console.log('Config loaded:');
-    if (config.GOOGLE_CLIENT_ID) console.log('- Google Client ID: ' + maskString(config.GOOGLE_CLIENT_ID));
     if (config.ANTHROPIC_API_KEY) console.log('- Anthropic API Key: ' + maskString(config.ANTHROPIC_API_KEY));
     if (config.ELEVENLABS_API_KEY) console.log('- ElevenLabs API Key: ' + maskString(config.ELEVENLABS_API_KEY));
     if (config.JWT_SECRET) console.log('- JWT Secret: ' + maskString(config.JWT_SECRET));
@@ -133,7 +130,6 @@ function setupEnv() {
   
   // Log available credentials (masked)
   console.log('Environment setup complete:');
-  if (process.env.GOOGLE_CLIENT_ID) console.log('- Google Client ID: ' + maskString(process.env.GOOGLE_CLIENT_ID));
   if (process.env.ANTHROPIC_API_KEY) console.log('- Anthropic API Key: ' + maskString(process.env.ANTHROPIC_API_KEY));
   if (process.env.ELEVENLABS_API_KEY) console.log('- ElevenLabs API Key: ' + maskString(process.env.ELEVENLABS_API_KEY));
   if (process.env.JWT_SECRET) console.log('- JWT Secret: ' + maskString(process.env.JWT_SECRET));

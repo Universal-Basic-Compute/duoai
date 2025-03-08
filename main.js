@@ -288,7 +288,7 @@ function createWindow() {
         const apiUrl = configManager.loadConfig().API_URL || 'https://duoai.vercel.app';
         
         // Create CSP with dynamic API URL and explicitly include production URL
-        const csp = `default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.googleapis.com; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com ${apiUrl} https://duoai.vercel.app https://*.googleapis.com https://accounts.google.com http://localhost:3000; img-src 'self' data: https://*.googleusercontent.com; style-src 'self' 'unsafe-inline';`;
+        const csp = `default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com ${apiUrl} https://duoai.vercel.app http://localhost:3000; img-src 'self' data:; style-src 'self' 'unsafe-inline';`;
         
         callback({
             responseHeaders: {
@@ -316,26 +316,7 @@ app.whenReady().then(() => {
         return;
     }
     
-    // Add this function to check if we're running the packaged app
-    function isPackaged() {
-      return app.isPackaged;
-    }
-
-    // Register custom protocol handler with better handling for packaged apps
-    if (isPackaged()) {
-        // For packaged app, we need to use setAsDefaultProtocolClient differently
-        app.setAsDefaultProtocolClient('duoai');
-    
-        console.log('Registered duoai:// protocol handler (packaged app)');
-    } else {
-        // For development
-        if (process.platform === 'win32') {
-            app.setAsDefaultProtocolClient('duoai');
-        } else {
-            app.setAsDefaultProtocolClient('duoai', process.execPath, [path.resolve(process.argv[1] || '.')]);
-        }
-        console.log('Registered duoai:// protocol handler (development)');
-    }
+    // Protocol handler registration removed
     
     createWindow();
     
@@ -344,84 +325,9 @@ app.whenReady().then(() => {
     });
 });
 
-// Add this helper function to handle protocol URLs
-function handleProtocolUrl(url, window) {
-    if (url.startsWith('duoai://auth')) {
-        try {
-            // Extract the data part (everything after duoai://auth/)
-            const dataStr = url.substring(12); // 'duoai://auth/'.length = 12
-            console.log('Auth data received:', dataStr.substring(0, 20) + '...');
-            
-            // Decode the URL component
-            const decodedData = decodeURIComponent(dataStr);
-            
-            // Parse the JSON data
-            const authData = JSON.parse(decodedData);
-            
-            // Send to renderer process
-            if (window) {
-                window.webContents.send('auth-data-received', authData);
-                console.log('Auth data sent to renderer process');
-            } else {
-                console.error('No window available to send auth data');
-            }
-        } catch (error) {
-            console.error('Error handling protocol URL:', error);
-            console.error('URL was:', url);
-        }
-    }
-}
+// Protocol URL handling removed
 
-// Add this to handle protocol activation
-app.on('open-url', (event, url) => {
-    event.preventDefault();
-    console.log('open-url event received:', url);
-    
-    const win = BrowserWindow.getAllWindows()[0];
-    if (win) {
-        handleProtocolUrl(url, win);
-    } else {
-        console.error('No window available to handle open-url event');
-    }
-});
-
-// Handle protocol activation from command line args (Windows)
-if (process.platform === 'win32') {
-    // Process the first instance arguments
-    const gotTheLock = app.requestSingleInstanceLock();
-    
-    if (!gotTheLock) {
-        app.quit();
-    } else {
-        app.on('second-instance', (event, commandLine, workingDirectory) => {
-            // Someone tried to run a second instance, focus our window instead
-            const win = BrowserWindow.getAllWindows()[0];
-            if (win) {
-                if (win.isMinimized()) win.restore();
-                win.focus();
-                
-                // Check if this is a protocol handler call
-                const protocolUrl = commandLine.find(arg => arg.startsWith('duoai://'));
-                if (protocolUrl) {
-                    console.log('Protocol URL received in second instance:', protocolUrl);
-                    handleProtocolUrl(protocolUrl, win);
-                }
-            }
-        });
-        
-        // Check if app was started with protocol URL
-        const protocolUrl = process.argv.find(arg => arg.startsWith('duoai://'));
-        if (protocolUrl) {
-            console.log('Protocol URL received at startup:', protocolUrl);
-            // We'll need to wait for the window to be created
-            app.on('browser-window-created', (_, window) => {
-                window.webContents.on('did-finish-load', () => {
-                    handleProtocolUrl(protocolUrl, window);
-                });
-            });
-        }
-    }
-}
+// Windows protocol handler code removed
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
