@@ -28,12 +28,12 @@ module.exports = async (req, res) => {
         // Check if we have a JWT_SECRET
         if (!process.env.JWT_SECRET) {
             console.warn('JWT_SECRET not set, using mock verification');
-            // In development mode, use a mock user
+            // Use a mock user when JWT_SECRET is not set
             const user = {
                 id: 'mock-user-id',
                 name: 'Mock User',
                 email: 'mock@example.com',
-                picture: ''
+                picture: 'https://ui-avatars.com/api/?name=Mock+User&background=7e57c2&color=fff'
             };
             
             return res.json({

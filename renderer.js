@@ -765,9 +765,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
     
-        // Always use production URL for authentication
-        const prodUrl = 'https://duoai.vercel.app';
-        const redirectUri = encodeURIComponent(`${prodUrl}/api/auth/callback`);
+        // Always use production URL for authentication - hardcoded for consistency
+        const redirectUri = encodeURIComponent('https://duoai.vercel.app/api/auth/callback');
         console.log('Using redirect URI:', redirectUri);
     
         const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account`;

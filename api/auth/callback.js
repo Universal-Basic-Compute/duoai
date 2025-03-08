@@ -28,10 +28,10 @@ module.exports = async (req, res) => {
         const client = new OAuth2Client(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET,
-            process.env.API_URL + '/api/auth/callback'
+            'https://duoai.vercel.app/api/auth/callback'
         );
         
-        console.log('OAuth client created with redirect URI:', process.env.API_URL + '/api/auth/callback');
+        console.log('OAuth client created with redirect URI: https://duoai.vercel.app/api/auth/callback');
         
         console.log('Attempting to exchange code for tokens');
         

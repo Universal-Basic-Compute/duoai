@@ -65,7 +65,7 @@ module.exports = async (req, res) => {
         // Check if we have a JWT_SECRET
         if (!process.env.JWT_SECRET) {
             console.warn('JWT_SECRET not set, using a default secret (not secure for production)');
-            process.env.JWT_SECRET = 'default-development-secret';
+            process.env.JWT_SECRET = 'dI5dZ7cvp9'; // Use a more secure default secret
         }
         
         // Create tokens
