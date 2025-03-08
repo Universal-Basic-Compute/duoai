@@ -570,6 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Save the initial message to Airtable
                         try {
+                            // Get the current user's username from localStorage
+                            const user = JSON.parse(localStorage.getItem('user') || '{}');
+                            const username = user.name || 'anonymous';
+                            console.log('Using username for initial message:', username);
+                            
                             // Save the AI response to Airtable
                             fetch(`${authBridge.baseUrl}/api/save-message`, {
                                 method: 'POST',
@@ -580,7 +585,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 body: JSON.stringify({
                                     role: 'assistant',
                                     content: fullResponse,
-                                    character: currentCharacter
+                                    character: currentCharacter,
+                                    username: username // Add username to the request body
                                 })
                             }).catch(err => console.error('Error saving initial AI response:', err));
                         } catch (saveError) {

@@ -103,29 +103,35 @@ async function generateSystemPrompt(characterName) {
       processedBase64 = processedImageBuffer.toString('base64');
     }
     
-    // Extract username from JWT token if available
-    let username = 'anonymous';
-    try {
-        const authHeader = req.headers.authorization;
-        if (authHeader && authHeader.startsWith('Bearer ')) {
-            const token = authHeader.substring(7);
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
-            
-            // Get user email from token
-            const userEmail = decoded.email;
-            
-            // Get the user from Airtable to get the username
-            const user = await airtableService.findUserByEmail(userEmail);
-            username = user ? user.Username : userEmail;
-            
-            console.log('Extracted username from token:', username);
-        } else {
-            console.log('No auth token, using anonymous username');
+    // Extract username from request body or JWT token
+    let username = req.body.username || 'anonymous'; // First try to get from request body
+
+    // If not in request body, try to get from token
+    if (username === 'anonymous') {
+        try {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                const token = authHeader.substring(7);
+                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'duoai-jwt-secret');
+                
+                // Get user email from token
+                const userEmail = decoded.email;
+                
+                // Get the user from Airtable to get the username
+                const user = await airtableService.findUserByEmail(userEmail);
+                username = user ? user.Username : userEmail;
+                
+                console.log('Extracted username from token:', username);
+            } else {
+                console.log('No auth token, using anonymous username');
+            }
+        } catch (error) {
+            console.error('Error extracting username from token:', error);
+            console.log('Using anonymous username');
         }
-    } catch (error) {
-        console.error('Error extracting username from token:', error);
-        console.log('Using anonymous username');
     }
+    
+    console.log('Final username for message:', username);
     
     // Extract character name from system prompt if available
     let characterName = null;

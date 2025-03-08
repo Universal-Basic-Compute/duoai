@@ -261,11 +261,25 @@ class ClaudeAPI {
                         headers['Authorization'] = `Bearer ${authToken}`;
                     }
                 
+                    // Get username from localStorage if available
+                    let username = 'anonymous';
+                    try {
+                        const userJson = localStorage.getItem('user');
+                        if (userJson) {
+                            const user = JSON.parse(userJson);
+                            username = user.name || 'anonymous';
+                            console.log('Using username from localStorage:', username);
+                        }
+                    } catch (e) {
+                        console.error('Error getting username from localStorage:', e);
+                    }
+                
                     // Send the request to the backend server using the streaming endpoint
                     const response = await axios.post(streamUrl, {
                         userMessage: userMessage || '',
                         base64Image: base64Image,
-                        characterName: characterName || ''
+                        characterName: characterName || '',
+                        username: username // Add username to the request body
                     }, {
                         headers: headers,
                         maxContentLength: Infinity,
