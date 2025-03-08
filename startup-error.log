@@ -11,515 +11,400 @@ Running in development mode
 [32m.env file found in project root[0m
 Loading environment variables from .env file
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Environment setup complete:
-- Google Client ID: 7789....com
 - Anthropic API Key: sk-a...bgAA
 - ElevenLabs API Key: sk_8...e564
 - JWT Secret: Z7cv...cvp9
 Loading HTML from: C:\Users\conta\duoai\index.html
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
+[1688:0308/224624.392:ERROR:CONSOLE(1)] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
+[1688:0308/224624.392:ERROR:CONSOLE(1)] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
-[29524:0308/214702.590:ERROR:CONSOLE(1)] "Request Autofill.enable failed. {"code":-32601,"message":"'Autofill.enable' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
-[29524:0308/214702.590:ERROR:CONSOLE(1)] "Request Autofill.setAddresses failed. {"code":-32601,"message":"'Autofill.setAddresses' wasn't found"}", source: devtools://devtools/bundled/core/protocol_client/protocol_client.js (1)
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 Config loaded:
-- Google Client ID: 7789....com
+- JWT Secret: Z7cv...cvp9
+- API URL: https://duoai.vercel.app
+Config loaded:
+- JWT Secret: Z7cv...cvp9
+- API URL: https://duoai.vercel.app
+Config loaded:
+- JWT Secret: Z7cv...cvp9
+- API URL: https://duoai.vercel.app
+Config loaded:
+- JWT Secret: Z7cv...cvp9
+- API URL: https://duoai.vercel.app
+Config loaded:
 - JWT Secret: Z7cv...cvp9
 - API URL: https://duoai.vercel.app
 C:\Users\conta\AppData\Roaming\npm\node_modules\electron\dist\electron.exe exited with signal SIGINT
