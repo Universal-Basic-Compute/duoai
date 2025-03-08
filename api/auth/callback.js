@@ -31,6 +31,10 @@ module.exports = async (req, res) => {
             process.env.API_URL + '/api/auth/callback'
         );
         
+        console.log('OAuth client created with redirect URI:', process.env.API_URL + '/api/auth/callback');
+        
+        console.log('Attempting to exchange code for tokens');
+        
         // Exchange code for tokens
         const { tokens } = await client.getToken(code);
         

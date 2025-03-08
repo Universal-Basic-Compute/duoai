@@ -762,6 +762,39 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // No fallback dialog - we'll rely on the proper OAuth flow
         alert('A browser window has been opened for Google authentication. Please complete the sign-in process there and return to the app.');
+        
+        // For development/testing, bypass Google auth and use mock login
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Development mode detected, using mock login');
+            mockLogin();
+        }
+    }
+    
+    // Function to simulate login for development/testing
+    function mockLogin() {
+        console.log('Using mock login');
+        
+        // Create mock user data
+        const mockUser = {
+            id: 'mock-user-id',
+            name: 'Mock User',
+            email: 'mock@example.com',
+            picture: ''
+        };
+        
+        // Store mock tokens and user info
+        localStorage.setItem('authToken', 'mock-token');
+        localStorage.setItem('refreshToken', 'mock-refresh-token');
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('isLoggedIn', 'true');
+        
+        // Update UI
+        isLoggedIn = true;
+        loginContainer.classList.add('hidden');
+        menuTab.style.display = 'block';
+        
+        // Check subscription status
+        checkSubscriptionStatus();
     }
     
     // Callback function for Google Sign-In
@@ -976,7 +1009,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Check login state at startup
-    checkLoginState();
+    checkLoginState().then(isLoggedIn => {
+        if (!isLoggedIn && process.env.NODE_ENV === 'development') {
+            // In development mode, automatically use mock login if not logged in
+            console.log('Development mode: using mock login');
+            mockLogin();
+        }
+    });
     
     // Load saved settings
     loadSavedSettings();

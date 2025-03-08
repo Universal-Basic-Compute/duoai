@@ -65,7 +65,7 @@ function loadConfig() {
     // Environment-specific overrides
     const envConfigs = {
       development: {
-        API_URL: 'https://duoai.vercel.app'
+        API_URL: 'http://localhost:3000'  // Use local URL for development
       },
       production: {
         API_URL: 'https://duoai.vercel.app'

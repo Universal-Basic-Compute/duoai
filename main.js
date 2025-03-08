@@ -6,6 +6,12 @@ const { spawn } = require('child_process');
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged;
 const isMac = process.platform === 'darwin';
 
+// Set NODE_ENV to development if app is not packaged
+if (!app.isPackaged) {
+    process.env.NODE_ENV = 'development';
+    console.log('Running in development mode');
+}
+
 // Helper function to get asset paths
 function getAssetPath(...paths) {
   return path.join(app.isPackaged ? process.resourcesPath : __dirname, ...paths);
