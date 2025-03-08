@@ -70,7 +70,10 @@ module.exports = async (req, res) => {
         
         // Create tokens
         const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
-        const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const refreshToken = jwt.sign({ 
+            userId: user.id,
+            googleId: googleUser.id  // Add the Google ID for refresh token verification
+        }, process.env.JWT_SECRET, { expiresIn: '7d' });
         
         // Return tokens and user info
         res.json({

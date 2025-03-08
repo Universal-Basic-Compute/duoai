@@ -32,8 +32,14 @@ module.exports = async (req, res) => {
         // Verify refresh token
         const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
         
-        // Get user from Airtable
-        const user = await airtableService.findUserByGoogleId(decoded.userId);
+        // Get user from Airtable - try both userId and googleId
+        let user;
+        if (decoded.googleId) {
+            user = await airtableService.findUserByGoogleId(decoded.googleId);
+        } else if (decoded.userId) {
+            // For backward compatibility with existing tokens
+            user = await airtableService.findUserByGoogleId(decoded.userId);
+        }
         
         if (!user) {
             return res.status(404).json({ error: 'User not found' });

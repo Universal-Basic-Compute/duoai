@@ -24,6 +24,45 @@ try {
 }
 
 /**
+ * Find a user by their Airtable record ID
+ * @param {string} recordId - The Airtable record ID
+ * @returns {Promise<Object|null>} - The user object or null if not found
+ */
+async function findUserById(recordId) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Using mock user data for record ID:', recordId);
+        return {
+            id: recordId,
+            GoogleId: 'mock-google-id',
+            Name: 'Mock User',
+            Email: 'mock@example.com',
+            ProfilePicture: '',
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'basic',
+            SubscriptionStatus: 'active',
+            HoursUsed: 0
+        };
+    }
+    
+    try {
+        const record = await usersTable.find(recordId);
+        
+        if (record) {
+            return {
+                id: record.id,
+                ...record.fields
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error finding user by ID:', error);
+        throw error;
+    }
+}
+
+/**
  * Find a user by their Google ID
  * @param {string} googleId - The Google ID to search for
  * @returns {Promise<Object|null>} - The user object or null if not found
@@ -400,6 +439,7 @@ async function getUserMessages(userId, limit = 100) {
 
 module.exports = {
     findUserByGoogleId,
+    findUserById,
     createUser,
     updateUser,
     updateLastLogin,
