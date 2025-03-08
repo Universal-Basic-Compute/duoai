@@ -9,8 +9,9 @@
     "start": "electron .",
     "electron-dev": "electron .",
     "lint": "next lint",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
+    "prepare-build": "node prepare-build.js",
+    "pack": "npm run prepare-build && electron-builder --dir",
+    "dist": "npm run prepare-build && electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -34,6 +35,17 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
       "!**/website/**/*",
       "!**/docs/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": ".",
+        "to": ".",
+        "filter": [
+          "index.html",
+          "styles.css",
+          "prompts/**/*"
+        ]
+      }
     ],
     "win": {
       "target": [

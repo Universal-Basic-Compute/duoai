@@ -142,7 +142,13 @@ if (!app.isPackaged) {
 
 // Helper function to get asset paths
 function getAssetPath(...paths) {
-  return path.join(app.isPackaged ? process.resourcesPath : __dirname, ...paths);
+  if (app.isPackaged) {
+    // In packaged app, resources are in the resources directory
+    return path.join(process.resourcesPath, ...paths);
+  } else {
+    // In development, resources are in the project root
+    return path.join(__dirname, ...paths);
+  }
 }
 
 // Check for .env file
@@ -266,6 +272,14 @@ function createWindow() {
     // Check if the file exists
     if (!fs.existsSync(indexPath)) {
         console.error('index.html not found at:', indexPath);
+        
+        // Show error dialog
+        dialog.showErrorBox('DUOAI Error', 
+            `Could not find index.html at: ${indexPath}\n\n` +
+            `This is likely due to a packaging issue. Please reinstall the application.`);
+        
+        app.quit();
+        return;
     }
     
     // Set Content Security Policy before loading the page
