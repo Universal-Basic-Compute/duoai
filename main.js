@@ -148,8 +148,8 @@ function createWindow() {
         // Get the API URL from config
         const apiUrl = configManager.loadConfig().API_URL || 'https://duoai.vercel.app';
         
-        // Create CSP with dynamic API URL
-        const csp = `default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.googleapis.com; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com ${apiUrl} https://*.googleapis.com https://accounts.google.com http://localhost:3000; img-src 'self' data: https://*.googleusercontent.com; style-src 'self' 'unsafe-inline';`;
+        // Create CSP with dynamic API URL and explicitly include production URL
+        const csp = `default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.googleapis.com; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com ${apiUrl} https://duoai.vercel.app https://*.googleapis.com https://accounts.google.com http://localhost:3000; img-src 'self' data: https://*.googleusercontent.com; style-src 'self' 'unsafe-inline';`;
         
         callback({
             responseHeaders: {
