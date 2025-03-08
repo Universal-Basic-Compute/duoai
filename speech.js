@@ -574,7 +574,6 @@ class SpeechManager {
             }
         }
     }
-    }
     
     /**
      * Set the voice for ElevenLabs TTS
@@ -599,7 +598,6 @@ class SpeechManager {
             console.error('Error setting voice:', error);
             // Keep the previous voice ID in case of error
         }
-    }
     }
 
     /**
@@ -658,7 +656,6 @@ class SpeechManager {
             return false;
         }
     }
-    }
 
     /**
      * Check if ElevenLabs TTS is available
@@ -716,7 +713,6 @@ class SpeechManager {
             console.error('Error checking ElevenLabs availability:', error);
             return false;
         }
-    }
     }
     
     /**
