@@ -345,27 +345,59 @@ class SpeechManager {
                     // Create audio blob
                     const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
                     
-                    try {
-                        // Convert blob to base64
-                        const base64Audio = await this.blobToBase64(audioBlob);
-                        
-                        // Always use production URL
-                        const apiUrl = 'https://duoai.vercel.app';
+                    // Check if the audio is long enough to be meaningful speech
+                    // Typically noise or false detections are very short
+                    const minMeaningfulDuration = 500; // 500ms minimum
                     
-                        // Send to Whisper API on remote server with production URL
-                        const response = await axios.post(`${apiUrl}/api/whisper`, {
-                            audioData: base64Audio
-                        });
+                    // Create an audio element to check duration
+                    const audioElement = new Audio(URL.createObjectURL(audioBlob));
+                    
+                    // Wait for metadata to load to get duration
+                    await new Promise(resolve => {
+                        audioElement.onloadedmetadata = () => resolve();
+                        audioElement.onerror = () => resolve(); // Handle errors
                         
-                        const transcript = response.data.transcription;
-                        console.log('Whisper transcription:', transcript);
+                        // Set a timeout in case metadata loading hangs
+                        setTimeout(resolve, 1000);
+                    });
+                    
+                    // Check if audio is long enough
+                    const isLongEnough = !audioElement.duration || audioElement.duration > minMeaningfulDuration/1000;
+                    
+                    // Clean up the temporary audio element
+                    URL.revokeObjectURL(audioElement.src);
+                    
+                    if (isLongEnough) {
+                        try {
+                            // Convert blob to base64
+                            const base64Audio = await this.blobToBase64(audioBlob);
+                            
+                            // Always use production URL
+                            const apiUrl = 'https://duoai.vercel.app';
                         
-                        if (transcript && transcript.trim() && this.speechCallback) {
-                            this.speechCallback(transcript);
+                            // Send to Whisper API on remote server with production URL
+                            const response = await axios.post(`${apiUrl}/api/whisper`, {
+                                audioData: base64Audio
+                            });
+                            
+                            const transcript = response.data.transcription;
+                            console.log('Whisper transcription:', transcript);
+                            
+                            // Only process non-empty transcripts that don't contain just punctuation or special characters
+                            if (transcript && 
+                                transcript.trim() && 
+                                /[a-zA-Z0-9]/.test(transcript) && // Contains at least one alphanumeric character
+                                this.speechCallback) {
+                                this.speechCallback(transcript);
+                            } else {
+                                console.log('Ignoring empty or invalid transcript:', transcript);
+                            }
+                        } catch (error) {
+                            console.error('Error transcribing audio:', error);
+                            if (this.endCallback) this.endCallback(error.message);
                         }
-                    } catch (error) {
-                        console.error('Error transcribing audio:', error);
-                        if (this.endCallback) this.endCallback(error.message);
+                    } else {
+                        console.log('Audio too short, likely noise - ignoring');
                     }
                 }
                 
@@ -452,13 +484,22 @@ class SpeechManager {
             // Create audio context
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             
-            // Create analyser
+            // Create analyser with more precise FFT size
             this.analyser = this.audioContext.createAnalyser();
-            this.analyser.fftSize = 256;
+            this.analyser.fftSize = 1024; // More detailed frequency analysis
+            this.analyser.smoothingTimeConstant = 0.5; // Add some smoothing
             
             // Create source from stream
             const source = this.audioContext.createMediaStreamSource(stream);
-            source.connect(this.analyser);
+            
+            // Add a high-pass filter to reduce background noise
+            const highpassFilter = this.audioContext.createBiquadFilter();
+            highpassFilter.type = 'highpass';
+            highpassFilter.frequency.value = 85; // Filter out low frequency noise
+            
+            // Connect the source to the filter, then to the analyser
+            source.connect(highpassFilter);
+            highpassFilter.connect(this.analyser);
             
             // Start silence detection
             this.silenceDetectionRunning = true;
@@ -477,6 +518,17 @@ class SpeechManager {
         const bufferLength = this.analyser.frequencyBinCount;
         const dataArray = new Uint8Array(bufferLength);
         
+        // Add a noise floor threshold - anything below this is considered absolute silence
+        const noiseFloorThreshold = 5;
+        // Add a speech threshold - must be above this to be considered speech
+        const speechThreshold = 15;
+        
+        // Add consecutive frames counter for more stable detection
+        let consecutiveSilenceFrames = 0;
+        let consecutiveSpeechFrames = 0;
+        const requiredSilenceFrames = 5; // About 80-100ms of silence
+        const requiredSpeechFrames = 3; // About 50-60ms of speech
+        
         const checkVolume = () => {
             if (!this.silenceDetectionRunning) return;
             
@@ -489,31 +541,54 @@ class SpeechManager {
             }
             const average = sum / bufferLength;
             
-            // Detect speech (non-silence)
-            if (average > 15) { // Threshold for speech detection
-                this.hasSpeech = true;
+            // Detect speech (non-silence) with better noise filtering
+            if (average > speechThreshold) {
+                consecutiveSpeechFrames++;
+                consecutiveSilenceFrames = 0;
                 
-                // Clear any existing silence timeout
-                if (this.silenceTimeout) {
-                    clearTimeout(this.silenceTimeout);
-                    this.silenceTimeout = null;
+                // Only consider it speech after several consecutive frames above threshold
+                if (consecutiveSpeechFrames >= requiredSpeechFrames) {
+                    // Clear any existing silence timeout
+                    if (this.silenceTimeout) {
+                        clearTimeout(this.silenceTimeout);
+                        this.silenceTimeout = null;
+                    }
+                    
+                    // Mark that we've detected speech
+                    if (!this.hasSpeech) {
+                        console.log('Speech detected, average volume:', average);
+                        this.hasSpeech = true;
+                    }
                 }
             } 
-            // Detect silence after speech
-            else if (this.hasSpeech) {
-                // Start silence timeout if not already started
-                if (!this.silenceTimeout) {
-                    this.silenceTimeout = setTimeout(() => {
-                        console.log('Silence detected after speech, stopping recording');
-                        
-                        // Stop current recording to process the audio
-                        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-                            this.mediaRecorder.stop();
-                        }
-                        
-                        this.silenceTimeout = null;
-                    }, this.silenceThreshold);
+            // Detect silence - must be below noise floor to be considered silence
+            else if (average < noiseFloorThreshold) {
+                consecutiveSilenceFrames++;
+                consecutiveSpeechFrames = 0;
+                
+                // Only consider it silence after several consecutive frames below threshold
+                if (consecutiveSilenceFrames >= requiredSilenceFrames && this.hasSpeech) {
+                    // Start silence timeout if not already started
+                    if (!this.silenceTimeout) {
+                        console.log('Potential silence detected after speech, average volume:', average);
+                        this.silenceTimeout = setTimeout(() => {
+                            console.log('Silence confirmed after speech, stopping recording');
+                            
+                            // Stop current recording to process the audio
+                            if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                                this.mediaRecorder.stop();
+                            }
+                            
+                            this.silenceTimeout = null;
+                        }, this.silenceThreshold);
+                    }
                 }
+            }
+            // In the "gray area" between noise floor and speech threshold
+            else {
+                // Reset consecutive frame counters in the ambiguous range
+                consecutiveSpeechFrames = 0;
+                consecutiveSilenceFrames = 0;
             }
             
             // Continue checking if still running
