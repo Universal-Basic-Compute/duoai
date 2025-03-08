@@ -137,6 +137,18 @@ function createWindow() {
         console.error('index.html not found at:', indexPath);
     }
     
+    // Set Content Security Policy before loading the page
+    mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                'Content-Security-Policy': [
+                    "default-src 'self'; script-src 'self' https://accounts.google.com https://*.googleapis.com 'unsafe-inline'; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com https://duoai.vercel.app https://*.googleapis.com; img-src 'self' data: https://*.googleusercontent.com; style-src 'self' 'unsafe-inline';"
+                ]
+            }
+        });
+    });
+    
     mainWindow.loadFile(indexPath);
     
     // Allow the window to be moved during login
