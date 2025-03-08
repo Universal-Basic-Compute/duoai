@@ -819,18 +819,10 @@ class SpeechManager {
                         resolve();
                     };
                     
-                    // Set a timeout in case the audio never loads
+                    // Also add a timeout in case the audio never loads or ends
                     setTimeout(() => {
-                        if (this.audioElement.readyState < 3) { // HAVE_FUTURE_DATA
-                            console.warn('Audio taking too long to load');
-                            URL.revokeObjectURL(audioUrl);
-                            
-                            // Tell main process we're done with audio
-                            if (this.isElectronEnv && ipcRenderer) {
-                                ipcRenderer.send('keep-app-running', false);
-                            }
-                            
-                            // Reset audio playing flag
+                        if (this.isPlayingAudio) {
+                            console.warn('Audio playback timeout reached, resuming listening');
                             this.isPlayingAudio = false;
                             
                             // Resume continuous listening if it was active before
@@ -842,7 +834,7 @@ class SpeechManager {
                             
                             resolve();
                         }
-                    }, 5000); // 5 second timeout
+                    }, 30000); // 30 second timeout
                 });
             } catch (apiError) {
                 console.error('Error with ElevenLabs API call:', apiError.message);
