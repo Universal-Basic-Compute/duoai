@@ -265,7 +265,11 @@ function createWindow() {
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
-            enableRemoteModule: true
+            enableRemoteModule: true,
+            webSecurity: true,
+            allowRunningInsecureContent: false,
+            // Add this line to allow playing audio from blob URLs
+            webviewTag: true
         },
         resizable: false,
         fullscreenable: false,
@@ -300,7 +304,8 @@ function createWindow() {
         const apiUrl = configManager.loadConfig().API_URL || 'https://duoai.vercel.app';
         
         // Create CSP with dynamic API URL and explicitly include production URL
-        const csp = `default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com ${apiUrl} https://duoai.vercel.app http://localhost:3000; img-src 'self' data:; style-src 'self' 'unsafe-inline';`;
+        // Add media-src 'self' blob: to allow blob URLs for audio playback
+        const csp = `default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com ${apiUrl} https://duoai.vercel.app http://localhost:3000; img-src 'self' data:; style-src 'self' 'unsafe-inline'; media-src 'self' blob:;`;
         
         callback({
             responseHeaders: {

@@ -442,8 +442,24 @@ class SpeechManager {
                     console.log('Created new Audio element for playback');
                 
                     // Set the source before attaching event handlers
-                    this.audioElement.src = audioUrl;
-                    
+                    try {
+                        this.audioElement.src = audioUrl;
+                    } catch (error) {
+                        console.error('Error setting audio source (possible CSP issue):', error);
+                        URL.revokeObjectURL(audioUrl);
+                        return resolve();
+                    }
+                
+                    // Add specific error handler for CSP issues
+                    this.audioElement.addEventListener('error', (e) => {
+                        console.error('Audio element error:', e);
+                        if (e.target.error && e.target.error.code === 4) {
+                            console.error('CSP error detected when loading audio');
+                        }
+                        URL.revokeObjectURL(audioUrl);
+                        resolve();
+                    });
+                
                     this.audioElement.oncanplaythrough = () => {
                         console.log('Audio can play through, starting playback');
                         this.audioElement.play().catch(error => {
