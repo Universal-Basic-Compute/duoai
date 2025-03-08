@@ -1,6 +1,5 @@
 // First, import required modules at the very top of the file
 const { ipcRenderer } = require('electron');
-const systemPromptBuilder = require('./system_prompt_builder');
 const screenshotUtil = require('./screenshot');
 const claudeAPI = require('./claude_api');
 const authBridge = require('./bridge');
@@ -396,12 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add active class
             novaCharacterItem.classList.add('character-active');
             
-            // Build the system prompt for Nova
-            const systemPrompt = systemPromptBuilder.buildSystemPrompt('Nova');
-            console.log('Default system prompt built for Nova');
-            
-            // Store the system prompt for later use
-            localStorage.setItem('currentSystemPrompt', systemPrompt);
+            // Store the character name for later use
             localStorage.setItem('currentCharacter', 'Nova');
             
             // Set current character
@@ -411,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const voiceId = getVoiceIdForCharacter('Nova');
             speechManager.setVoice(voiceId);
             localStorage.setItem('selectedVoice', voiceId);
-            
         }
     };
     
@@ -1122,6 +1115,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Store the character name for later use
             localStorage.setItem('currentCharacter', characterName);
+            
+            // Set current character
+            currentCharacter = characterName;
             
             // Set the voice for the selected character
             const voiceId = getVoiceIdForCharacter(characterName);
