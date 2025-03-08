@@ -35,7 +35,7 @@ async function findUserByGoogleId(googleId) {
         return {
             id: 'mock-id-' + googleId,
             GoogleId: googleId,
-            Name: 'Mock User',
+            Username: 'Mock User',
             Email: 'mock@example.com',
             ProfilePicture: '',
             CreatedAt: new Date().toISOString(),
@@ -77,7 +77,7 @@ async function findUserByEmail(email) {
         return {
             id: 'mock-id-' + email,
             Email: email,
-            Name: 'Mock User',
+            Username: 'Mock User',
             PasswordHash: '', // No password for mock user
             CreatedAt: new Date().toISOString(),
             LastLogin: new Date().toISOString(),
@@ -121,7 +121,7 @@ async function createUserWithCredentials(userData) {
         return {
             id: 'mock-id-' + userData.email,
             Email: userData.email,
-            Name: userData.username || '',
+            Username: userData.username || '',
             PasswordHash: 'mock-password-hash',
             CreatedAt: new Date().toISOString(),
             LastLogin: new Date().toISOString(),
@@ -136,7 +136,7 @@ async function createUserWithCredentials(userData) {
             {
                 fields: {
                     Email: userData.email,
-                    Name: userData.username || '',
+                    Username: userData.username || '',
                     PasswordHash: userData.passwordHash, // Already hashed password
                     CreatedAt: new Date().toISOString(),
                     LastLogin: new Date().toISOString(),
@@ -172,7 +172,7 @@ async function createUser(userData) {
         return {
             id: 'mock-id-' + userData.id,
             GoogleId: userData.id,
-            Name: userData.displayName || '',
+            Username: userData.displayName || '',
             Email: userData.emails && userData.emails[0] ? userData.emails[0].value : '',
             ProfilePicture: userData.photos && userData.photos[0] ? userData.photos[0].value : '',
             CreatedAt: new Date().toISOString(),
@@ -188,7 +188,7 @@ async function createUser(userData) {
             {
                 fields: {
                     GoogleId: userData.id,
-                    Name: userData.displayName || '',
+                    Username: userData.displayName || '',
                     Email: userData.emails && userData.emails[0] ? userData.emails[0].value : '',
                     ProfilePicture: userData.photos && userData.photos[0] ? userData.photos[0].value : '',
                     CreatedAt: new Date().toISOString(),

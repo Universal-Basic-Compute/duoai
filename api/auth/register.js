@@ -79,7 +79,7 @@ module.exports = async (req, res) => {
       user: {
         id: user.id,
         email: user.Email,
-        name: user.Name
+        name: user.Username
       }
     });
   } catch (error) {
