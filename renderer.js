@@ -8,6 +8,17 @@ const speechManager = require('./speech');
 // Debug protocol handler registration
 console.log('Renderer process started, protocol handlers should be registered');
 
+// Add event listener for app closing
+window.addEventListener('beforeunload', () => {
+    // Clean up speech resources when the app is actually closing
+    if (speechManager) {
+        speechManager.cleanup();
+    }
+    
+    // Tell main process audio playback is done
+    ipcRenderer.send('keep-app-running', false);
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded');
     
@@ -606,18 +617,22 @@ document.addEventListener('DOMContentLoaded', () => {
     closeChatButton.addEventListener('click', async () => {
         // End usage tracking
         await endUsageTracking();
-        
-        // Clean up speech resources
-        speechManager.cleanup();
-        
+    
+        // Don't call speechManager.cleanup() here as it would stop audio playback
+        // Instead, just hide the chat container
+    
         // Hide the chat container
         chatContainer.style.right = '-350px';
-        
+    
         // Show the menu tab
         menuTab.style.right = '0';
-        
+    
         // Resize window
         ipcRenderer.send('resize-window', { width: 50, height: 600 });
+    
+        // Note: We're intentionally not cleaning up speech resources
+        // to allow audio to continue playing in the background
+        console.log('Chat closed but audio playback will continue if in progress');
     });
     
     // Send button functionality

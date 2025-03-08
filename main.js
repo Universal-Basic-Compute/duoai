@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol, dialog, powerSaveBlocker } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -82,6 +82,10 @@ app.on('render-process-gone', (event, webContents, details) => {
 app.on('child-process-gone', (event, details) => {
     console.error('Child process gone:', details.type, details.reason, details.exitCode);
 });
+
+// Add these variables at the top level
+let powerSaveBlockerId = null;
+let audioPlaybackActive = false;
 
 // Log startup information
 console.log(`Starting DUOAI application (version ${app.getVersion()})`);
@@ -346,8 +350,44 @@ app.whenReady().then(() => {
 
 // Windows protocol handler code removed
 
+// Add this IPC handler for audio playback
+ipcMain.on('keep-app-running', (event, keepRunning) => {
+    audioPlaybackActive = keepRunning;
+    
+    if (keepRunning) {
+        // Start power save blocker if not already active
+        if (powerSaveBlockerId === null) {
+            powerSaveBlockerId = powerSaveBlocker.start('prevent-app-suspension');
+            console.log('Power save blocker started with ID:', powerSaveBlockerId);
+        }
+    } else {
+        // Stop power save blocker if active
+        if (powerSaveBlockerId !== null) {
+            powerSaveBlocker.stop(powerSaveBlockerId);
+            console.log('Power save blocker stopped');
+            powerSaveBlockerId = null;
+        }
+    }
+});
+
 app.on('window-all-closed', function () {
+    // Don't quit if audio is playing
+    if (audioPlaybackActive) {
+        console.log('Window closed but audio is playing, keeping app running');
+        return;
+    }
+    
+    // Otherwise quit on all platforms except macOS
     if (process.platform !== 'darwin') app.quit();
+});
+
+// Add this to handle app before-quit event
+app.on('before-quit', () => {
+    // Make sure to stop power save blocker if active
+    if (powerSaveBlockerId !== null) {
+        powerSaveBlocker.stop(powerSaveBlockerId);
+        powerSaveBlockerId = null;
+    }
 });
 
 // No need to clean up server process as we're using a remote server

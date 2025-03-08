@@ -429,6 +429,17 @@ class SpeechManager {
                         try {
                             this.audioElement = new Audio();
                             this.audioElement.volume = this.volume;
+                            
+                            // Add this to ensure audio continues playing when window is minimized
+                            if (this.isElectronEnv) {
+                                // In Electron, we need to set this property to ensure audio continues
+                                this.audioElement.preservesPitch = false; // This is a dummy property to access the element
+                                
+                                // Use the ipcRenderer to tell the main process to keep the app running
+                                if (ipcRenderer) {
+                                    ipcRenderer.send('keep-app-running', true);
+                                }
+                            }
                         } catch (error) {
                             console.warn('Error creating Audio element:', error);
                             return resolve();
@@ -457,6 +468,12 @@ class SpeechManager {
                             console.error('CSP error detected when loading audio');
                         }
                         URL.revokeObjectURL(audioUrl);
+                        
+                        // Tell main process we're done with audio
+                        if (this.isElectronEnv && ipcRenderer) {
+                            ipcRenderer.send('keep-app-running', false);
+                        }
+                        
                         resolve();
                     });
                 
@@ -465,6 +482,12 @@ class SpeechManager {
                         this.audioElement.play().catch(error => {
                             console.error('Error playing audio:', error);
                             URL.revokeObjectURL(audioUrl);
+                            
+                            // Tell main process we're done with audio
+                            if (this.isElectronEnv && ipcRenderer) {
+                                ipcRenderer.send('keep-app-running', false);
+                            }
+                            
                             resolve();
                         });
                     };
@@ -479,12 +502,24 @@ class SpeechManager {
                     this.audioElement.onended = () => {
                         console.log('Audio playback ended');
                         URL.revokeObjectURL(audioUrl);
+                        
+                        // Tell main process we're done with audio
+                        if (this.isElectronEnv && ipcRenderer) {
+                            ipcRenderer.send('keep-app-running', false);
+                        }
+                        
                         resolve();
                     };
                     
                     this.audioElement.onerror = (error) => {
                         console.error('Error loading audio:', error);
                         URL.revokeObjectURL(audioUrl);
+                        
+                        // Tell main process we're done with audio
+                        if (this.isElectronEnv && ipcRenderer) {
+                            ipcRenderer.send('keep-app-running', false);
+                        }
+                        
                         resolve();
                     };
                     
@@ -493,6 +528,12 @@ class SpeechManager {
                         if (this.audioElement.readyState < 3) { // HAVE_FUTURE_DATA
                             console.warn('Audio taking too long to load');
                             URL.revokeObjectURL(audioUrl);
+                            
+                            // Tell main process we're done with audio
+                            if (this.isElectronEnv && ipcRenderer) {
+                                ipcRenderer.send('keep-app-running', false);
+                            }
+                            
                             resolve();
                         }
                     }, 5000); // 5 second timeout
