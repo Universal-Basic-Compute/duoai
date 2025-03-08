@@ -170,15 +170,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await authBridge.registerWithCredentials(username, email, password);
             
             if (response.success) {
-                // Show success message
-                registerError.textContent = '';
-                registerError.innerHTML = '<span style="color: #4caf50;">Registration successful! You can now log in.</span>';
+                // Instead of showing success message and switching to login form,
+                // directly store the tokens and user info
+                localStorage.setItem('authToken', response.token);
+                localStorage.setItem('refreshToken', response.refreshToken);
                 
-                // Clear form
-                registerForm.reset();
+                // Store user info
+                localStorage.setItem('user', JSON.stringify(response.user));
+                localStorage.setItem('isLoggedIn', 'true');
                 
-                // Switch to login form
-                loginToggle.click();
+                // Update UI for logged in state
+                isLoggedIn = true;
+                loginContainer.classList.add('hidden');
+                menuTab.style.display = 'block';
+                
+                // Check subscription status
+                checkSubscriptionStatus();
+                
+                console.log('Auto-login successful after registration');
             } else {
                 registerError.textContent = response.message || 'Registration failed. Please try again.';
             }
