@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const email = document.getElementById('loginEmail').value;
+        const emailOrUsername = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
         
         // Update placeholder to reflect email or username
@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.disabled = true;
             
             // Call the login API through the bridge
-            const response = await authBridge.loginWithCredentials(email, password);
+            // Pass the input value as is - the backend will determine if it's an email or username
+            const response = await authBridge.loginWithCredentials(emailOrUsername, password);
             
             if (response.success) {
                 // Store tokens in localStorage
