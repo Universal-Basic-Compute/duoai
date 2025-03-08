@@ -347,17 +347,17 @@ class SpeechManager {
                 console.log('Text is very short or empty, skipping TTS');
                 return Promise.resolve();
             }
-        
-        if (!this.elevenLabsClient) {
-            console.warn('ElevenLabs client not initialized, attempting to initialize now...');
-            const initialized = await this.initElevenLabs();
             
-            // Check again after initialization attempt
-            if (!initialized) {
-                console.warn('ElevenLabs client not initialized, cannot speak text');
-                return Promise.resolve();
+            if (!this.elevenLabsClient) {
+                console.warn('ElevenLabs client not initialized, attempting to initialize now...');
+                const initialized = await this.initElevenLabs();
+                
+                // Check again after initialization attempt
+                if (!initialized) {
+                    console.warn('ElevenLabs client not initialized, cannot speak text');
+                    return Promise.resolve();
+                }
             }
-        }
         
         try {
             console.log('Converting text to speech with ElevenLabs:', text.substring(0, 50) + '...');
@@ -526,6 +526,7 @@ class SpeechManager {
         console.error('Unexpected error in speak method:', outerError);
         return Promise.resolve();
     }
+  }
 }
 
     /**
