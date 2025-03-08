@@ -200,9 +200,8 @@ async function generateSystemPrompt(characterName) {
             response.data.content[0].text,
             characterName
         );
-            
-            console.log('Messages saved to Airtable');
-        }
+        
+        console.log('Messages saved to Airtable');
     } catch (saveError) {
         console.error('Error saving messages to Airtable:', saveError);
         // Don't fail the request if saving messages fails
