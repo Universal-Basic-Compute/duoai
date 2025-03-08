@@ -751,17 +751,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
     
-        // Build the auth URL with the correct redirect URI
-        const redirectUri = encodeURIComponent(`${config.API_URL}/api/auth/callback`);
+        // Always use production URL for authentication
+        const prodUrl = 'https://duoai.vercel.app';
+        const redirectUri = encodeURIComponent(`${prodUrl}/api/auth/callback`);
         console.log('Using redirect URI:', redirectUri);
     
         const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account`;
     
-        // Open the auth URL in the default browser
+        // Open the auth URL in the default browser without confirmation
         ipcRenderer.send('open-external-url', authUrl);
-    
-        // No fallback dialog - we'll rely on the proper OAuth flow
-        alert('A browser window has been opened for Google authentication. Please complete the sign-in process there and return to the app.');
         
         // For development/testing, bypass Google auth and use mock login
         if (process.env.NODE_ENV === 'development') {

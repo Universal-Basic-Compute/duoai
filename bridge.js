@@ -4,9 +4,8 @@ const { loadConfig } = require('./config');
 
 class AuthBridge {
     constructor() {
-        // Load config to get API URL
-        const config = loadConfig();
-        this.baseUrl = config.API_URL || 'https://duoai.vercel.app';
+        // Always use production URL for authentication
+        this.baseUrl = 'https://duoai.vercel.app';
         this.user = null;
         this.subscription = null;
     }

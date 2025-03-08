@@ -128,7 +128,7 @@ module.exports = async (req, res) => {
                                     token: '${token}',
                                     refreshToken: '${refreshToken}',
                                     user: ${JSON.stringify(jwtPayload.user)}
-                                }, '*');
+                                }, 'https://duoai.vercel.app');
                                 
                                 document.getElementById('status').textContent = 'Authentication successful! You can close this window.';
                             } else {
