@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerError = document.getElementById('registerError');
     const passwordStrength = document.getElementById('passwordStrength');
     const registerPassword = document.getElementById('registerPassword');
+    
+    // Ensure the register name field has the correct placeholder
+    const registerNameInput = document.getElementById('registerName');
+    if (registerNameInput) {
+        registerNameInput.placeholder = 'Username';
+    }
 
     // Form toggle
     loginToggle.addEventListener('click', () => {
