@@ -47,8 +47,6 @@ async function findUserByGoogleId(googleId) {
     }
     
     try {
-        // Ensure we use the exact field name as defined in Airtable
-        // Note: Field names in Airtable are case-sensitive
         const records = await usersTable.select({
             filterByFormula: `{GoogleId} = '${googleId}'`,
             maxRecords: 1
@@ -63,11 +61,6 @@ async function findUserByGoogleId(googleId) {
         return null;
     } catch (error) {
         console.error('Error finding user by Google ID:', error);
-        console.error('Error details:', error.message);
-        // Log more details if available
-        if (error.error) {
-            console.error('Airtable error:', error.error);
-        }
         throw error;
     }
 }
