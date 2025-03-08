@@ -27,11 +27,19 @@ module.exports = async (req, res) => {
 
     // Validate input
     if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+      return res.status(400).json({ error: 'Email/Username and password are required' });
     }
 
-    // Find user by email
-    const user = await airtableService.findUserByEmail(email);
+    // Find user by email or username
+    let user;
+    // Check if input is an email (contains @ symbol)
+    if (email.includes('@')) {
+      user = await airtableService.findUserByEmail(email);
+    } else {
+      // If no @ symbol, treat as username
+      user = await airtableService.findUserByUsername(email);
+    }
+  
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }

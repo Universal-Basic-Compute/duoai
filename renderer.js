@@ -112,6 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
         
+        // Update placeholder to reflect email or username
+        const loginEmailInput = document.getElementById('loginEmail');
+        if (loginEmailInput) {
+            loginEmailInput.placeholder = 'Email or Username';
+        }
+        
         // Clear previous errors
         loginError.textContent = '';
         

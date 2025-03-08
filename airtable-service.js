@@ -107,6 +107,47 @@ async function findUserByEmail(email) {
 }
 
 /**
+ * Find a user by their username
+ * @param {string} username - The username to search for
+ * @returns {Promise<Object|null>} - The user object or null if not found
+ */
+async function findUserByUsername(username) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Using mock user data for username:', username);
+        return {
+            id: 'mock-id-' + username,
+            Username: username,
+            Email: 'mock@example.com',
+            PasswordHash: '', // No password for mock user
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'basic',
+            SubscriptionStatus: 'active',
+            HoursUsed: 0
+        };
+    }
+    
+    try {
+        const records = await usersTable.select({
+            filterByFormula: `{Username} = '${username}'`,
+            maxRecords: 1
+        }).firstPage();
+        
+        if (records && records.length > 0) {
+            return {
+                id: records[0].id,
+                ...records[0].fields
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error finding user by username:', error);
+        throw error;
+    }
+}
+
+/**
  * Create a new user with email and password credentials
  * @param {Object} userData - User data to create
  * @param {string} userData.email - User's email
@@ -508,6 +549,7 @@ async function getUserMessages(username, limit = 100, character = null) {
 module.exports = {
     findUserByGoogleId,
     findUserByEmail,
+    findUserByUsername,
     createUser,
     createUserWithCredentials,
     updateUser,
