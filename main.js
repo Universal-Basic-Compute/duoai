@@ -397,38 +397,6 @@ ipcMain.on('open-external-url', (event, url) => {
     shell.openExternal(url);
 });
 
-// Settings window
-let settingsWindow = null;
-
-function createSettingsWindow() {
-    if (settingsWindow) {
-        settingsWindow.focus();
-        return;
-    }
-    
-    settingsWindow = new BrowserWindow({
-        width: 600,
-        height: 700,
-        webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false
-        },
-        parent: BrowserWindow.getFocusedWindow(),
-        modal: true,
-        show: false
-    });
-    
-    settingsWindow.loadFile(getAssetPath('settings.html'));
-    
-    settingsWindow.once('ready-to-show', () => {
-        settingsWindow.show();
-    });
-    
-    settingsWindow.on('closed', () => {
-        settingsWindow = null;
-    });
-}
-
 // IPC handlers for settings
 ipcMain.handle('get-config', async () => {
     return configManager.loadConfig();
@@ -437,15 +405,4 @@ ipcMain.handle('get-config', async () => {
 ipcMain.handle('save-config', async (event, newConfig) => {
     const result = configManager.saveConfig(newConfig);
     return result;
-});
-
-ipcMain.on('close-settings', () => {
-    if (settingsWindow) {
-        settingsWindow.close();
-    }
-});
-
-// Add menu item for settings
-ipcMain.on('open-settings', () => {
-    createSettingsWindow();
 });

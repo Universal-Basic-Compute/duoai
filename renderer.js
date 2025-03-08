@@ -968,9 +968,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add event listener for logout button
     logoutButton.addEventListener('click', logout);
     
+    // Create settings submenu
+    const settingsSubmenu = document.createElement('div');
+    settingsSubmenu.id = 'settingsSubmenu';
+    settingsSubmenu.className = 'submenu';
+    settingsSubmenu.innerHTML = `
+        <div class="submenu-header">
+            <button id="settingsBackButton" class="back-button">←</button>
+            <h2>Settings</h2>
+        </div>
+        <div class="submenu-content">
+            <div class="settings-section">
+                <h3>Assistant Mode</h3>
+                <div class="setting-item">
+                    <label for="assistantModeToggle">Mode</label>
+                    <div class="toggle-container">
+                        <span class="toggle-label">Reactive</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="assistantModeToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label">Proactive</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add the settings submenu to the document body
+    document.body.appendChild(settingsSubmenu);
+    
     // Settings button functionality
     settingsButton.addEventListener('click', () => {
-        ipcRenderer.send('open-settings');
+        // Show the settings submenu
+        settingsSubmenu.style.right = '0';
     });
     
     // Volume slider event listener
@@ -980,6 +1011,23 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('speechVolume', volume);
     });
     
+    // Settings back button functionality
+    document.getElementById('settingsBackButton').addEventListener('click', () => {
+        // Hide the settings submenu
+        settingsSubmenu.style.right = '-300px';
+    });
+    
+    // Assistant mode toggle functionality
+    const assistantModeToggle = document.getElementById('assistantModeToggle');
+    assistantModeToggle.addEventListener('change', () => {
+        const isProactive = assistantModeToggle.checked;
+        localStorage.setItem('assistantMode', isProactive ? 'proactive' : 'reactive');
+        console.log(`Assistant mode set to: ${isProactive ? 'Proactive' : 'Reactive'}`);
+    });
+    
+    // Load saved assistant mode setting
+    const savedAssistantMode = localStorage.getItem('assistantMode') || 'proactive';
+    assistantModeToggle.checked = savedAssistantMode === 'proactive';
 
     // Microphone button event listener
     micButton.addEventListener('click', () => {
