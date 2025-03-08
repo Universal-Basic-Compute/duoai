@@ -31,7 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Listen for auth data from main process
     ipcRenderer.on('auth-data-received', (event, authData) => {
-        console.log('Received auth data from main process');
+        console.log('Received auth data from main process:', authData ? 'Data received' : 'No data');
+        if (authData) {
+            console.log('Auth data contains token:', !!authData.token);
+            console.log('Auth data contains refreshToken:', !!authData.refreshToken);
+            console.log('Auth data contains user:', !!authData.user);
+        }
+        
         handleAuthData(authData);
     });
     
@@ -794,6 +800,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     });
     
+    // Create a diagnostic button (only in development mode)
+    const { app } = require('electron');
+    const { shell } = require('electron');
+    
+    if (!app.isPackaged) {
+        const diagnosticButton = document.createElement('button');
+        diagnosticButton.textContent = 'Test Protocol Handler';
+        diagnosticButton.style.marginTop = '10px';
+        diagnosticButton.addEventListener('click', () => {
+            // Test the protocol handler with a mock auth data
+            const mockAuthData = {
+                token: 'mock-token',
+                refreshToken: 'mock-refresh-token',
+                user: { id: 'mock-id', name: 'Mock User', email: 'mock@example.com' }
+            };
+            
+            // Convert to JSON string and encode for URL
+            const dataStr = encodeURIComponent(JSON.stringify(mockAuthData));
+            
+            // Create the protocol URL
+            const protocolUrl = `duoai://auth/${dataStr}`;
+            
+            // Open the URL (this should trigger the protocol handler)
+            shell.openExternal(protocolUrl);
+        });
+        
+        // Add the button to the login card
+        document.querySelector('.login-card').appendChild(diagnosticButton);
+    }
+    
     // This function is no longer needed as we're using the postMessage approach
     
     // Function to initialize Google Sign-In
@@ -814,16 +850,16 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
     
         // Use the exact redirect URI that's authorized in Google Cloud Console
-        // Remove the useProtocol parameter if it's not in your authorized URIs
         const redirectUri = encodeURIComponent('https://duoai.vercel.app/api/auth/callback');
         console.log('Using redirect URI:', redirectUri);
     
-        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account`;
+        // Add a parameter to indicate this is from the Electron app
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=email%20profile&prompt=select_account&state=electron_app`;
     
-        // Open the auth URL in the default browser without confirmation
-        ipcRenderer.send('open-external-url', authUrl);
+        console.log('Opening auth URL in browser:', authUrl);
         
-        console.log('Auth URL opened in browser:', authUrl);
+        // Open the auth URL in the default browser
+        ipcRenderer.send('open-external-url', authUrl);
     }
     
     

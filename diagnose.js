@@ -18,7 +18,9 @@ const criticalFiles = [
     'config.js',
     'index.html',
     'package.json',
-    'node_modules/electron/package.json'
+    'node_modules/electron/package.json',
+    'bridge.js',
+    'speech.js'
 ];
 
 criticalFiles.forEach(file => {
@@ -101,7 +103,8 @@ const criticalDeps = [
     'axios',
     'dotenv',
     'jsonwebtoken',
-    'sharp'
+    'sharp',
+    'elevenlabs'
 ];
 
 criticalDeps.forEach(dep => {
@@ -116,6 +119,19 @@ criticalDeps.forEach(dep => {
 // Check for user data directory
 const userDataPath = path.join(os.homedir(), 'AppData', 'Roaming', 'duoai');
 console.log(`\nUser data directory (${userDataPath}): ${fs.existsSync(userDataPath) ? 'Exists' : 'Does not exist'}`);
+
+// Check protocol handler registration
+console.log('\nChecking protocol handler registration:');
+try {
+    const { execSync } = require('child_process');
+    const command = 'reg query "HKCU\\Software\\Classes\\duoai" /s';
+    const result = execSync(command, { encoding: 'utf8' });
+    console.log('Protocol handler registration found:');
+    console.log(result);
+} catch (error) {
+    console.log('Protocol handler not registered in Windows registry');
+    console.log('Error:', error.message);
+}
 
 if (fs.existsSync(userDataPath)) {
     try {

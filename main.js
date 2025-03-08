@@ -316,11 +316,25 @@ app.whenReady().then(() => {
         return;
     }
     
-    // Register custom protocol handler
-    if (process.platform === 'win32') {
+    // Add this function to check if we're running the packaged app
+    function isPackaged() {
+      return app.isPackaged;
+    }
+
+    // Register custom protocol handler with better handling for packaged apps
+    if (isPackaged()) {
+        // For packaged app, we need to use setAsDefaultProtocolClient differently
         app.setAsDefaultProtocolClient('duoai');
+    
+        console.log('Registered duoai:// protocol handler (packaged app)');
     } else {
-        app.setAsDefaultProtocolClient('duoai', process.execPath, [path.resolve(process.argv[1] || '.')]);
+        // For development
+        if (process.platform === 'win32') {
+            app.setAsDefaultProtocolClient('duoai');
+        } else {
+            app.setAsDefaultProtocolClient('duoai', process.execPath, [path.resolve(process.argv[1] || '.')]);
+        }
+        console.log('Registered duoai:// protocol handler (development)');
     }
     
     createWindow();
@@ -330,28 +344,50 @@ app.whenReady().then(() => {
     });
 });
 
+// Add this helper function to handle protocol URLs
+function handleProtocolUrl(url, window) {
+    if (url.startsWith('duoai://auth')) {
+        try {
+            // Extract the data part (everything after duoai://auth/)
+            const dataStr = url.substring(12); // 'duoai://auth/'.length = 12
+            console.log('Auth data received:', dataStr.substring(0, 20) + '...');
+            
+            // Decode the URL component
+            const decodedData = decodeURIComponent(dataStr);
+            
+            // Parse the JSON data
+            const authData = JSON.parse(decodedData);
+            
+            // Send to renderer process
+            if (window) {
+                window.webContents.send('auth-data-received', authData);
+                console.log('Auth data sent to renderer process');
+            } else {
+                console.error('No window available to send auth data');
+            }
+        } catch (error) {
+            console.error('Error handling protocol URL:', error);
+            console.error('URL was:', url);
+        }
+    }
+}
+
 // Add this to handle protocol activation
 app.on('open-url', (event, url) => {
     event.preventDefault();
+    console.log('open-url event received:', url);
     
-    // Parse the URL
-    if (url.startsWith('duoai://auth')) {
-        const dataStr = decodeURIComponent(url.substring(12));
-        try {
-            const authData = JSON.parse(dataStr);
-            // Send to renderer process
-            const win = BrowserWindow.getAllWindows()[0];
-            if (win) {
-                win.webContents.send('auth-data-received', authData);
-            }
-        } catch (error) {
-            console.error('Error parsing auth data:', error);
-        }
+    const win = BrowserWindow.getAllWindows()[0];
+    if (win) {
+        handleProtocolUrl(url, win);
+    } else {
+        console.error('No window available to handle open-url event');
     }
 });
 
 // Handle protocol activation from command line args (Windows)
 if (process.platform === 'win32') {
+    // Process the first instance arguments
     const gotTheLock = app.requestSingleInstanceLock();
     
     if (!gotTheLock) {
@@ -367,16 +403,8 @@ if (process.platform === 'win32') {
                 // Check if this is a protocol handler call
                 const protocolUrl = commandLine.find(arg => arg.startsWith('duoai://'));
                 if (protocolUrl) {
-                    // Handle the protocol URL
-                    if (protocolUrl.startsWith('duoai://auth')) {
-                        const dataStr = decodeURIComponent(protocolUrl.substring(12));
-                        try {
-                            const authData = JSON.parse(dataStr);
-                            win.webContents.send('auth-data-received', authData);
-                        } catch (error) {
-                            console.error('Error parsing auth data:', error);
-                        }
-                    }
+                    console.log('Protocol URL received in second instance:', protocolUrl);
+                    handleProtocolUrl(protocolUrl, win);
                 }
             }
         });
@@ -384,21 +412,13 @@ if (process.platform === 'win32') {
         // Check if app was started with protocol URL
         const protocolUrl = process.argv.find(arg => arg.startsWith('duoai://'));
         if (protocolUrl) {
-            // Handle the protocol URL
-            if (protocolUrl.startsWith('duoai://auth')) {
-                const dataStr = decodeURIComponent(protocolUrl.substring(12));
-                try {
-                    const authData = JSON.parse(dataStr);
-                    // We'll need to wait for the window to be created
-                    app.on('browser-window-created', (_, window) => {
-                        window.webContents.on('did-finish-load', () => {
-                            window.webContents.send('auth-data-received', authData);
-                        });
-                    });
-                } catch (error) {
-                    console.error('Error parsing auth data:', error);
-                }
-            }
+            console.log('Protocol URL received at startup:', protocolUrl);
+            // We'll need to wait for the window to be created
+            app.on('browser-window-created', (_, window) => {
+                window.webContents.on('did-finish-load', () => {
+                    handleProtocolUrl(protocolUrl, window);
+                });
+            });
         }
     }
 }
