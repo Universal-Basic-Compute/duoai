@@ -66,6 +66,101 @@ async function findUserByGoogleId(googleId) {
 }
 
 /**
+ * Find a user by their email address
+ * @param {string} email - The email address to search for
+ * @returns {Promise<Object|null>} - The user object or null if not found
+ */
+async function findUserByEmail(email) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Using mock user data for email:', email);
+        return {
+            id: 'mock-id-' + email,
+            Email: email,
+            Name: 'Mock User',
+            PasswordHash: '', // No password for mock user
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'basic',
+            SubscriptionStatus: 'active',
+            HoursUsed: 0
+        };
+    }
+    
+    try {
+        const records = await usersTable.select({
+            filterByFormula: `{Email} = '${email}'`,
+            maxRecords: 1
+        }).firstPage();
+        
+        if (records && records.length > 0) {
+            return {
+                id: records[0].id,
+                ...records[0].fields
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error finding user by email:', error);
+        throw error;
+    }
+}
+
+/**
+ * Create a new user with email and password credentials
+ * @param {Object} userData - User data to create
+ * @param {string} userData.email - User's email
+ * @param {string} userData.password - User's password (will be hashed)
+ * @param {string} userData.name - User's name
+ * @returns {Promise<Object>} - The created user object
+ */
+async function createUserWithCredentials(userData) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Creating mock user with credentials for:', userData.email);
+        return {
+            id: 'mock-id-' + userData.email,
+            Email: userData.email,
+            Name: userData.name || '',
+            PasswordHash: 'mock-password-hash',
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'free', // Default subscription plan
+            SubscriptionStatus: 'inactive',
+            HoursUsed: 0
+        };
+    }
+    
+    try {
+        const records = await usersTable.create([
+            {
+                fields: {
+                    Email: userData.email,
+                    Name: userData.name || '',
+                    PasswordHash: userData.passwordHash, // Already hashed password
+                    CreatedAt: new Date().toISOString(),
+                    LastLogin: new Date().toISOString(),
+                    SubscriptionPlan: 'free', // Default subscription plan
+                    SubscriptionStatus: 'inactive',
+                    HoursUsed: 0
+                }
+            }
+        ]);
+        
+        if (records && records.length > 0) {
+            return {
+                id: records[0].id,
+                ...records[0].fields
+            };
+        }
+        throw new Error('Failed to create user');
+    } catch (error) {
+        console.error('Error creating user with credentials:', error);
+        throw error;
+    }
+}
+
+/**
  * Create a new user in Airtable
  * @param {Object} userData - User data to create
  * @returns {Promise<Object>} - The created user object
@@ -400,7 +495,9 @@ async function getUserMessages(userId, limit = 100) {
 
 module.exports = {
     findUserByGoogleId,
+    findUserByEmail,
     createUser,
+    createUserWithCredentials,
     updateUser,
     updateLastLogin,
     updateSubscription,
