@@ -167,9 +167,6 @@ ipcMain.on('open-external-url', (event, url) => {
     shell.openExternal(url);
 });
 
-// Load and save configuration
-const configManager = require('./config');
-
 // Settings window
 let settingsWindow = null;
 
