@@ -199,7 +199,7 @@ module.exports = async (req, res) => {
             // Save assistant message to Airtable
             try {
                 console.log('[STREAM] Saving assistant message to Airtable...');
-                console.log('[STREAM] User ID:', userId);
+                console.log('[STREAM] Username:', username);
                 console.log('[STREAM] Character:', characterName || 'None');
                 console.log('[STREAM] Message length:', fullResponse.length);
                 

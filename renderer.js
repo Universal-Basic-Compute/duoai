@@ -568,6 +568,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Cache the response for offline use
                         cacheResponse('initial_message', fullResponse);
                         
+                        // Save the initial message to Airtable
+                        try {
+                            // Save the AI response to Airtable
+                            fetch(`${authBridge.baseUrl}/api/save-message`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                                },
+                                body: JSON.stringify({
+                                    role: 'assistant',
+                                    content: fullResponse,
+                                    character: currentCharacter
+                                })
+                            }).catch(err => console.error('Error saving initial AI response:', err));
+                        } catch (saveError) {
+                            console.error('Error saving initial message:', saveError);
+                        }
+                        
                         // Speak the response
                         speechManager.speak(fullResponse).catch(error => {
                             console.error('Error speaking message:', error);
@@ -647,25 +666,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Add user message to chat
         addMessage(sanitizedMessage, 'user');
-        
-        // Save user message to Airtable
-        try {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            fetch(`${authBridge.baseUrl}/api/save-message`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                },
-                body: JSON.stringify({
-                    role: 'user',
-                    content: sanitizedMessage,
-                    character: currentCharacter
-                })
-            }).catch(err => console.error('Error saving user message:', err));
-        } catch (saveError) {
-            console.error('Error saving message:', saveError);
-        }
         
         // Clear input
         userInput.value = '';
@@ -761,25 +761,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Cache the response for offline use
                     cacheResponse(`message_${sanitizedMessage.substring(0, 50)}`, fullResponse);
-                    
-                    // Save AI response to Airtable
-                    try {
-                        const user = JSON.parse(localStorage.getItem('user') || '{}');
-                        fetch(`${authBridge.baseUrl}/api/save-message`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                            },
-                            body: JSON.stringify({
-                                role: 'assistant',
-                                content: fullResponse,
-                                character: currentCharacter
-                            })
-                        }).catch(err => console.error('Error saving AI response:', err));
-                    } catch (saveError) {
-                        console.error('Error saving message:', saveError);
-                    }
                     
                     // Speak the response
                     speechManager.speak(fullResponse).catch(error => {
