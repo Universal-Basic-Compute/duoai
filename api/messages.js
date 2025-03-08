@@ -37,8 +37,11 @@ module.exports = async (req, res) => {
     // Get limit from query parameters
     const limit = req.query.limit ? parseInt(req.query.limit) : 100;
     
-    // Get messages from Airtable
-    const messages = await airtableService.getUserMessages(username, limit);
+    // Get character from query parameters
+    const character = req.query.character;
+    
+    // Get messages from Airtable, filtered by both username and character if provided
+    const messages = await airtableService.getUserMessages(username, limit, character);
     
     res.json({ messages });
   } catch (error) {

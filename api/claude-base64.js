@@ -146,7 +146,7 @@ async function generateSystemPrompt(characterName) {
     let previousMessages = [];
     try {
       console.log('Fetching previous messages for context...');
-      const messages = await airtableService.getUserMessages(username, 20);
+      const messages = await airtableService.getUserMessages(username, 20, characterName);
       
       if (messages && messages.length > 0) {
         console.log(`Found ${messages.length} previous messages`);

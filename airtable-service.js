@@ -453,13 +453,14 @@ async function saveMessage(username, role, content, characterName = null) {
 }
 
 /**
- * Get messages for a user
+ * Get messages for a user, optionally filtered by character
  * @param {string} username - The username
  * @param {number} limit - Maximum number of messages to return
+ * @param {string} character - Optional character name to filter by
  * @returns {Promise<Array>} - Array of message objects
  */
-async function getUserMessages(username, limit = 100) {
-    console.log(`[AIRTABLE] Getting messages for user: ${username}, limit: ${limit}`);
+async function getUserMessages(username, limit = 100, character = null) {
+    console.log(`[AIRTABLE] Getting messages for user: ${username}, limit: ${limit}, character: ${character || 'All'}`);
     console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
     
     if (!airtableEnabled) {
@@ -472,9 +473,20 @@ async function getUserMessages(username, limit = 100) {
         console.log('[AIRTABLE] Accessing messages table');
         const messagesTable = base('MESSAGES');
         
-        console.log(`[AIRTABLE] Querying messages with filter: {Username} = '${username}'`);
+        // Build the filter formula based on whether a character is specified
+        let filterFormula;
+        if (character) {
+            // Filter by both username and character
+            filterFormula = `AND({Username} = '${username}', {Character} = '${character}')`;
+            console.log(`[AIRTABLE] Querying messages with filter: ${filterFormula}`);
+        } else {
+            // Filter by username only
+            filterFormula = `{Username} = '${username}'`;
+            console.log(`[AIRTABLE] Querying messages with filter: ${filterFormula}`);
+        }
+        
         const records = await messagesTable.select({
-            filterByFormula: `{Username} = '${username}'`,
+            filterByFormula: filterFormula,
             sort: [{ field: 'Timestamp', direction: 'desc' }],
             maxRecords: limit
         }).firstPage();

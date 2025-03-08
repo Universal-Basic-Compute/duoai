@@ -567,31 +567,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         // Cache the response for offline use
                         cacheResponse('initial_message', fullResponse);
-                        
-                        // Save the initial message to Airtable
-                        try {
-                            // Get the current user's username from localStorage
-                            const user = JSON.parse(localStorage.getItem('user') || '{}');
-                            const username = user.name || 'anonymous';
-                            console.log('Using username for initial message:', username);
-                            
-                            // Save the AI response to Airtable
-                            fetch(`${authBridge.baseUrl}/api/save-message`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-                                },
-                                body: JSON.stringify({
-                                    role: 'assistant',
-                                    content: fullResponse,
-                                    character: currentCharacter,
-                                    username: username // Add username to the request body
-                                })
-                            }).catch(err => console.error('Error saving initial AI response:', err));
-                        } catch (saveError) {
-                            console.error('Error saving initial message:', saveError);
-                        }
+                    
+                        // Note: We don't need to save the message here as it's already saved in claude-stream.js
                         
                         // Speak the response
                         speechManager.speak(fullResponse).catch(error => {
@@ -817,55 +794,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Function to add a message to the chat
-    function addMessage(text, sender, isCached = false) {
+    function addMessage(text, sender, noSpeak = false) {
         // If text is empty, don't add a message
         if (!text) return;
-        
+    
         // For streaming AI messages, we handle this differently in sendMessage
-        if (sender === 'ai' && !isCached) {
+        if (sender === 'ai' && !noSpeak) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('message', `${sender}-message`);
-            
+        
             const textElement = document.createElement('div');
             textElement.textContent = text;
             messageElement.appendChild(textElement);
-            
+        
             chatMessages.appendChild(messageElement);
-            
+        
             // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
-            
+        
             // Speak AI messages
             speechManager.speak(text).catch(error => {
                 console.error('Error speaking message:', error);
             });
-            
+        
             return messageElement;
         }
-        
+    
         // For user messages and cached AI responses
         const messageElement = document.createElement('div');
         messageElement.classList.add('message', `${sender}-message`);
-        
+    
         // For cached responses, add an indicator
-        if (isCached && sender === 'ai') {
+        if (sender === 'ai' && text.includes('[cached]')) {
             const cachedIndicator = document.createElement('div');
             cachedIndicator.classList.add('cached-indicator');
             cachedIndicator.textContent = 'Offline response';
             messageElement.appendChild(cachedIndicator);
         }
-        
+    
         const textElement = document.createElement('div');
         textElement.textContent = text;
         messageElement.appendChild(textElement);
-        
+    
         chatMessages.appendChild(messageElement);
-        
+    
         // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Speak AI messages
-        if (sender === 'ai') {
+    
+        // Speak AI messages if not noSpeak
+        if (sender === 'ai' && !noSpeak) {
             speechManager.speak(text).catch(error => {
                 console.error('Error speaking message:', error);
             });
@@ -1157,9 +1134,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return characterVoices[characterName] || 'JBFqnCBsd6RMkjVDRZzb'; // Default to George
     }
 
+    // Function to load character-specific messages
+    async function loadCharacterMessages(characterName) {
+        try {
+            // Get the auth token
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                console.error('No auth token available');
+                return [];
+            }
+            
+            // Fetch messages for the specific character
+            const response = await fetch(`${authBridge.baseUrl}/api/messages?character=${encodeURIComponent(characterName)}`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch messages: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.messages || [];
+        } catch (error) {
+            console.error('Error loading character messages:', error);
+            return [];
+        }
+    }
+
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', async () => {
             // Remove active class from all items
             document.querySelectorAll('.character-item').forEach(i => {
                 i.classList.remove('character-active');
@@ -1183,6 +1189,47 @@ document.addEventListener('DOMContentLoaded', () => {
             speechManager.setVoice(voiceId);
             localStorage.setItem('selectedVoice', voiceId);
             
+            // If the chat is open, load character-specific messages
+            if (chatContainer.style.right === '0px') {
+                // Clear previous messages
+                chatMessages.innerHTML = '';
+                
+                // Update the character info in the chat header
+                selectedCharacter.innerHTML = `
+                    <div class="character-avatar">${characterName.charAt(0)}</div>
+                    <div class="character-info">${characterName}</div>
+                `;
+                
+                // Add a loading indicator
+                addLoadingIndicator();
+                
+                // Load character-specific messages
+                const messages = await loadCharacterMessages(characterName);
+                
+                // Remove loading indicator
+                removeLoadingIndicator();
+                
+                // Display messages if any
+                if (messages.length > 0) {
+                    // Sort messages by timestamp (oldest first)
+                    messages.sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp));
+                    
+                    // Add messages to chat
+                    messages.forEach(message => {
+                        const sender = message.Role === 'user' ? 'user' : 'ai';
+                        addMessage(message.Content, sender, true); // true means don't speak
+                    });
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    // Add welcome message
+                    const welcomeMessage = document.createElement('div');
+                    welcomeMessage.className = 'welcome-message';
+                    welcomeMessage.textContent = `Start a conversation with ${characterName} by sending a message or taking a screenshot.`;
+                    chatMessages.appendChild(welcomeMessage);
+                }
+            }
             
             // Optional: Close the submenu after selection
             // charactersSubmenu.style.right = '-300px';

@@ -85,7 +85,8 @@ module.exports = async (req, res) => {
         let previousMessages = [];
         try {
             // Get previous messages from Airtable (limit to 10 for context)
-            const messages = await airtableService.getUserMessages(username, 10);
+            // Filter by both username and character name
+            const messages = await airtableService.getUserMessages(username, 10, characterName);
             
             if (messages && messages.length > 0) {
                 console.log(`[STREAM] Found ${messages.length} previous messages for context`);
