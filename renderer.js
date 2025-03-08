@@ -708,22 +708,117 @@ document.addEventListener('DOMContentLoaded', () => {
         initGoogleSignIn();
     });
     
+    // Function to show token input dialog
+    function showTokenInputDialog() {
+        // Create a modal dialog for token input
+        const modal = document.createElement('div');
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        modal.style.display = 'flex';
+        modal.style.justifyContent = 'center';
+        modal.style.alignItems = 'center';
+        modal.style.zIndex = '10000';
+        
+        const dialog = document.createElement('div');
+        dialog.style.backgroundColor = 'white';
+        dialog.style.padding = '20px';
+        dialog.style.borderRadius = '10px';
+        dialog.style.width = '80%';
+        dialog.style.maxWidth = '500px';
+        
+        dialog.innerHTML = `
+            <h2>Enter Authentication Tokens</h2>
+            <p>Please paste the tokens from the browser window:</p>
+            
+            <div style="margin: 10px 0;">
+                <label for="authToken">Auth Token:</label>
+                <input type="text" id="authToken" style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+            
+            <div style="margin: 10px 0;">
+                <label for="refreshToken">Refresh Token:</label>
+                <input type="text" id="refreshToken" style="width: 100%; padding: 8px; margin-top: 5px;">
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button id="cancelTokenInput" style="margin-right: 10px; padding: 8px 15px;">Cancel</button>
+                <button id="submitTokens" style="padding: 8px 15px; background-color: #4285F4; color: white; border: none;">Submit</button>
+            </div>
+        `;
+        
+        modal.appendChild(dialog);
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        document.getElementById('cancelTokenInput').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+        
+        document.getElementById('submitTokens').addEventListener('click', async () => {
+            const authToken = document.getElementById('authToken').value.trim();
+            const refreshToken = document.getElementById('refreshToken').value.trim();
+            
+            if (!authToken || !refreshToken) {
+                alert('Please enter both tokens');
+                return;
+            }
+            
+            // Store tokens
+            localStorage.setItem('authToken', authToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            
+            // Verify token and get user info
+            try {
+                const authStatus = await authBridge.checkAuthStatus();
+                
+                if (authStatus.isAuthenticated) {
+                    // Store user info
+                    localStorage.setItem('user', JSON.stringify(authStatus.user));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // Update UI
+                    isLoggedIn = true;
+                    loginContainer.classList.add('hidden');
+                    menuTab.style.display = 'block';
+                    
+                    // Remove modal
+                    document.body.removeChild(modal);
+                    
+                    // Check subscription status
+                    await checkSubscriptionStatus();
+                } else {
+                    alert('Invalid tokens. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error verifying tokens:', error);
+                alert('Error verifying tokens. Please try again.');
+            }
+        });
+        
+        // Focus the first input
+        document.getElementById('authToken').focus();
+    }
+    
     // Function to initialize Google Sign-In
     function initGoogleSignIn() {
         // Get config to access environment variables
         const config = require('./config').loadConfig();
         const clientId = config.GOOGLE_CLIENT_ID;
-        
+    
         console.log('Config loaded in renderer:', config);
         console.log('Google Client ID available:', !!clientId);
-        
+    
         if (!clientId) {
             console.error('Google Client ID not found in configuration');
-            
+        
             // For development/testing, use a mock login
             if (confirm('Google Client ID not found. Would you like to use a mock login for testing?')) {
                 console.log('Using mock login for testing');
-                
+            
                 // Simulate successful login with mock data
                 const mockUser = {
                     id: 'mock-user-id',
@@ -731,46 +826,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     email: 'mock@example.com',
                     picture: ''
                 };
-                
+            
                 // Store mock tokens
                 localStorage.setItem('authToken', 'mock-token');
                 localStorage.setItem('refreshToken', 'mock-refresh-token');
                 localStorage.setItem('user', JSON.stringify(mockUser));
                 localStorage.setItem('isLoggedIn', 'true');
-                
+            
                 // Update UI for logged in state
                 isLoggedIn = true;
                 loginContainer.classList.add('hidden');
                 menuTab.style.display = 'block';
-                
+            
                 return;
             } else {
                 alert('Google authentication is not properly configured. Please check your settings.');
                 return;
             }
         }
-        
+    
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
-        
-        // Create a Google Sign-In button programmatically
-        const googleSignInDiv = document.createElement('div');
-        googleSignInDiv.id = 'g_id_onload';
-        googleSignInDiv.setAttribute('data-client_id', clientId);
-        googleSignInDiv.setAttribute('data-callback', 'handleGoogleSignIn');
-        googleSignInDiv.setAttribute('data-auto_prompt', 'false');
-        document.body.appendChild(googleSignInDiv);
-        
-        // Load the Google Sign-In script
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => {
-            console.log('Google Sign-In script loaded');
-            // Trigger the Google Sign-In prompt
-            google.accounts.id.prompt();
-        };
-        document.body.appendChild(script);
+    
+        // Instead of loading the Google Sign-In script directly, open a browser window for authentication
+        const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(config.API_URL + '/api/auth/callback')}&response_type=code&scope=email%20profile&prompt=select_account`;
+    
+        // Open the auth URL in the default browser
+        ipcRenderer.send('open-external-url', authUrl);
+    
+        // Show token input dialog after a short delay
+        setTimeout(() => {
+            showTokenInputDialog();
+        }, 1000);
     }
     
     // Callback function for Google Sign-In

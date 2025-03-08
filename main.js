@@ -143,7 +143,7 @@ function createWindow() {
             responseHeaders: {
                 ...details.responseHeaders,
                 'Content-Security-Policy': [
-                    "default-src 'self'; script-src 'self' https://accounts.google.com https://*.googleapis.com 'unsafe-inline'; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com https://duoai.vercel.app https://*.googleapis.com; img-src 'self' data: https://*.googleusercontent.com; style-src 'self' 'unsafe-inline';"
+                    "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.googleapis.com; connect-src 'self' https://api.anthropic.com https://api.elevenlabs.io https://api.openai.com https://duoai.vercel.app https://*.googleapis.com https://accounts.google.com; img-src 'self' data: https://*.googleusercontent.com; style-src 'self' 'unsafe-inline';"
                 ]
             }
         });
