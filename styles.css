@@ -167,6 +167,8 @@ body {
     z-index: 999;
     box-shadow: -5px 0 25px var(--shadow-color);
     border-left: 1px solid rgba(126, 87, 194, 0.2);
+    display: flex;
+    flex-direction: column;
 }
 
 .menu-header {
@@ -193,6 +195,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .primary-button {
@@ -354,16 +358,28 @@ body {
     transform: translate(5px, -50%);
 }
 
-.logout-button {
+/* Menu footer to position the logout button at the bottom */
+.menu-footer {
     margin-top: auto;
-    background-color: rgba(244, 67, 54, 0.1);
-    border-color: rgba(244, 67, 54, 0.3);
-    color: #f44336;
+    padding: 15px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.logout-button {
+    background-color: rgba(244, 67, 54, 0.2) !important;
+    border: 1px solid rgba(244, 67, 54, 0.5) !important;
+    color: #f44336 !important;
+    margin-top: 10px;
+    width: 80%;
+    align-self: center;
 }
 
 .logout-button:hover {
-    background-color: rgba(244, 67, 54, 0.2);
-    border-color: rgba(244, 67, 54, 0.5);
+    background-color: rgba(244, 67, 54, 0.3) !important;
+    border-color: rgba(244, 67, 54, 0.7) !important;
 }
 
 .submenu {

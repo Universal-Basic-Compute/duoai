@@ -819,18 +819,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Add event listener for logout button
-    logoutButton.addEventListener('click', logout);
+    // Create a menu footer div to contain settings and logout buttons
+    const menuFooter = document.createElement('div');
+    menuFooter.className = 'menu-footer';
+    
+    // Add the menu footer to the side menu
+    sideMenu.appendChild(menuFooter);
     
     // Settings button
     const settingsButton = document.createElement('button');
     settingsButton.id = 'settingsButton';
     settingsButton.className = 'secondary-button';
     settingsButton.textContent = 'Settings';
-    settingsButton.style.marginTop = '15px';
     
-    // Insert settings button before logout button
-    logoutButton.parentNode.insertBefore(settingsButton, logoutButton);
+    // Add settings button to the menu footer
+    menuFooter.appendChild(settingsButton);
+    
+    // Move logout button to the menu footer
+    if (logoutButton.parentNode) {
+        logoutButton.parentNode.removeChild(logoutButton);
+    }
+    menuFooter.appendChild(logoutButton);
+    
+    // Add event listener for logout button
+    logoutButton.addEventListener('click', logout);
     
     // Settings button functionality
     settingsButton.addEventListener('click', () => {
