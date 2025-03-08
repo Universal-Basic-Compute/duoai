@@ -346,14 +346,14 @@ async function getSubscription(recordId) {
 
 /**
  * Save a message to Airtable
- * @param {string} userId - The user ID
+ * @param {string} username - The username
  * @param {string} role - The message role ('user' or 'assistant')
  * @param {string} content - The message content
  * @param {string} characterName - The AI character name
  * @returns {Promise<Object>} - The created message object
  */
-async function saveMessage(userId, role, content, characterName = null) {
-    console.log(`[AIRTABLE] Attempting to save ${role} message for user ${userId}`);
+async function saveMessage(username, role, content, characterName = null) {
+    console.log(`[AIRTABLE] Attempting to save ${role} message for user ${username}`);
     console.log(`[AIRTABLE] Message length: ${content ? content.length : 0} characters`);
     console.log(`[AIRTABLE] Character: ${characterName || 'None'}`);
     console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
@@ -363,7 +363,7 @@ async function saveMessage(userId, role, content, characterName = null) {
         console.log('[AIRTABLE] Airtable not enabled, saving mock message');
         return {
             id: 'mock-message-' + Date.now(),
-            UserId: userId,
+            Username: username,
             Role: role,
             Content: content,
             Character: characterName,
@@ -373,8 +373,8 @@ async function saveMessage(userId, role, content, characterName = null) {
     
     try {
         // Validate inputs
-        if (!userId) {
-            console.error('[AIRTABLE] No user ID provided for message');
+        if (!username) {
+            console.error('[AIRTABLE] No username provided for message');
             return null;
         }
         
@@ -404,7 +404,7 @@ async function saveMessage(userId, role, content, characterName = null) {
         // Log the record we're trying to create
         const recordToCreate = {
             fields: {
-                UserId: userId,
+                Username: username,
                 Role: role,
                 Content: truncatedContent,
                 Character: characterName || '',
@@ -454,12 +454,12 @@ async function saveMessage(userId, role, content, characterName = null) {
 
 /**
  * Get messages for a user
- * @param {string} userId - The user ID
+ * @param {string} username - The username
  * @param {number} limit - Maximum number of messages to return
  * @returns {Promise<Array>} - Array of message objects
  */
-async function getUserMessages(userId, limit = 100) {
-    console.log(`[AIRTABLE] Getting messages for user: ${userId}, limit: ${limit}`);
+async function getUserMessages(username, limit = 100) {
+    console.log(`[AIRTABLE] Getting messages for user: ${username}, limit: ${limit}`);
     console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
     
     if (!airtableEnabled) {
@@ -472,9 +472,9 @@ async function getUserMessages(userId, limit = 100) {
         console.log('[AIRTABLE] Accessing messages table');
         const messagesTable = base('MESSAGES');
         
-        console.log(`[AIRTABLE] Querying messages with filter: {UserId} = '${userId}'`);
+        console.log(`[AIRTABLE] Querying messages with filter: {Username} = '${username}'`);
         const records = await messagesTable.select({
-            filterByFormula: `{UserId} = '${userId}'`,
+            filterByFormula: `{Username} = '${username}'`,
             sort: [{ field: 'Timestamp', direction: 'desc' }],
             maxRecords: limit
         }).firstPage();

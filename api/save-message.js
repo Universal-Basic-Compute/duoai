@@ -19,18 +19,26 @@ module.exports = async (req, res) => {
   }
   
   try {
+    // Extract message data from request body
+    const { role, content, character } = req.body;
+    
+    if (!role || !content) {
+      return res.status(400).json({ error: 'Role and content are required' });
+    }
+    
     // Extract username from token or request
     const username = req.user ? req.user.name : 'mock-user';
     
-    // Get limit from query parameters
-    const limit = req.query.limit ? parseInt(req.query.limit) : 100;
+    // Save message to Airtable
+    const message = await airtableService.saveMessage(username, role, content, character);
     
-    // Get messages from Airtable
-    const messages = await airtableService.getUserMessages(username, limit);
+    if (!message) {
+      return res.status(500).json({ error: 'Failed to save message' });
+    }
     
-    res.json({ messages });
+    res.json({ success: true, message });
   } catch (error) {
-    console.error('Error fetching messages:', error);
-    res.status(500).json({ error: 'Failed to fetch message history' });
+    console.error('Error saving message:', error);
+    res.status(500).json({ error: 'Failed to save message' });
   }
 };

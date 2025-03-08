@@ -19,6 +19,7 @@
     { "src": "/api/auth/register", "dest": "/api/auth/register.js" },
     { "src": "/api/auth/login", "dest": "/api/auth/login.js" },
     { "src": "/api/messages", "dest": "/api/messages.js" },
+    { "src": "/api/save-message", "dest": "/api/save-message.js" },
     { "src": "/api/usage/start", "dest": "/api/usage/start.js" },
     { "src": "/api/usage/end", "dest": "/api/usage/end.js" },
     { "src": "/api/health", "dest": "/api/health.js" },
