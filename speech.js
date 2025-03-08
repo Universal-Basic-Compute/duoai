@@ -51,6 +51,16 @@ class SpeechManager {
         this.elevenLabsClient = null;
         this.voiceId = "JBFqnCBsd6RMkjVDRZzb"; // Default voice ID (George)
         this.modelId = "eleven_flash_v2_5"; // Using flash model
+        this.isContinuousListening = true; // Default to continuous listening
+        this.silenceTimeout = null;
+        this.silenceThreshold = 2000; // 2 seconds of silence before auto-sending
+        this.hasSpeech = false; // Flag to track if speech has been detected
+        this.speechCallback = null; // Store the callback for speech results
+        this.endCallback = null; // Store the callback for when listening ends
+        this.audioContext = null;
+        this.analyser = null;
+        this.microphoneStream = null;
+        this.silenceDetectionRunning = false;
         
         // Always use production URL
         this.serverUrl = 'https://duoai.vercel.app';
@@ -280,15 +290,255 @@ class SpeechManager {
             if (onEnd) onEnd(error.message);
         }
     }
+    
+    /**
+     * Start continuous listening for speech input with auto-send
+     * @param {Function} onResult - Callback function for speech results
+     * @param {Function} onEnd - Callback function for when listening ends
+     * @returns {Promise<boolean>} - True if started successfully
+     */
+    async startContinuousListening(onResult, onEnd) {
+        if (!this.isSpeechRecognitionSupported()) {
+            console.warn('Speech recognition not supported in this environment');
+            if (onEnd) onEnd('Speech recognition not supported');
+            return false;
+        }
+        
+        try {
+            // Store callbacks for later use
+            this.speechCallback = onResult;
+            this.endCallback = onEnd;
+            
+            // Request microphone access
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.microphoneStream = stream;
+            
+            // Set up audio context for silence detection
+            this.setupSilenceDetection(stream);
+            
+            this.isListening = true;
+            this.isContinuousListening = true;
+            this.audioChunks = [];
+            
+            // Create media recorder
+            this.mediaRecorder = new MediaRecorder(stream);
+            
+            // Handle data available event
+            this.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    this.audioChunks.push(event.data);
+                }
+            };
+            
+            // Handle recording stop event
+            this.mediaRecorder.onstop = async () => {
+                // Only process if we have audio chunks and detected speech
+                if (this.audioChunks.length > 0 && this.hasSpeech) {
+                    // Create audio blob
+                    const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                    
+                    try {
+                        // Convert blob to base64
+                        const base64Audio = await this.blobToBase64(audioBlob);
+                        
+                        // Always use production URL
+                        const apiUrl = 'https://duoai.vercel.app';
+                    
+                        // Send to Whisper API on remote server with production URL
+                        const response = await axios.post(`${apiUrl}/api/whisper`, {
+                            audioData: base64Audio
+                        });
+                        
+                        const transcript = response.data.transcription;
+                        console.log('Whisper transcription:', transcript);
+                        
+                        if (transcript && transcript.trim() && this.speechCallback) {
+                            this.speechCallback(transcript);
+                        }
+                    } catch (error) {
+                        console.error('Error transcribing audio:', error);
+                        if (this.endCallback) this.endCallback(error.message);
+                    }
+                }
+                
+                // Reset for next recording if in continuous mode
+                this.audioChunks = [];
+                this.hasSpeech = false;
+                
+                if (this.isContinuousListening) {
+                    // Start a new recording session
+                    this.mediaRecorder.start();
+                } else {
+                    // Stop all tracks in the stream if not in continuous mode
+                    if (this.microphoneStream) {
+                        this.microphoneStream.getTracks().forEach(track => track.stop());
+                    }
+                    this.isListening = false;
+                    if (this.endCallback) this.endCallback();
+                    
+                    // Clean up silence detection
+                    this.cleanupSilenceDetection();
+                }
+            };
+            
+            // Start recording
+            this.mediaRecorder.start();
+            console.log('Continuous speech recording started');
+            
+            return true;
+        } catch (error) {
+            console.error('Error starting continuous speech recognition:', error);
+            this.isListening = false;
+            this.isContinuousListening = false;
+            if (this.endCallback) this.endCallback(error.message);
+            return false;
+        }
+    }
 
     /**
      * Stop listening for speech input
      */
     stopListening() {
-        if (!this.isListening || !this.mediaRecorder) return;
+        this.isContinuousListening = false;
         
-        this.mediaRecorder.stop();
+        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+            this.mediaRecorder.stop();
+        } else {
+            // If not recording, clean up directly
+            if (this.microphoneStream) {
+                this.microphoneStream.getTracks().forEach(track => track.stop());
+            }
+            this.isListening = false;
+            if (this.endCallback) this.endCallback();
+        }
+        
+        // Clean up silence detection
+        this.cleanupSilenceDetection();
+        
         console.log('Speech recording stopped');
+    }
+    
+    /**
+     * Toggle continuous listening mode
+     * @param {Function} onResult - Callback function for speech results
+     * @param {Function} onEnd - Callback function for when listening ends
+     * @returns {Promise<boolean>} - True if continuous listening is now active
+     */
+    async toggleContinuousListening(onResult, onEnd) {
+        if (this.isContinuousListening) {
+            // Turn off continuous listening
+            this.stopListening();
+            return false;
+        } else {
+            // Turn on continuous listening
+            return this.startContinuousListening(onResult, onEnd);
+        }
+    }
+    
+    /**
+     * Set up silence detection
+     * @param {MediaStream} stream - The microphone stream
+     */
+    setupSilenceDetection(stream) {
+        try {
+            // Create audio context
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create analyser
+            this.analyser = this.audioContext.createAnalyser();
+            this.analyser.fftSize = 256;
+            
+            // Create source from stream
+            const source = this.audioContext.createMediaStreamSource(stream);
+            source.connect(this.analyser);
+            
+            // Start silence detection
+            this.silenceDetectionRunning = true;
+            this.detectSilence();
+        } catch (error) {
+            console.error('Error setting up silence detection:', error);
+        }
+    }
+    
+    /**
+     * Detect silence after speech
+     */
+    detectSilence() {
+        if (!this.silenceDetectionRunning || !this.analyser) return;
+        
+        const bufferLength = this.analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+        
+        const checkVolume = () => {
+            if (!this.silenceDetectionRunning) return;
+            
+            this.analyser.getByteFrequencyData(dataArray);
+            
+            // Calculate average volume
+            let sum = 0;
+            for (let i = 0; i < bufferLength; i++) {
+                sum += dataArray[i];
+            }
+            const average = sum / bufferLength;
+            
+            // Detect speech (non-silence)
+            if (average > 15) { // Threshold for speech detection
+                this.hasSpeech = true;
+                
+                // Clear any existing silence timeout
+                if (this.silenceTimeout) {
+                    clearTimeout(this.silenceTimeout);
+                    this.silenceTimeout = null;
+                }
+            } 
+            // Detect silence after speech
+            else if (this.hasSpeech) {
+                // Start silence timeout if not already started
+                if (!this.silenceTimeout) {
+                    this.silenceTimeout = setTimeout(() => {
+                        console.log('Silence detected after speech, stopping recording');
+                        
+                        // Stop current recording to process the audio
+                        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+                            this.mediaRecorder.stop();
+                        }
+                        
+                        this.silenceTimeout = null;
+                    }, this.silenceThreshold);
+                }
+            }
+            
+            // Continue checking if still running
+            if (this.silenceDetectionRunning) {
+                requestAnimationFrame(checkVolume);
+            }
+        };
+        
+        // Start checking volume
+        checkVolume();
+    }
+    
+    /**
+     * Clean up silence detection resources
+     */
+    cleanupSilenceDetection() {
+        this.silenceDetectionRunning = false;
+        
+        if (this.silenceTimeout) {
+            clearTimeout(this.silenceTimeout);
+            this.silenceTimeout = null;
+        }
+        
+        if (this.audioContext) {
+            try {
+                this.audioContext.close();
+            } catch (e) {
+                console.warn('Error closing audio context:', e);
+            }
+            this.audioContext = null;
+        }
+        
+        this.analyser = null;
     }
 
     /**
@@ -782,6 +1032,9 @@ class SpeechManager {
                 return;
             }
             
+            // Clean up silence detection
+            this.cleanupSilenceDetection();
+            
             // Create a local reference to the audio element
             const audioEl = this.audioElement;
             
@@ -853,6 +1106,17 @@ class SpeechManager {
                 } catch (trackError) {
                     console.warn('Error stopping media tracks:', trackError);
                 }
+            }
+            
+            // Clean up microphone stream
+            if (this.microphoneStream) {
+                try {
+                    this.microphoneStream.getTracks().forEach(track => track.stop());
+                    console.log('Stopped microphone stream tracks');
+                } catch (streamError) {
+                    console.warn('Error stopping microphone stream:', streamError);
+                }
+                this.microphoneStream = null;
             }
             
             console.log('Cleanup completed successfully');

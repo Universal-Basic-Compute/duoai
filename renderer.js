@@ -22,6 +22,9 @@ window.addEventListener('beforeunload', () => {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM fully loaded');
     
+    // Variable to track continuous listening state
+    let continuousListeningActive = true; // Start with continuous listening enabled
+    
     const menuTab = document.getElementById('menuTab');
     const sideMenu = document.getElementById('sideMenu');
     const startButton = document.getElementById('startButton');
@@ -1029,57 +1032,63 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedAssistantMode = localStorage.getItem('assistantMode') || 'proactive';
     assistantModeToggle.checked = savedAssistantMode === 'proactive';
 
+    // Initialize continuous listening when the app starts
+    function initializeContinuousListening() {
+        if (speechManager.isSpeechRecognitionSupported()) {
+            speechManager.startContinuousListening(
+                // On result
+                (transcript) => {
+                    userInput.value = transcript;
+                    userInput.style.height = 'auto';
+                    userInput.style.height = (userInput.scrollHeight) + 'px';
+                    
+                    // Auto-send after transcript is received
+                    sendMessage();
+                },
+                // On end
+                (error) => {
+                    if (error) {
+                        speechStatus.textContent = 'Error: ' + error;
+                        setTimeout(() => {
+                            speechStatus.textContent = '';
+                        }, 3000);
+                        
+                        // Try to restart continuous listening
+                        setTimeout(() => {
+                            if (continuousListeningActive) {
+                                initializeContinuousListening();
+                            }
+                        }, 5000);
+                    }
+                }
+            );
+            
+            // Update UI to show continuous listening is active
+            micButton.classList.add('recording');
+            speechStatus.textContent = 'Listening...';
+            continuousListeningActive = true;
+        } else {
+            console.warn('Speech recognition not supported');
+            speechStatus.textContent = 'Speech recognition not available';
+        }
+    }
+    
+    // Call this function to start continuous listening when the app loads
+    initializeContinuousListening();
+    
     // Microphone button event listener
     micButton.addEventListener('click', () => {
-        if (speechManager.isListening) {
-            stopSpeechRecognition();
+        if (continuousListeningActive) {
+            // Turn off continuous listening
+            speechManager.stopListening();
+            micButton.classList.remove('recording');
+            speechStatus.textContent = '';
+            continuousListeningActive = false;
         } else {
-            startSpeechRecognition();
+            // Turn on continuous listening
+            initializeContinuousListening();
         }
     });
-
-    // Function to start speech recognition
-    function startSpeechRecognition() {
-        if (!speechManager.isSpeechRecognitionSupported()) {
-            alert('Speech recognition is not supported in this browser');
-            return;
-        }
-        
-        micButton.classList.add('recording');
-        speechStatus.textContent = 'Listening...';
-        
-        speechManager.startListening(
-            // On result
-            (transcript) => {
-                userInput.value = transcript;
-                userInput.style.height = 'auto';
-                userInput.style.height = (userInput.scrollHeight) + 'px';
-                stopSpeechRecognition();
-                
-                // Auto-send after a short delay
-                setTimeout(() => {
-                    sendMessage();
-                }, 500);
-            },
-            // On end
-            (error) => {
-                stopSpeechRecognition();
-                if (error) {
-                    speechStatus.textContent = 'Error: ' + error;
-                    setTimeout(() => {
-                        speechStatus.textContent = '';
-                    }, 3000);
-                }
-            }
-        );
-    }
-
-    // Function to stop speech recognition
-    function stopSpeechRecognition() {
-        speechManager.stopListening();
-        micButton.classList.remove('recording');
-        speechStatus.textContent = '';
-    }
 
     // Load saved settings
     function loadSavedSettings() {
@@ -1090,6 +1099,21 @@ document.addEventListener('DOMContentLoaded', () => {
             speechManager.setVolume(volume);
         }
         
+        // Load continuous listening preference
+        const savedContinuousListening = localStorage.getItem('continuousListening');
+        if (savedContinuousListening !== null) {
+            continuousListeningActive = savedContinuousListening === 'true';
+            
+            // Update UI to match saved preference
+            if (continuousListeningActive) {
+                micButton.classList.add('recording');
+                speechStatus.textContent = 'Listening...';
+                // Don't start listening here, it will be started in initializeContinuousListening
+            } else {
+                micButton.classList.remove('recording');
+                speechStatus.textContent = '';
+            }
+        }
     }
     
     // Test ElevenLabs TTS

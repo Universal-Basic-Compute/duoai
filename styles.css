@@ -838,6 +838,12 @@ input:checked + .toggle-slider:before {
   animation: pulse 1s infinite;
 }
 
+/* Add a style for continuous listening mode */
+.mic-button.continuous {
+  background: linear-gradient(135deg, #4CAF50, #8BC34A);
+  animation: pulse 1.5s infinite;
+}
+
 .speech-status {
   color: var(--text-secondary);
   font-size: 12px;
