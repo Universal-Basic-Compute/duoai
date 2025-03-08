@@ -46,8 +46,8 @@ module.exports = async (req, res) => {
             'Connection': 'keep-alive'
         });
         
-        // Use a mock user ID if req.user is not available
-        const userId = req.user ? req.user.id : 'mock-user-id';
+        // Always use mock-user-id for testing
+        const userId = 'mock-user-id';
         console.log('[STREAM] Using user ID:', userId);
         
         // Use character name from request

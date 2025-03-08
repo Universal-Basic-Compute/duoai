@@ -102,8 +102,8 @@ async function generateSystemPrompt(characterName) {
       processedBase64 = processedImageBuffer.toString('base64');
     }
     
-    // Use a mock user ID if req.user is not available
-    const userId = req.user ? req.user.id : 'mock-user-id';
+    // Always use mock-user-id for testing
+    const userId = 'mock-user-id';
     
     // Extract character name from system prompt if available
     let characterName = null;
@@ -185,23 +185,21 @@ async function generateSystemPrompt(characterName) {
     
     // Save the user message and Claude's response to Airtable
     try {
-        if (req.user && req.user.id) {
-            
-            // Save user message
-            await airtableService.saveMessage(
-                req.user.id,
-                'user',
-                userMessage || "*the user did not type a specific message at this time*",
-                characterName
-            );
-            
-            // Save assistant message
-            await airtableService.saveMessage(
-                req.user.id,
-                'assistant',
-                response.data.content[0].text,
-                characterName
-            );
+        // Save user message
+        await airtableService.saveMessage(
+            userId,
+            'user',
+            userMessage || "*the user did not type a specific message at this time*",
+            characterName
+        );
+        
+        // Save assistant message
+        await airtableService.saveMessage(
+            userId,
+            'assistant',
+            response.data.content[0].text,
+            characterName
+        );
             
             console.log('Messages saved to Airtable');
         }
