@@ -121,7 +121,7 @@ async function createUserWithCredentials(userData) {
         return {
             id: 'mock-id-' + userData.email,
             Email: userData.email,
-            Name: userData.name || '',
+            Name: userData.username || '',
             PasswordHash: 'mock-password-hash',
             CreatedAt: new Date().toISOString(),
             LastLogin: new Date().toISOString(),
