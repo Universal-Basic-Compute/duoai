@@ -138,9 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 isLoggedIn = true;
                 loginContainer.classList.add('hidden');
                 menuTab.style.display = 'block';
-                
+            
                 // Check subscription status
                 checkSubscriptionStatus();
+            
+                // Start continuous listening now that user is logged in
+                initializeContinuousListening();
             } else {
                 loginError.textContent = response.message || 'Login failed. Please check your credentials.';
             }
@@ -200,6 +203,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Check subscription status
                 checkSubscriptionStatus();
+                
+                // Start continuous listening now that user is logged in
+                initializeContinuousListening();
                 
                 console.log('Auto-login successful after registration');
             } else {
@@ -918,25 +924,33 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Logout function
     function logout() {
+        // Stop continuous listening
+        if (continuousListeningActive) {
+            speechManager.stopListening();
+            micButton.classList.remove('recording');
+            speechStatus.textContent = '';
+            continuousListeningActive = false;
+        }
+    
         // Clear tokens and user data
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('isLoggedIn');
         localStorage.removeItem('user');
         localStorage.removeItem('subscription');
-        
+    
         // Update UI
         isLoggedIn = false;
         loginContainer.classList.remove('hidden');
         menuTab.style.display = 'none';
-        
+    
         // Hide other containers
         sideMenu.style.right = '-300px';
         chatContainer.style.right = '-350px';
-        
+    
         // Resize window to show login
         ipcRenderer.send('resize-window', { width: 350, height: 500 });
-        
+    
         // Notify the server about logout (optional)
         try {
             const logoutUrl = authBridge.getLogoutUrl();
@@ -1085,8 +1099,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Call this function to start continuous listening when the app loads
-    initializeContinuousListening();
+    // Don't start continuous listening immediately, wait for login check
+    checkLoginState().then(loggedIn => {
+        console.log('Login state checked, isLoggedIn:', loggedIn);
+        
+        // Only initialize continuous listening if logged in
+        if (loggedIn) {
+            initializeContinuousListening();
+        } else {
+            // Update UI to show login required
+            micButton.classList.remove('recording');
+            speechStatus.textContent = 'Login required';
+            continuousListeningActive = false;
+        }
+    });
     
     // Microphone button event listener
     micButton.addEventListener('click', () => {
@@ -1152,6 +1178,8 @@ document.addEventListener('DOMContentLoaded', () => {
     checkLoginState().then(isLoggedIn => {
         // Remove the development mode check
         console.log('Login state checked, isLoggedIn:', isLoggedIn);
+        
+        // Login state is already checked in the earlier code that initializes continuous listening
     });
     
     // Load saved settings
