@@ -232,15 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Error checking login state:', error);
             
-            // For now, always set as logged in to bypass Google auth during development
-            isLoggedIn = true;
-            localStorage.setItem('isLoggedIn', 'true');
-            
-            // User is logged in, hide login container and show app
-            loginContainer.classList.add('hidden');
-            menuTab.style.display = 'block';
-            
-            return true;
+            // Don't use mock login, just return false
+            isLoggedIn = false;
+            localStorage.removeItem('isLoggedIn');
+            loginContainer.classList.remove('hidden');
+            menuTab.style.display = 'none';
+            return false;
         }
     }
     
@@ -760,40 +757,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Open the auth URL in the default browser without confirmation
         ipcRenderer.send('open-external-url', authUrl);
-        
-        // For development/testing, bypass Google auth and use mock login
-        if (process.env.NODE_ENV === 'development') {
-            console.log('Development mode detected, using mock login');
-            mockLogin();
-        }
     }
     
-    // Function to simulate login for development/testing
-    function mockLogin() {
-        console.log('Using mock login');
-        
-        // Create mock user data
-        const mockUser = {
-            id: 'mock-user-id',
-            name: 'Mock User',
-            email: 'mock@example.com',
-            picture: ''
-        };
-        
-        // Store mock tokens and user info
-        localStorage.setItem('authToken', 'mock-token');
-        localStorage.setItem('refreshToken', 'mock-refresh-token');
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        localStorage.setItem('isLoggedIn', 'true');
-        
-        // Update UI
-        isLoggedIn = true;
-        loginContainer.classList.add('hidden');
-        menuTab.style.display = 'block';
-        
-        // Check subscription status
-        checkSubscriptionStatus();
-    }
     
     // Callback function for Google Sign-In
     window.handleGoogleSignIn = async (response) => {
@@ -1008,11 +973,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check login state at startup
     checkLoginState().then(isLoggedIn => {
-        if (!isLoggedIn && process.env.NODE_ENV === 'development') {
-            // In development mode, automatically use mock login if not logged in
-            console.log('Development mode: using mock login');
-            mockLogin();
-        }
+        // Remove the development mode check
+        console.log('Login state checked, isLoggedIn:', isLoggedIn);
     });
     
     // Load saved settings
