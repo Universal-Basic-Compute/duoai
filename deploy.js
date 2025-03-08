@@ -9,7 +9,6 @@ if (!fs.existsSync('api')) {
 
 // Copy necessary files to the api directory
 const filesToCopy = [
-  'system_prompt_builder.js',
   'airtable-service.js'
 ];
 
