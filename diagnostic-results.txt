@@ -1,0 +1,104 @@
+DUOAI Diagnostic Tool
+====================
+Running at: 2025-03-08T17:35:22.678Z
+Platform: win32 (10.0.22631)
+Architecture: x64
+Node.js version: v20.15.0
+Current directory: C:\Users\conta\duoai
+
+Checking for critical files:
+- main.js: Found
+  - Size: 13170 bytes
+  - Last modified: Sat Mar 08 2025 18:32:12 GMT+0100 (heure normale d’Europe centrale)
+- renderer.js: Found
+  - Size: 43421 bytes
+  - Last modified: Sat Mar 08 2025 18:14:33 GMT+0100 (heure normale d’Europe centrale)
+- config.js: Found
+  - Size: 5316 bytes
+  - Last modified: Sat Mar 08 2025 17:25:36 GMT+0100 (heure normale d’Europe centrale)
+- index.html: Found
+  - Size: 6240 bytes
+  - Last modified: Sat Mar 08 2025 01:17:01 GMT+0100 (heure normale d’Europe centrale)
+- package.json: Found
+  - Size: 2142 bytes
+  - Last modified: Sat Mar 08 2025 18:18:34 GMT+0100 (heure normale d’Europe centrale)
+- node_modules/electron/package.json: Found
+  - Size: 586 bytes
+  - Last modified: Sat Mar 08 2025 18:12:03 GMT+0100 (heure normale d’Europe centrale)
+
+.env file: Found
+- Environment variables defined:
+  - ANTHROPIC_API_KEY: Defined
+  - AIRTABLE_API_KEY: Defined
+  - AIRTABLE_BASE_ID: Defined
+  - MAIN_TELEGRAM_CHAT_ID: Defined
+  - TELEGRAM_BOT_TOKEN: Defined
+  - GOOGLE_CLIENT_ID: Defined
+  - GOOGLE_CLIENT_SECRET: Defined
+  - JWT_SECRET: Defined
+  - API_URL: Defined
+  - OPENAI_API_KEY: Defined
+  - ELEVENLABS_API_KEY: Defined
+
+Checking for log files:
+- C:\Users\conta\duoai\duoai-error.log: Found
+  - Size: 0 bytes
+  - Last modified: Sat Mar 08 2025 18:34:33 GMT+0100 (heure normale d’Europe centrale)
+- C:\Users\conta\duoai\error.log: Not found
+- C:\Users\conta\AppData\Roaming\duoai\error.log: Found
+  - Size: 1456 bytes
+  - Last modified: Sat Mar 08 2025 18:29:29 GMT+0100 (heure normale d’Europe centrale)
+  - Last 10 lines:
+    [2025-03-08T17:29:16.269Z] index.html not found at: C:\Users\conta\AppData\Local\Programs\DUOAI\resources\index.html
+    [2025-03-08T17:29:16.374Z] (node:18180) electron: Failed to load URL: file:///C:/Users/conta/AppData/Local/Programs/DUOAI/resources/index.html with error: ERR_FILE_NOT_FOUND
+    (Use `DUOAI --trace-warnings ...` to show where the warning was created)
+    [2025-03-08T17:29:23.274Z] index.html not found at: C:\Users\conta\AppData\Local\Programs\DUOAI\resources\index.html
+    [2025-03-08T17:29:23.370Z] (node:18464) electron: Failed to load URL: file:///C:/Users/conta/AppData/Local/Programs/DUOAI/resources/index.html with error: ERR_FILE_NOT_FOUND
+    (Use `DUOAI --trace-warnings ...` to show where the warning was created)
+    [2025-03-08T17:29:29.488Z] index.html not found at: C:\Users\conta\AppData\Local\Programs\DUOAI\resources\index.html
+    [2025-03-08T17:29:29.599Z] (node:26248) electron: Failed to load URL: file:///C:/Users/conta/AppData/Local/Programs/DUOAI/resources/index.html with error: ERR_FILE_NOT_FOUND
+    (Use `DUOAI --trace-warnings ...` to show where the warning was created)
+    
+- C:\Users\conta\AppData\Local\duoai\error.log: Not found
+
+Checking for critical dependencies:
+- electron: Found at C:\Users\conta\duoai\node_modules\electron\index.js
+- axios: Found at C:\Users\conta\duoai\node_modules\axios\dist\node\axios.cjs
+- dotenv: Found at C:\Users\conta\duoai\node_modules\dotenv\lib\main.js
+- jsonwebtoken: MISSING (Cannot find module 'jsonwebtoken'
+Require stack:
+- C:\Users\conta\duoai\diagnose.js)
+- sharp: Found at C:\Users\conta\duoai\node_modules\sharp\lib\index.js
+
+User data directory (C:\Users\conta\AppData\Roaming\duoai): Exists
+- Files in user data directory:
+  - blob_storage
+  - Cache
+  - Code Cache
+  - config.json
+  - DawnGraphiteCache
+  - DawnWebGPUCache
+  - DIPS
+  - DIPS-shm
+  - DIPS-wal
+  - error.log
+  - GPUCache
+  - Local State
+  - Local Storage
+  - Network
+  - Preferences
+  - Session Storage
+  - Shared Dictionary
+  - SharedStorage
+
+Config file (C:\Users\conta\AppData\Roaming\duoai\config.json): Exists
+- Config contents:
+  - GOOGLE_CLIENT_ID: 
+  - GOOGLE_CLIENT_SECRET: 
+  - AIRTABLE_API_KEY: 
+  - AIRTABLE_BASE_ID: 
+  - ANTHROPIC_API_KEY: 
+  - ELEVENLABS_API_KEY: 
+  - SESSION_SECRET: duoai...ecret
+
+Diagnostic complete.
