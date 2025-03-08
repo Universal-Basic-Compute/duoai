@@ -714,10 +714,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const config = require('./config').loadConfig();
         const clientId = config.GOOGLE_CLIENT_ID;
         
+        console.log('Config loaded in renderer:', config);
+        console.log('Google Client ID available:', !!clientId);
+        
         if (!clientId) {
             console.error('Google Client ID not found in configuration');
-            alert('Google authentication is not properly configured. Please check your settings.');
-            return;
+            
+            // For development/testing, use a mock login
+            if (confirm('Google Client ID not found. Would you like to use a mock login for testing?')) {
+                console.log('Using mock login for testing');
+                
+                // Simulate successful login with mock data
+                const mockUser = {
+                    id: 'mock-user-id',
+                    name: 'Mock User',
+                    email: 'mock@example.com',
+                    picture: ''
+                };
+                
+                // Store mock tokens
+                localStorage.setItem('authToken', 'mock-token');
+                localStorage.setItem('refreshToken', 'mock-refresh-token');
+                localStorage.setItem('user', JSON.stringify(mockUser));
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                // Update UI for logged in state
+                isLoggedIn = true;
+                loginContainer.classList.add('hidden');
+                menuTab.style.display = 'block';
+                
+                return;
+            } else {
+                alert('Google authentication is not properly configured. Please check your settings.');
+                return;
+            }
         }
         
         console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');

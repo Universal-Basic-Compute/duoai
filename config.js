@@ -84,12 +84,34 @@ function loadConfig() {
       fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
     }
     
-    // Merge configs with priority: env-specific > file > default
-    return { 
+    // Ensure environment variables take precedence
+    const config = { 
       ...defaultConfig, 
       ...fileConfig, 
       ...(envConfigs[env] || {}) 
     };
+    
+    // Explicitly set environment variables if they exist
+    if (process.env.GOOGLE_CLIENT_ID) {
+      config.GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    }
+    
+    if (process.env.GOOGLE_CLIENT_SECRET) {
+      config.GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+    }
+    
+    if (process.env.JWT_SECRET) {
+      config.JWT_SECRET = process.env.JWT_SECRET;
+    }
+    
+    // Log available credentials (for debugging)
+    console.log('Config loaded:');
+    if (config.GOOGLE_CLIENT_ID) console.log('- Google Client ID: ' + maskString(config.GOOGLE_CLIENT_ID));
+    if (config.ANTHROPIC_API_KEY) console.log('- Anthropic API Key: ' + maskString(config.ANTHROPIC_API_KEY));
+    if (config.ELEVENLABS_API_KEY) console.log('- ElevenLabs API Key: ' + maskString(config.ELEVENLABS_API_KEY));
+    if (config.JWT_SECRET) console.log('- JWT Secret: ' + maskString(config.JWT_SECRET));
+    
+    return config;
   } catch (error) {
     console.error('Error loading config:', error);
     return defaultConfig;
