@@ -1,10 +1,10 @@
-const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol } = require('electron');
+const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol, dialog } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
 
 // Set up error logging to file
-const logFilePath = path.join(app.getPath('userData'), 'error.log');
+const logFilePath = path.join(__dirname, 'duoai-error.log');
 console.log(`Logging errors to: ${logFilePath}`);
 
 // Create a write stream for the log file
@@ -36,13 +36,28 @@ console.error = function() {
 
 // Log unhandled exceptions
 process.on('uncaughtException', (error) => {
+    const errorMessage = `CRITICAL ERROR: ${error.message}\nStack: ${error.stack}`;
     console.error('Uncaught Exception:', error);
     console.error('Stack trace:', error.stack);
     
-    // Show error in dialog if possible
+    // Write to log file directly
+    try {
+        fs.writeFileSync(logFilePath, `[${new Date().toISOString()}] ${errorMessage}\n`, { flag: 'a' });
+    } catch (fsError) {
+        console.error('Failed to write to log file:', fsError);
+    }
+    
+    // Show error dialog
     if (app.isReady()) {
-        const { dialog } = require('electron');
-        dialog.showErrorBox('Error', `An error occurred: ${error.message}\n\nCheck ${logFilePath} for details.`);
+        dialog.showErrorBox('DUOAI Error', 
+            `The application encountered a critical error:\n\n${error.message}\n\n` +
+            `This error has been logged to: ${logFilePath}`);
+    } else {
+        app.on('ready', () => {
+            dialog.showErrorBox('DUOAI Error', 
+                `The application encountered a critical error:\n\n${error.message}\n\n` +
+                `This error has been logged to: ${logFilePath}`);
+        });
     }
     
     // Don't exit the app immediately to allow the error to be logged
