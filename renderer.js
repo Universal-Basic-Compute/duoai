@@ -543,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 let fullResponse = '';
                 
                 await claudeAPI.sendMessageWithScreenshotStreaming(
-                    "*the user did not type a specific message at this time*",
+                    `*${getUsernameForMessage()} did not type a specific message at this time*`,
                     screenshotPath,
                     currentCharacter, // Pass character name
                     // On chunk callback
@@ -729,7 +729,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Character:', currentCharacter || 'None');
             
             await claudeAPI.sendMessageWithScreenshotStreaming(
-                sanitizedMessage || "*the user did not type a specific message at this time*",
+                sanitizedMessage || `*${getUsernameForMessage()} did not type a specific message at this time*`,
                 screenshotPath,
                 currentCharacter, // Pass character name
                 // On chunk callback
@@ -808,6 +808,17 @@ document.addEventListener('DOMContentLoaded', () => {
     function sanitizeInput(input) {
         // Basic sanitization - remove HTML tags
         return input.replace(/<[^>]*>?/gm, '');
+    }
+    
+    // Function to get username for messages
+    function getUsernameForMessage() {
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            return user.name || 'User';
+        } catch (e) {
+            console.error('Error getting username:', e);
+            return 'User';
+        }
     }
     
     // Function to add a message to the chat

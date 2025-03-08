@@ -180,7 +180,7 @@ async function generateSystemPrompt(characterName) {
         },
         {
           type: 'text',
-          text: userMessage || "*the user did not type a specific message at this time*"
+          text: userMessage || `*${username} did not type a specific message at this time*`
         }
       ]
     });
@@ -211,7 +211,7 @@ async function generateSystemPrompt(characterName) {
         await airtableService.saveMessage(
             username,
             'user',
-            userMessage || "*the user did not type a specific message at this time*",
+            userMessage || `*${username} did not type a specific message at this time*`,
             characterName
         );
         

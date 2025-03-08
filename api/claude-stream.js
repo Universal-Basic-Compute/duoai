@@ -109,7 +109,7 @@ module.exports = async (req, res) => {
             const savedUserMessage = await airtableService.saveMessage(
                 username,
                 'user',
-                userMessage || "*the user did not type a specific message at this time*",
+                userMessage || `*${username} did not type a specific message at this time*`,
                 characterName
             );
             
