@@ -1048,6 +1048,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize continuous listening when the app starts
     function initializeContinuousListening() {
+        // First check if user is logged in
+        if (!isLoggedIn) {
+            console.log('User not logged in, not starting continuous listening');
+            micButton.classList.remove('recording');
+            speechStatus.textContent = 'Login required';
+            continuousListeningActive = false;
+            return;
+        }
+        
         // Don't initialize if speech is playing
         if (speechManager.isPlayingAudio) {
             console.log('Audio is playing, not initializing continuous listening');
