@@ -130,7 +130,7 @@ async function generateSystemPrompt(characterName) {
           .map(msg => ({
             role: msg.Role === 'user' ? 'user' : 'assistant',
             content: msg.Role === 'user' 
-              ? msg.Content 
+              ? [{ type: 'text', text: msg.Content }]
               : [{ type: 'text', text: msg.Content }]
           }));
       } else {
