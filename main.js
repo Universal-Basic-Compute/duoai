@@ -19,12 +19,17 @@ const envFilePath = path.join(__dirname, '.env');
 if (!fs.existsSync(envFilePath)) {
   console.warn('\x1b[33m%s\x1b[0m', 'WARNING: No .env file found in project root!');
   console.warn('\x1b[33m%s\x1b[0m', 'Some features may not work correctly without environment variables.');
+  console.warn('\x1b[33m%s\x1b[0m', 'Create a .env file with GOOGLE_CLIENT_ID, JWT_SECRET, etc.');
 } else {
   console.log('\x1b[32m%s\x1b[0m', '.env file found in project root');
   
   // Load environment variables from .env file
   require('dotenv').config();
 }
+
+// Load configuration and set up environment
+const configManager = require('./config');
+configManager.setupEnv();
 
 // No need to start a local server as we're using a remote server
 

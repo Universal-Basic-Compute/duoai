@@ -710,10 +710,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to initialize Google Sign-In
     function initGoogleSignIn() {
+        // Get config to access environment variables
+        const config = require('./config').loadConfig();
+        const clientId = config.GOOGLE_CLIENT_ID;
+        
+        if (!clientId) {
+            console.error('Google Client ID not found in configuration');
+            alert('Google authentication is not properly configured. Please check your settings.');
+            return;
+        }
+        
+        console.log('Initializing Google Sign-In with Client ID:', clientId.substring(0, 4) + '...');
+        
         // Create a Google Sign-In button programmatically
         const googleSignInDiv = document.createElement('div');
         googleSignInDiv.id = 'g_id_onload';
-        googleSignInDiv.setAttribute('data-client_id', 'YOUR_GOOGLE_CLIENT_ID'); // Replace with your actual client ID
+        googleSignInDiv.setAttribute('data-client_id', clientId);
         googleSignInDiv.setAttribute('data-callback', 'handleGoogleSignIn');
         googleSignInDiv.setAttribute('data-auto_prompt', 'false');
         document.body.appendChild(googleSignInDiv);
@@ -746,9 +758,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             console.log('ID token received, sending to backend');
             
-            // Get API URL from config
+            // Get API URL and log it
             const config = require('./config').loadConfig();
             const apiUrl = config.API_URL || 'https://duoai.vercel.app';
+            
+            console.log('Sending Google token to backend at:', apiUrl);
             
             // Send the token to our backend
             const authResponse = await fetch(`${apiUrl}/api/auth/google`, {
