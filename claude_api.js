@@ -314,12 +314,12 @@ class ClaudeAPI {
                     
                     // Special case for proactive messages
                     if (userMessage === '*proactive message*') {
-                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. The user hasn't interacted in a while. Proactively comment on something interesting you notice on their screen or ask a question about what they might be doing. Be brief (1-2 sentences) and conversational. Your response:`;
+                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. The user hasn't interacted in a while. Start or continue the conversation. Your response:`;
                     } else if (messageCount < 20) {
                         // Onboarding mode - explicitly instruct Claude to ask questions
                         if (userMessage && userMessage.trim()) {
                             // Normal user message in onboarding mode
-                            formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n${userMessage}\n\nRespond briefly (1-2 sentences) and end with a question to keep the conversation going. Your response:`;
+                            formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n${userMessage}\n\nStart or continue the conversation. Your response:`;
                         } else {
                             // Default message when user didn't type anything in onboarding mode
                             formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n*${username} did not type a specific message at this time*\n\nIntroduce yourself briefly (1-2 sentences) and ask an engaging question to start the conversation. Your response:`;
