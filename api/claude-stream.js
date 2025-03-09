@@ -193,7 +193,6 @@ module.exports = async (req, res) => {
         // Fetch previous messages for context
         console.log('[STREAM] Fetching previous messages for context...');
         let previousMessages = [];
-        let messageCount = 0;
         try {
             // Get previous messages from Airtable
             // First get all messages to count them
