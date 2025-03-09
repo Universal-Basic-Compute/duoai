@@ -1417,3 +1417,187 @@ module.exports = {
     getActiveQuestsForPrompt,
     calculateRelationshipDepth
 };
+// This is a copy of the main airtable-service.js file
+// It's placed here to ensure the quests/relationship.js endpoint can find it
+const Airtable = require('airtable');
+
+// Initialize variables
+let airtableEnabled = false;
+let base;
+let usersTable;
+
+try {
+  // Configure Airtable
+  if (process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
+    Airtable.configure({
+      apiKey: process.env.AIRTABLE_API_KEY
+    });
+    
+    base = Airtable.base(process.env.AIRTABLE_BASE_ID);
+    usersTable = base('USERS');
+    airtableEnabled = true;
+    console.log('Airtable initialized successfully');
+  } else {
+    console.warn('Airtable API key or Base ID not provided. Using mock data instead.');
+  }
+} catch (error) {
+  console.warn('Failed to initialize Airtable:', error.message);
+}
+
+/**
+ * Find a user by their email address
+ * @param {string} email - The email address to search for
+ * @returns {Promise<Object|null>} - The user object or null if not found
+ */
+async function findUserByEmail(email) {
+    if (!airtableEnabled) {
+        // Return mock user data
+        console.log('Using mock user data for email:', email);
+        return {
+            id: 'mock-id-' + email,
+            Email: email,
+            Username: 'Mock User',
+            PasswordHash: '', // No password for mock user
+            CreatedAt: new Date().toISOString(),
+            LastLogin: new Date().toISOString(),
+            SubscriptionPlan: 'basic',
+            SubscriptionStatus: 'active',
+            HoursUsed: 0
+        };
+    }
+    
+    try {
+        const records = await usersTable.select({
+            filterByFormula: `{Email} = '${email}'`,
+            maxRecords: 1
+        }).firstPage();
+        
+        if (records && records.length > 0) {
+            return {
+                id: records[0].id,
+                ...records[0].fields
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error finding user by email:', error);
+        throw error;
+    }
+}
+
+/**
+ * Calculate relationship depth score for a user and character
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @returns {Promise<Object>} - Relationship depth information
+ */
+async function calculateRelationshipDepth(username, characterName) {
+    if (!airtableEnabled) return { score: 0, level: "New Acquaintance", tier: 1, progress: 0 };
+    
+    try {
+        // Get completed quests
+        const completedQuests = await getCompletedQuests(username, characterName);
+        
+        if (!completedQuests || completedQuests.length === 0) {
+            return { score: 0, level: "New Acquaintance", tier: 1, progress: 0 };
+        }
+        
+        // Calculate base score (1 point per completed quest)
+        let baseScore = completedQuests.length;
+        
+        // Add tier bonuses (higher tier quests are worth more)
+        let tierBonus = 0;
+        let highestTier = 1;
+        
+        // Count quests by tier
+        const questsByTier = {};
+        
+        completedQuests.forEach(quest => {
+            const tier = quest.Tier || 1;
+            questsByTier[tier] = (questsByTier[tier] || 0) + 1;
+            
+            // Track highest tier
+            if (tier > highestTier) highestTier = tier;
+            
+            // Add tier-based bonus points
+            tierBonus += (tier - 1) * 2; // Tier 1: +0, Tier 2: +2, Tier 3: +4, etc.
+        });
+        
+        // Calculate total score
+        const totalScore = baseScore + tierBonus;
+        
+        // Determine relationship level based on score and highest tier
+        const relationshipLevels = [
+            "New Acquaintance",    // 0-5 points
+            "Casual Friend",       // 6-15 points
+            "Gaming Buddy",        // 16-30 points
+            "Trusted Companion",   // 31-50 points
+            "Kindred Spirit",      // 51-75 points
+            "Inseparable Duo"      // 76+ points
+        ];
+        
+        // Calculate level index based on score ranges
+        let levelIndex = 0;
+        if (totalScore > 5) levelIndex = 1;
+        if (totalScore > 15) levelIndex = 2;
+        if (totalScore > 30) levelIndex = 3;
+        if (totalScore > 50) levelIndex = 4;
+        if (totalScore > 75) levelIndex = 5;
+        
+        // Adjust level based on highest tier (can't be more than highest tier + 1)
+        levelIndex = Math.min(levelIndex, highestTier);
+        
+        // Calculate progress to next level (as a percentage)
+        const levelThresholds = [0, 5, 15, 30, 50, 75];
+        const currentThreshold = levelThresholds[levelIndex];
+        const nextThreshold = levelIndex < 5 ? levelThresholds[levelIndex + 1] : currentThreshold * 1.5;
+        
+        const progress = levelIndex < 5 
+            ? (totalScore - currentThreshold) / (nextThreshold - currentThreshold)
+            : 1; // Max level
+        
+        return {
+            score: totalScore,
+            level: relationshipLevels[levelIndex],
+            tier: highestTier,
+            progress: Math.min(1, Math.max(0, progress)), // Ensure between 0-1
+            completedCount: completedQuests.length,
+            questsByTier
+        };
+    } catch (error) {
+        console.error('Error calculating relationship depth:', error);
+        return { score: 0, level: "New Acquaintance", tier: 1, progress: 0 };
+    }
+}
+
+/**
+ * Get completed quests for a user and character
+ * @param {string} username - Username to get quests for
+ * @param {string} characterName - Character name to filter by
+ * @returns {Promise<Array>} - Array of completed quest records
+ */
+async function getCompletedQuests(username, characterName) {
+    if (!airtableEnabled) return [];
+    
+    try {
+        const questsTable = base('USER_QUESTS');
+        const records = await questsTable.select({
+            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'completed')`,
+            maxRecords: 50,
+            sort: [{ field: 'CompletedAt', direction: 'desc' }]
+        }).firstPage();
+        
+        return records.map(record => ({
+            id: record.id,
+            ...record.fields
+        }));
+    } catch (error) {
+        console.error('Error getting completed quests:', error);
+        return [];
+    }
+}
+
+module.exports = {
+    findUserByEmail,
+    calculateRelationshipDepth
+};
