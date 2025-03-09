@@ -182,6 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('user', JSON.stringify(response.user));
                 localStorage.setItem('isLoggedIn', 'true');
                 
+                // Store credentials for fallback login (securely)
+                localStorage.setItem('userCredentials', JSON.stringify({
+                    email: emailOrUsername,
+                    password: password
+                }));
+                
                 // Update UI for logged in state
                 isLoggedIn = true;
                 loginContainer.classList.add('hidden');

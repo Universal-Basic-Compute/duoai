@@ -132,43 +132,42 @@ class AuthBridge {
             
             console.log('Attempting to refresh token with URL:', `${this.baseUrl}/api/auth/refresh`);
             
-            const response = await axios.post(`${this.baseUrl}/api/auth/refresh`, {
-                refreshToken: refreshToken
-            }, {
-                // Add timeout to prevent hanging requests
-                timeout: 10000,
-                // Add headers to ensure proper content type
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            if (response.data && response.data.token) {
-                // Store the new tokens
-                localStorage.setItem('authToken', response.data.token);
+            // First try with the standard endpoint
+            try {
+                const response = await axios.post(`${this.baseUrl}/api/auth/refresh`, {
+                    refreshToken: refreshToken
+                }, {
+                    // Add timeout to prevent hanging requests
+                    timeout: 10000,
+                    // Add headers to ensure proper content type
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
-                // Update refresh token if provided
-                if (response.data.refreshToken) {
-                    localStorage.setItem('refreshToken', response.data.refreshToken);
+                if (response.data && response.data.token) {
+                    // Store the new tokens
+                    localStorage.setItem('authToken', response.data.token);
+                    
+                    // Update refresh token if provided
+                    if (response.data.refreshToken) {
+                        localStorage.setItem('refreshToken', response.data.refreshToken);
+                    }
+                    
+                    console.log('Token refreshed successfully');
+                    return true;
                 }
                 
-                console.log('Token refreshed successfully');
-                return true;
-            }
-            
-            console.warn('Invalid response from refresh endpoint:', response.data);
-            return false;
-        } catch (error) {
-            console.error('Error refreshing token:', error);
-            
-            // Check if it's a 404 error (endpoint not found)
-            if (error.response && error.response.status === 404) {
-                console.error('Refresh endpoint not found (404). Check your Vercel deployment.');
+                console.warn('Invalid response from refresh endpoint:', response.data);
+                return false;
+            } catch (refreshError) {
+                // If the refresh endpoint fails, try the fallback approach
+                console.error('Error with refresh endpoint:', refreshError.message);
                 
                 // Try a fallback approach - direct login if we have credentials in localStorage
-                try {
-                    const storedCredentials = localStorage.getItem('userCredentials');
-                    if (storedCredentials) {
+                const storedCredentials = localStorage.getItem('userCredentials');
+                if (storedCredentials) {
+                    try {
                         const { email, password } = JSON.parse(storedCredentials);
                         console.log('Attempting fallback login with stored credentials');
                         
@@ -177,12 +176,16 @@ class AuthBridge {
                             console.log('Fallback login successful');
                             return true;
                         }
+                    } catch (fallbackError) {
+                        console.error('Fallback login failed:', fallbackError);
                     }
-                } catch (fallbackError) {
-                    console.error('Fallback login failed:', fallbackError);
                 }
+                
+                // If we get here, both refresh and fallback login failed
+                return false;
             }
-            
+        } catch (error) {
+            console.error('Unexpected error in refreshToken:', error);
             return false;
         }
     }
