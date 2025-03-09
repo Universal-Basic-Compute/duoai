@@ -266,6 +266,11 @@ function createWindow() {
         frame: false,
         transparent: true,
         alwaysOnTop: true,
+        // Add these properties to ensure it stays on top of fullscreen apps
+        focusable: true, 
+        skipTaskbar: true,
+        // This is the key property for staying on top of fullscreen apps
+        type: 'panel', // Use 'toolbar' on Windows, 'panel' on macOS
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
@@ -276,14 +281,40 @@ function createWindow() {
             webviewTag: true
         },
         resizable: false,
-        fullscreenable: false,
-        skipTaskbar: true
+        fullscreenable: false
     });
+    
+    // Set the window level to be above fullscreen apps (macOS specific)
+    if (process.platform === 'darwin') {
+        mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+    } else {
+        // For Windows, set a higher level of always-on-top
+        mainWindow.setAlwaysOnTop(true, 'screen-saver');
+    }
 
     // Position the window at the right edge of the screen
     const primaryDisplay = screen.getPrimaryDisplay();
     const { width, height } = primaryDisplay.workAreaSize;
     mainWindow.setPosition(width - 350, Math.floor(height / 2) - 300);
+    
+    // Add event handlers to ensure the window stays on top when shown or focused
+    mainWindow.on('show', () => {
+        // Re-apply always-on-top setting when window is shown
+        if (process.platform === 'darwin') {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+        } else {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver');
+        }
+    });
+    
+    mainWindow.on('focus', () => {
+        // Re-apply always-on-top setting when window is focused
+        if (process.platform === 'darwin') {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver', 1);
+        } else {
+            mainWindow.setAlwaysOnTop(true, 'screen-saver');
+        }
+    });
     
     // Use the correct path to index.html
     const indexPath = getAssetPath('index.html');
@@ -330,6 +361,34 @@ function createWindow() {
     }
 }
 
+// Function to detect fullscreen applications
+function checkForFullscreenApps() {
+    if (process.platform === 'win32') {
+        try {
+            // On Windows, we can use the screen API to detect fullscreen apps
+            const displays = screen.getAllDisplays();
+            let hasFullscreenApp = false;
+            
+            for (const display of displays) {
+                // Check if any display has a fullscreen app
+                if (display.workArea.width !== display.bounds.width || 
+                    display.workArea.height !== display.bounds.height) {
+                    hasFullscreenApp = true;
+                    break;
+                }
+            }
+            
+            // If a fullscreen app is detected, ensure our window stays on top
+            const mainWindow = BrowserWindow.getAllWindows()[0];
+            if (hasFullscreenApp && mainWindow) {
+                mainWindow.setAlwaysOnTop(true, 'screen-saver');
+            }
+        } catch (error) {
+            console.error('Error checking for fullscreen apps:', error);
+        }
+    }
+}
+
 app.whenReady().then(() => {
     // Check dependencies before proceeding
     if (!checkDependencies()) {
@@ -340,6 +399,9 @@ app.whenReady().then(() => {
     // Protocol handler registration removed
     
     createWindow();
+    
+    // Check for fullscreen apps periodically
+    setInterval(checkForFullscreenApps, 2000); // Check every 2 seconds
     
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
