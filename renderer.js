@@ -435,33 +435,46 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hide menu tab initially
     menuTab.style.display = 'none';
     
-    // Function to select Nova by default
+    // Function to select Zephyr by default
     const selectDefaultCharacter = () => {
-        // Find the Nova character item
-        const novaCharacterItem = Array.from(document.querySelectorAll('.character-item'))
-            .find(item => item.querySelector('.character-name').textContent === 'Nova');
+        // Find the Zephyr character item
+        const zephyrCharacterItem = Array.from(document.querySelectorAll('.character-item'))
+            .find(item => item.querySelector('.character-name').textContent === 'Zephyr');
         
-        if (novaCharacterItem) {
-            console.log('Selecting Nova by default');
+        if (zephyrCharacterItem) {
+            console.log('Selecting Zephyr by default');
             
             // Add active class
-            novaCharacterItem.classList.add('character-active');
+            zephyrCharacterItem.classList.add('character-active');
             
             // Store the character name for later use
-            localStorage.setItem('currentCharacter', 'Nova');
+            localStorage.setItem('currentCharacter', 'Zephyr');
             
             // Set current character
-            currentCharacter = 'Nova';
+            currentCharacter = 'Zephyr';
             
-            // Set the voice for Nova
-            const voiceId = getVoiceIdForCharacter('Nova');
+            // Set the voice for Zephyr
+            const voiceId = getVoiceIdForCharacter('Zephyr');
             speechManager.setVoice(voiceId);
             localStorage.setItem('selectedVoice', voiceId);
         }
     };
     
-    // Call the function to select Nova by default
+    // Function to update the character button text
+    function updateCharacterButtonText() {
+        const charactersButton = document.getElementById('charactersButton');
+        const currentChar = localStorage.getItem('currentCharacter') || 'Zephyr';
+        
+        if (charactersButton) {
+            charactersButton.textContent = currentChar;
+        }
+    }
+    
+    // Call the function to select Zephyr by default
     selectDefaultCharacter();
+    
+    // Update character button text
+    updateCharacterButtonText();
     
     // Ensure menu tab is in the correct position at startup
     menuTab.style.right = '0';
@@ -1336,6 +1349,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Set current character
             currentCharacter = characterName;
+            
+            // Update the character button text to show selected character
+            updateCharacterButtonText();
             
             // Set the voice for the selected character
             const voiceId = getVoiceIdForCharacter(characterName);
