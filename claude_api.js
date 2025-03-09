@@ -322,7 +322,7 @@ class ClaudeAPI {
                             formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n${userMessage}\n\nStart or continue the conversation. Your response:`;
                         } else {
                             // Default message when user didn't type anything in onboarding mode
-                            formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n*${username} did not type a specific message at this time*\n\nIntroduce yourself briefly (1-2 sentences) and ask an engaging question to start the conversation. Your response:`;
+                            formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n*${username} did not type a specific message at this time*\n\nStart or continue the conversation. Your response:`;
                         }
                     } else {
                         // Standard mode - continue as before
