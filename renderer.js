@@ -602,6 +602,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Hide menu
             sideMenu.style.right = '-300px';
             menuTab.style.right = '0';
+            // Remove the open class to hide the shadow
+            sideMenu.classList.remove('open');
             // Resize window to be narrow when menu is closed
             ipcRenderer.send('resize-window', { width: 50, height: 600 });
             menuOpen = false;
@@ -609,6 +611,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show menu
             sideMenu.style.right = '0';
             menuTab.style.right = '300px'; // This is correct - position at the edge of the menu
+            // Add the open class to show the shadow
+            sideMenu.classList.add('open');
             // Hide chat if it's open
             chatContainer.style.right = '-350px';
             // Resize window to accommodate the open menu
@@ -918,6 +922,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
         // Show the menu tab and ensure it's visible
         menuTab.style.right = '0';
+        
+        // Make sure the menu shadow is removed when closing the chat
+        sideMenu.classList.remove('open');
         
         // Force menu tab to be visible with important flags
         menuTab.style.setProperty('display', 'block', 'important');
@@ -1348,6 +1355,11 @@ document.addEventListener('DOMContentLoaded', () => {
     backButton.addEventListener('click', () => {
         // Hide the characters submenu
         charactersSubmenu.style.right = '-300px';
+        
+        // If the main menu is not open, make sure the shadow is removed
+        if (!menuOpen) {
+            sideMenu.classList.remove('open');
+        }
     });
     
     // Email/password login is the only authentication method

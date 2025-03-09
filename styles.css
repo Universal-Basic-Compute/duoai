@@ -339,12 +339,17 @@ body {
     height: 100%;
     background: linear-gradient(160deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
     color: var(--text-color);
-    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
     z-index: 999;
-    box-shadow: -5px 0 25px var(--shadow-color);
+    box-shadow: none; /* Start with no shadow */
     border-left: 1px solid rgba(126, 87, 194, 0.2);
     display: flex;
     flex-direction: column;
+}
+
+/* Add a new class for when the menu is open */
+.side-menu.open {
+    box-shadow: -5px 0 25px var(--shadow-color);
 }
 
 .menu-header {
