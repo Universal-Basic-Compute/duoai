@@ -1310,7 +1310,7 @@ document.addEventListener('DOMContentLoaded', () => {
         charactersSubmenu.style.right = '-300px';
     });
     
-    // Google login button removed
+    // Email/password login is the only authentication method
     
     // Diagnostic button removed
     

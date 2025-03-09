@@ -268,6 +268,7 @@ class AuthBridge {
             '/api/auth/status',
             '/api/auth/login',
             '/api/auth/refresh'
+            // No Google auth endpoints
         ];
         
         const results = {};

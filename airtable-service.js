@@ -23,47 +23,6 @@ try {
   console.warn('Failed to initialize Airtable:', error.message);
 }
 
-/**
- * Find a user by their Google ID
- * @param {string} googleId - The Google ID to search for
- * @returns {Promise<Object|null>} - The user object or null if not found
- */
-async function findUserByGoogleId(googleId) {
-    if (!airtableEnabled) {
-        // Return mock user data
-        console.log('Using mock user data for Google ID:', googleId);
-        return {
-            id: 'mock-id-' + googleId,
-            GoogleId: googleId,
-            Username: 'Mock User',
-            Email: 'mock@example.com',
-            ProfilePicture: '',
-            CreatedAt: new Date().toISOString(),
-            LastLogin: new Date().toISOString(),
-            SubscriptionPlan: 'basic',
-            SubscriptionStatus: 'active',
-            HoursUsed: 0
-        };
-    }
-    
-    try {
-        const records = await usersTable.select({
-            filterByFormula: `{GoogleId} = '${googleId}'`,
-            maxRecords: 1
-        }).firstPage();
-        
-        if (records && records.length > 0) {
-            return {
-                id: records[0].id,
-                ...records[0].fields
-            };
-        }
-        return null;
-    } catch (error) {
-        console.error('Error finding user by Google ID:', error);
-        throw error;
-    }
-}
 
 /**
  * Find a user by their email address
@@ -212,7 +171,6 @@ async function createUser(userData) {
         console.log('Creating mock user for:', userData.displayName || userData.id);
         return {
             id: 'mock-id-' + userData.id,
-            GoogleId: userData.id,
             Username: userData.displayName || '',
             Email: userData.emails && userData.emails[0] ? userData.emails[0].value : '',
             ProfilePicture: userData.photos && userData.photos[0] ? userData.photos[0].value : '',
@@ -228,7 +186,6 @@ async function createUser(userData) {
         const records = await usersTable.create([
             {
                 fields: {
-                    GoogleId: userData.id,
                     Username: userData.displayName || '',
                     Email: userData.emails && userData.emails[0] ? userData.emails[0].value : '',
                     ProfilePicture: userData.photos && userData.photos[0] ? userData.photos[0].value : '',
@@ -1386,7 +1343,6 @@ async function periodicQuestAndAdaptationCheck(username, characterName, messageC
 }
 
 module.exports = {
-    findUserByGoogleId,
     findUserByEmail,
     findUserByUsername,
     createUser,
