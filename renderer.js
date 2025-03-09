@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Function to ensure menu tab is visible and properly positioned
     function ensureMenuTabVisibility() {
         if (menuTab) {
-            // Force the menu tab to be visible and positioned correctly
+            // Force the menu tab to be visible and positioned correctly with !important flags
             menuTab.style.setProperty('display', 'block', 'important');
             menuTab.style.setProperty('visibility', 'visible', 'important');
             menuTab.style.setProperty('opacity', '1', 'important');
@@ -38,8 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
             menuTab.style.setProperty('top', '50%', 'important');
             menuTab.style.setProperty('transform', 'translateY(-50%)', 'important');
             menuTab.style.setProperty('z-index', '9999', 'important');
+            menuTab.style.setProperty('pointer-events', 'auto', 'important');
             
-            console.log('Menu tab visibility enforced, position:', menuTab.style.right);
+            // Add a debug log to confirm the tab's visibility state
+            console.log('Menu tab visibility enforced, position:', menuTab.style.right, 
+                        'display:', window.getComputedStyle(menuTab).display,
+                        'visibility:', window.getComputedStyle(menuTab).visibility);
         } else {
             console.error('Menu tab element not found when trying to enforce visibility');
         }
@@ -601,8 +605,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         console.log('Menu state after click:', menuOpen);
         
-        // Force visibility and position after state change
+        // Force visibility and position after state change - call immediately and after a delay
+        ensureMenuTabVisibility();
         setTimeout(ensureMenuTabVisibility, 50);
+        setTimeout(ensureMenuTabVisibility, 200);
     }
     
     // Add the click event listener
@@ -619,11 +625,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Also call it after a short delay to override any other scripts that might change it
     setTimeout(ensureMenuTabVisibility, 500);
 
-    // Call it periodically to ensure it stays visible
-    setInterval(ensureMenuTabVisibility, 5000);
+    // Call it periodically to ensure it stays visible - increase frequency
+    setInterval(ensureMenuTabVisibility, 2000); // Check every 2 seconds instead of 5
 
-    // Also call it on window resize
-    window.addEventListener('resize', ensureMenuTabVisibility);
+    // Also call it on window resize with additional delayed check
+    window.addEventListener('resize', () => {
+        ensureMenuTabVisibility();
+        // Call again after a short delay to handle any CSS transitions
+        setTimeout(ensureMenuTabVisibility, 300);
+    });
     
     // Function to update relationship depth indicator
     async function updateRelationshipDepth(characterName) {
@@ -887,6 +897,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Note: We're intentionally not cleaning up speech resources
         // to allow audio to continue playing in the background
         console.log('Chat closed but audio playback will continue if in progress');
+        
+        // Ensure menu tab is visible after chat is closed
+        setTimeout(ensureMenuTabVisibility, 100);
     });
     
     // Send button functionality

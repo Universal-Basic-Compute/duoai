@@ -280,7 +280,6 @@ body {
     height: 30px; /* Reduced height from 40px to 30px */
     pointer-events: auto !important; /* Force pointer events to be enabled */
     user-select: none; /* Prevent text selection */
-    position: relative; /* Ensure relative positioning for absolute children */
     overflow: visible; /* Allow the loading indicator to overflow */
     display: block !important;
     visibility: visible !important;
