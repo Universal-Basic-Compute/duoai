@@ -126,14 +126,25 @@ class AuthBridge {
             const refreshToken = localStorage.getItem('refreshToken');
             
             if (!refreshToken) {
+                console.log('No refresh token available in localStorage');
                 return false;
             }
             
+            console.log('Attempting to refresh token with URL:', `${this.baseUrl}/api/auth/refresh`);
+            
             const response = await axios.post(`${this.baseUrl}/api/auth/refresh`, {
                 refreshToken: refreshToken
+            }, {
+                // Add timeout to prevent hanging requests
+                timeout: 10000,
+                // Add headers to ensure proper content type
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
             
             if (response.data && response.data.token) {
+                // Store the new tokens
                 localStorage.setItem('authToken', response.data.token);
                 
                 // Update refresh token if provided
@@ -141,12 +152,37 @@ class AuthBridge {
                     localStorage.setItem('refreshToken', response.data.refreshToken);
                 }
                 
+                console.log('Token refreshed successfully');
                 return true;
             }
             
+            console.warn('Invalid response from refresh endpoint:', response.data);
             return false;
         } catch (error) {
             console.error('Error refreshing token:', error);
+            
+            // Check if it's a 404 error (endpoint not found)
+            if (error.response && error.response.status === 404) {
+                console.error('Refresh endpoint not found (404). Check your Vercel deployment.');
+                
+                // Try a fallback approach - direct login if we have credentials in localStorage
+                try {
+                    const storedCredentials = localStorage.getItem('userCredentials');
+                    if (storedCredentials) {
+                        const { email, password } = JSON.parse(storedCredentials);
+                        console.log('Attempting fallback login with stored credentials');
+                        
+                        const loginResponse = await this.loginWithCredentials(email, password);
+                        if (loginResponse.success) {
+                            console.log('Fallback login successful');
+                            return true;
+                        }
+                    }
+                } catch (fallbackError) {
+                    console.error('Fallback login failed:', fallbackError);
+                }
+            }
+            
             return false;
         }
     }
@@ -224,4 +260,60 @@ class AuthBridge {
     }
 }
 
-module.exports = new AuthBridge();
+    /**
+     * Test API endpoints to diagnose deployment issues
+     * @returns {Promise<Object>} - Results of endpoint tests
+     */
+    async testApiEndpoints() {
+        const endpoints = [
+            '/api/health',
+            '/api/auth/status',
+            '/api/auth/login',
+            '/api/auth/refresh'
+        ];
+        
+        const results = {};
+        
+        for (const endpoint of endpoints) {
+            try {
+                const url = `${this.baseUrl}${endpoint}`;
+                console.log(`Testing endpoint: ${url}`);
+                
+                // Use OPTIONS request as it's typically allowed for CORS preflight
+                const response = await axios.options(url, { timeout: 5000 });
+                
+                results[endpoint] = {
+                    status: response.status,
+                    success: response.status >= 200 && response.status < 300
+                };
+                
+                console.log(`Endpoint ${endpoint} test result:`, results[endpoint]);
+            } catch (error) {
+                results[endpoint] = {
+                    status: error.response ? error.response.status : 'network-error',
+                    success: false,
+                    error: error.message
+                };
+                
+                console.error(`Endpoint ${endpoint} test failed:`, error.message);
+            }
+        }
+        
+        return results;
+    }
+}
+
+// Create a singleton instance
+const authBridge = new AuthBridge();
+
+// Test API endpoints during initialization
+authBridge.testApiEndpoints().then(results => {
+    console.log('API endpoint test results:', results);
+    
+    // Check if refresh endpoint is accessible
+    if (results['/api/auth/refresh'] && !results['/api/auth/refresh'].success) {
+        console.warn('Refresh token endpoint is not accessible. Token refresh will not work.');
+    }
+});
+
+module.exports = authBridge;
