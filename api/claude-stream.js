@@ -34,8 +34,31 @@ async function processAdaptation(username, characterName, conversationHistory) {
             return null;
         }
         
-        // Replace placeholder with actual conversation
+        // Get the base prompt and character prompt for context
+        const basePromptPath = path.join(rootDir, 'prompts', 'base_prompt.txt');
+        const characterPromptPath = path.join(rootDir, 'prompts', 'characters', `${characterName.toLowerCase()}.txt`);
+        
+        let basePrompt = '';
+        let characterPrompt = '';
+        
+        try {
+            basePrompt = fs.readFileSync(basePromptPath, 'utf8');
+            console.log('[ADAPTATION] Read base prompt successfully');
+        } catch (error) {
+            console.error('[ADAPTATION] Error reading base prompt:', error);
+        }
+        
+        try {
+            characterPrompt = fs.readFileSync(characterPromptPath, 'utf8');
+            console.log(`[ADAPTATION] Read character prompt for ${characterName} successfully`);
+        } catch (error) {
+            console.error(`[ADAPTATION] Error reading character prompt for ${characterName}:`, error);
+        }
+        
+        // Replace placeholders with actual content
         adaptationPrompt = adaptationPrompt.replace('{{conversation}}', formattedConversation);
+        adaptationPrompt = adaptationPrompt.replace('{{base_prompt}}', basePrompt);
+        adaptationPrompt = adaptationPrompt.replace('{{character_prompt}}', characterPrompt);
         
         // Call Claude API for adaptation analysis
         const payload = {
