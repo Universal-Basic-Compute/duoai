@@ -213,12 +213,17 @@ async function generateSystemPrompt(characterName) {
     
     // Save the user message and Claude's response to Airtable
     try {
+        // Determine the context based on message count (if available)
+        // Default to 'standard' if we don't have message count information
+        const context = req.body.messageCount < 20 ? 'onboarding' : 'standard';
+        
         // Save user message
         await airtableService.saveMessage(
             username,
             'user',
             userMessage || `*${username} did not type a specific message at this time*`,
-            characterName
+            characterName,
+            context // Add context parameter
         );
         
         // Save assistant message
@@ -226,7 +231,8 @@ async function generateSystemPrompt(characterName) {
             username,
             'assistant',
             response.data.content[0].text,
-            characterName
+            characterName,
+            context // Add context parameter
         );
         
         console.log('Messages saved to Airtable');

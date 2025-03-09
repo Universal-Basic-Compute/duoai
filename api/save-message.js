@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
     const username = user ? user.Username : userEmail;
     
     // Extract message data from request body
-    const { role, content, character, username: requestUsername } = req.body;
+    const { role, content, character, username: requestUsername, context = 'standard' } = req.body;
     
     if (!role || !content) {
       return res.status(400).json({ error: 'Role and content are required' });
@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
     console.log('Using username for message:', finalUsername);
     
     // Save message to Airtable
-    const message = await airtableService.saveMessage(finalUsername, role, content, character);
+    const message = await airtableService.saveMessage(finalUsername, role, content, character, context);
     
     if (!message) {
       return res.status(500).json({ error: 'Failed to save message' });

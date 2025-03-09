@@ -230,11 +230,16 @@ module.exports = async (req, res) => {
         try {
             console.log('[STREAM] Saving user message to Airtable...');
             
+            // Determine the context based on message count
+            const context = messageCount < 20 ? 'onboarding' : 'standard';
+            console.log(`[STREAM] Message context: ${context} (message count: ${messageCount})`);
+            
             const savedUserMessage = await airtableService.saveMessage(
                 username,
                 'user',
                 userMessage || `*${username} did not type a specific message at this time*`,
-                characterName
+                characterName,
+                context // Add context parameter
             );
             
             if (savedUserMessage) {
@@ -327,12 +332,16 @@ module.exports = async (req, res) => {
                 console.log('[STREAM] Character:', characterName || 'None');
                 console.log('[STREAM] Message length:', fullResponse.length);
                 
+                // Determine the context based on message count
+                const context = messageCount < 20 ? 'onboarding' : 'standard';
+                
                 if (fullResponse.length > 0) {
                     const savedAssistantMessage = await airtableService.saveMessage(
                         username,
                         'assistant',
                         fullResponse,
-                        characterName
+                        characterName,
+                        context // Add context parameter
                     );
                     
                     if (savedAssistantMessage) {
