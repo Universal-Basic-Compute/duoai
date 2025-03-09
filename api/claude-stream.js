@@ -531,6 +531,19 @@ async function generateSystemPrompt(characterName, messageCount = null, username
                 } else {
                     console.log(`[PROMPT] No adaptations found for user ${username} and character ${characterName}`);
                 }
+                
+                // Add active quests to the system prompt
+                try {
+                    const activeQuestsText = await airtableService.getActiveQuestsForPrompt(username, characterName);
+                    
+                    if (activeQuestsText) {
+                        fullPrompt += '\n\n' + '='.repeat(50) + '\n\n';
+                        fullPrompt += activeQuestsText;
+                        console.log('[PROMPT] Added active quests to system prompt');
+                    }
+                } catch (questsError) {
+                    console.error('[PROMPT] Error adding active quests to system prompt:', questsError);
+                }
             } catch (adaptationError) {
                 console.error('[PROMPT] Error getting adaptations:', adaptationError);
             }

@@ -945,6 +945,46 @@ async function activateNextTierQuests(username, characterName, tier) {
 }
 
 /**
+ * Get active quests formatted for system prompt
+ * @param {string} username - Username to get quests for
+ * @param {string} characterName - Character name to filter by
+ * @returns {Promise<string>} - Formatted quests text for system prompt
+ */
+async function getActiveQuestsForPrompt(username, characterName) {
+    if (!airtableEnabled) return '';
+    
+    try {
+        const activeQuests = await getUserActiveQuests(username, characterName);
+        
+        if (!activeQuests || activeQuests.length === 0) {
+            console.log(`[QUESTS] No active quests found for ${username} with ${characterName}`);
+            return '';
+        }
+        
+        console.log(`[QUESTS] Found ${activeQuests.length} active quests for system prompt`);
+        
+        // Format quests for the system prompt
+        let questsText = 'ACTIVE QUESTS (subtly pursue these objectives through natural conversation):\n';
+        
+        activeQuests.forEach((quest, index) => {
+            questsText += `${index + 1}. ${quest.QuestName}`;
+            
+            // Add description if available
+            if (quest.QuestDescription) {
+                questsText += `: ${quest.QuestDescription}`;
+            }
+            
+            questsText += '\n';
+        });
+        
+        return questsText;
+    } catch (error) {
+        console.error('[QUESTS] Error getting active quests for prompt:', error);
+        return '';
+    }
+}
+
+/**
  * Verify quest completions using LLM analysis
  * @param {string} username - Username to check quests for
  * @param {string} characterName - Character name
@@ -1250,5 +1290,6 @@ module.exports = {
     verifyQuestsWithLLM,
     findMessagesNeedingVerification,
     markRecentMessagesAsVerified,
-    periodicQuestAndAdaptationCheck
+    periodicQuestAndAdaptationCheck,
+    getActiveQuestsForPrompt
 };
