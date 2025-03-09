@@ -362,45 +362,43 @@ module.exports = async (req, res) => {
                 // Increment message count after saving
                 messageCount++;
                 
-                // Run periodic quest and adaptation check every 10 messages
-                if (messageCount % 10 === 0) {
-                    console.log(`[STREAM] Message count ${messageCount} is a multiple of 10, running verification checks`);
-                    
-                    // Run verification asynchronously
-                    setTimeout(async () => {
-                        try {
-                            const verificationResults = await airtableService.periodicQuestAndAdaptationCheck(
-                                username, 
-                                characterName, 
-                                messageCount
-                            );
+                // Run periodic quest and adaptation check on every message for debugging
+                console.log(`[STREAM] Running verification checks on every message for debugging`);
+                
+                // Run verification asynchronously
+                setTimeout(async () => {
+                    try {
+                        const verificationResults = await airtableService.periodicQuestAndAdaptationCheck(
+                            username, 
+                            characterName, 
+                            messageCount
+                        );
+                        
+                        console.log('[STREAM] Verification results:', verificationResults);
+                        
+                        // If adaptation should run, process it
+                        if (verificationResults.adaptationRun) {
+                            // Get the full conversation history for context
+                            const conversationMessages = await airtableService.getUserMessages(username, 20, characterName);
                             
-                            console.log('[STREAM] Verification results:', verificationResults);
-                            
-                            // If adaptation should run, process it
-                            if (verificationResults.adaptationRun) {
-                                // Get the full conversation history for context
-                                const conversationMessages = await airtableService.getUserMessages(username, 20, characterName);
+                            if (conversationMessages && conversationMessages.length > 0) {
+                                // Convert to the format expected by the adaptation processor
+                                const formattedMessages = conversationMessages
+                                    .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
+                                    .map(msg => ({
+                                        role: msg.Role === 'user' ? 'user' : 'assistant',
+                                        content: [{ type: 'text', text: msg.Content }]
+                                    }));
                                 
-                                if (conversationMessages && conversationMessages.length > 0) {
-                                    // Convert to the format expected by the adaptation processor
-                                    const formattedMessages = conversationMessages
-                                        .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
-                                        .map(msg => ({
-                                            role: msg.Role === 'user' ? 'user' : 'assistant',
-                                            content: [{ type: 'text', text: msg.Content }]
-                                        }));
-                                    
-                                    // Process the adaptation
-                                    await processAdaptation(username, characterName, formattedMessages);
-                                    console.log('[STREAM] Adaptation processing completed');
-                                }
+                                // Process the adaptation
+                                await processAdaptation(username, characterName, formattedMessages);
+                                console.log('[STREAM] Adaptation processing completed');
                             }
-                        } catch (verificationError) {
-                            console.error('[STREAM] Error in verification checks:', verificationError);
                         }
-                    }, 100); // Small delay to ensure response is sent first
-                }
+                    } catch (verificationError) {
+                        console.error('[STREAM] Error in verification checks:', verificationError);
+                    }
+                }, 100); // Small delay to ensure response is sent first
             } catch (saveError) {
                 console.error('[STREAM] Error saving assistant message to Airtable:', saveError);
                 console.error('[STREAM] Error message:', saveError.message);
