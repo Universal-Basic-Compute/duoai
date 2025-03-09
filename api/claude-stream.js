@@ -75,7 +75,7 @@ async function processAdaptation(username, characterName, conversationHistory) {
                     ]
                 }
             ],
-            max_tokens: 1000
+            max_tokens: 4096
         };
         
         console.log('[ADAPTATION] Sending adaptation request to Claude API');
