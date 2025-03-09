@@ -1,4 +1,29 @@
-const airtableService = require('../../airtable-service');
+let airtableService;
+try {
+    airtableService = require('../../airtable-service');
+} catch (error) {
+    console.error('Error loading airtable-service:', error);
+    // Create a fallback implementation
+    airtableService = {
+        calculateRelationshipDepth: async (username, character) => {
+            console.log(`Using fallback relationship data for ${username} with ${character}`);
+            return { 
+                score: 0, 
+                level: "New Acquaintance", 
+                tier: 1, 
+                progress: 0,
+                completedCount: 0
+            };
+        },
+        findUserByEmail: async (email) => {
+            console.log(`Using fallback user data for ${email}`);
+            return {
+                Username: email.split('@')[0]
+            };
+        }
+    };
+}
+
 const jwt = require('jsonwebtoken');
 
 module.exports = async (req, res) => {

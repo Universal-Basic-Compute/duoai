@@ -17,5 +17,8 @@
   },
   "scripts": {
     "postinstall": "npm install airtable@0.12.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
