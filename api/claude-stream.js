@@ -405,21 +405,33 @@ module.exports = async (req, res) => {
             
             // End the response
             res.write('event: message_stop\ndata: {"type": "message_stop"}\n\n');
-            res.end();
-            console.log('[STREAM] Response ended');
             
             // Check quest triggers
             try {
                 console.log('[QUESTS] Checking quest triggers for user:', username);
-                await airtableService.checkQuestTriggers(
+                const questResult = await airtableService.checkQuestTriggers(
                     username, 
                     characterName, 
                     userMessage || "*the user did not type a specific message at this time*", 
                     fullResponse
                 );
+                
+                // If a quest was completed, send a notification
+                if (questResult && questResult.completed) {
+                    console.log('[QUESTS] Quest completed:', questResult.questName);
+                    // Send quest completion event
+                    res.write(`event: quest_completed\ndata: ${JSON.stringify({
+                        type: 'quest_completed',
+                        questName: questResult.questName,
+                        tier: questResult.tier || 1
+                    })}\n\n`);
+                }
             } catch (questError) {
                 console.error('[QUESTS] Error processing quests:', questError);
             }
+            
+            res.end();
+            console.log('[STREAM] Response ended');
         });
         
         // Handle errors in the stream

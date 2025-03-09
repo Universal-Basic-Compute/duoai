@@ -1452,6 +1452,199 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Function to open quest journal
+    function openQuestJournal() {
+        // Get current character
+        const currentCharacter = localStorage.getItem('currentCharacter');
+        if (!currentCharacter) {
+            alert('Please select a character first');
+            return;
+        }
+        
+        // Create journal overlay
+        const journalOverlay = document.createElement('div');
+        journalOverlay.className = 'journal-overlay';
+        
+        // Get quest data from API
+        const authToken = localStorage.getItem('authToken');
+        if (!authToken) {
+            alert('You need to be logged in to view the journal');
+            return;
+        }
+        
+        // Show loading state
+        journalOverlay.innerHTML = `
+            <div class="journal-container">
+                <div class="journal-header">
+                    <h2>${currentCharacter}'s Companion Journal</h2>
+                    <button class="journal-close">×</button>
+                </div>
+                <div class="journal-content">
+                    <div class="loading-indicator">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add close button functionality
+        journalOverlay.querySelector('.journal-close').onclick = () => {
+            journalOverlay.classList.add('closing');
+            setTimeout(() => journalOverlay.remove(), 500);
+        };
+        
+        // Add to DOM and animate in
+        document.body.appendChild(journalOverlay);
+        setTimeout(() => journalOverlay.classList.add('open'), 10);
+        
+        // Fetch quest data
+        fetch(`${authBridge.baseUrl}/api/quests/journal?character=${encodeURIComponent(currentCharacter)}`, {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            const { active, completed, relationship } = data;
+            
+            // Update journal content
+            const journalContent = journalOverlay.querySelector('.journal-content');
+            
+            journalContent.innerHTML = `
+                <div class="journal-header">
+                    <div class="relationship-status">
+                        <span class="status-label">Relationship:</span>
+                        <span class="status-value tier-${relationship.tier}">${relationship.level}</span>
+                    </div>
+                </div>
+                
+                <div class="journal-section">
+                    <h3>Discoveries About You</h3>
+                    <div class="completed-quests">
+                        ${renderCompletedQuests(completed)}
+                    </div>
+                </div>
+                
+                <div class="journal-section">
+                    <h3>${currentCharacter}'s Curiosities</h3>
+                    <div class="active-quests">
+                        ${renderActiveQuests(active)}
+                    </div>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error fetching quest journal:', error);
+            
+            // Show error message
+            const journalContent = journalOverlay.querySelector('.journal-content');
+            journalContent.innerHTML = `
+                <div class="error-message">
+                    <p>Failed to load journal data. Please try again later.</p>
+                    <p>Error: ${error.message}</p>
+                </div>
+            `;
+        });
+    }
+    
+    // Function to render completed quests
+    function renderCompletedQuests(completed) {
+        if (!completed || completed.length === 0) {
+            return '<p class="empty-state">No discoveries yet. Keep chatting!</p>';
+        }
+        
+        return completed.map(quest => `
+            <div class="journal-entry completed">
+                <div class="entry-header">
+                    <span class="entry-date">${formatDate(quest.completedAt)}</span>
+                    <span class="entry-badge tier-${quest.tier}">Milestone</span>
+                </div>
+                <div class="entry-title">${quest.name}</div>
+                <div class="entry-content">${generateQuestMemory(quest)}</div>
+            </div>
+        `).join('');
+    }
+    
+    // Function to render active quests
+    function renderActiveQuests(active) {
+        if (!active || active.length === 0) {
+            return '<p class="empty-state">No active curiosities at the moment.</p>';
+        }
+        
+        return active.map(quest => `
+            <div class="journal-entry">
+                <div class="entry-header">
+                    <span class="entry-badge tier-${quest.tier}">Ongoing</span>
+                </div>
+                <div class="entry-title">${quest.name}</div>
+                <div class="entry-content">I'm curious to learn more about this...</div>
+            </div>
+        `).join('');
+    }
+    
+    // Function to generate a personalized memory based on the quest
+    function generateQuestMemory(quest) {
+        // If we have evidence, use it
+        if (quest.evidence && quest.evidence.evidence) {
+            return quest.evidence.evidence;
+        }
+        
+        // Otherwise, generate based on quest name
+        switch(quest.questId) {
+            case 'ice-breaker':
+                return 'We shared a moment of laughter together.';
+            case 'gaming-origin':
+                return 'You shared how your gaming journey began.';
+            case 'current-obsession':
+                return 'You told me about a game you\'re currently passionate about.';
+            case 'gaming-memory':
+                return 'You shared a meaningful gaming memory with me.';
+            case 'hidden-gem':
+                return 'You introduced me to an underrated game you appreciate.';
+            case 'gaming-frustration':
+                return 'You opened up about something that frustrates you in games.';
+            case 'breakthrough-moment':
+                return 'You shared a moment of triumph when you overcame a gaming challenge.';
+            default:
+                return `We connected over ${quest.name.toLowerCase()}.`;
+        }
+    }
+    
+    // Function to format date
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        
+        const date = new Date(dateString);
+        return date.toLocaleDateString(undefined, { 
+            month: 'short', 
+            day: 'numeric',
+            year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+        });
+    }
+    
+    // Function to show quest completion notification
+    function showQuestCompletion(questName, tier) {
+        const notification = document.createElement('div');
+        notification.className = 'quest-notification';
+        notification.innerHTML = `
+            <div class="quest-icon">✨</div>
+            <div class="quest-info">
+                <div class="quest-title">Connection Deepened</div>
+                <div class="quest-description">${questName}</div>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        // Animate out after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+        }, 5000);
+    }
+    
     // Add click event listeners to character items
     document.querySelectorAll('.character-item').forEach(item => {
         item.addEventListener('click', async () => {
@@ -1491,6 +1684,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="character-avatar">${characterName.charAt(0)}</div>
                     <div class="character-info">${characterName}</div>
                 `;
+            
+                // Add journal button to chat header if not already there
+                const chatHeader = document.querySelector('.chat-header');
+                if (!chatHeader.querySelector('.journal-button')) {
+                    chatHeader.insertBefore(journalButton, closeChatButton);
+                }
                 
                 // Add a loading indicator
                 addLoadingIndicator();

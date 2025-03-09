@@ -164,6 +164,33 @@ class ClaudeAPI {
         }
     }
     /**
+     * Show a quest completion notification
+     * @param {string} questName - Name of the completed quest
+     * @param {number} tier - Quest tier
+     */
+    function showQuestCompletion(questName, tier) {
+        const notification = document.createElement('div');
+        notification.className = 'quest-notification';
+        notification.innerHTML = `
+            <div class="quest-icon">✨</div>
+            <div class="quest-info">
+                <div class="quest-title">Connection Deepened</div>
+                <div class="quest-description">${questName}</div>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        // Animate out after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 500);
+        }, 5000);
+    }
+
+    /**
      * Optimize a screenshot for sending to Claude API
      * @param {Buffer} imageBuffer - The image buffer
      * @returns {Promise<string>} - Base64 encoded optimized image
@@ -323,6 +350,24 @@ class ClaudeAPI {
                         
                         for (const event of events) {
                             if (!event.trim()) continue;
+                            
+                            // Check for quest completion events
+                            if (event.startsWith('event: quest_completed')) {
+                                try {
+                                    const match = event.match(/^data: (.+)$/m);
+                                    if (match) {
+                                        const data = JSON.parse(match[1]);
+                                        if (data.type === 'quest_completed') {
+                                            console.log('Quest completed:', data.questName);
+                                            // Show quest completion notification
+                                            showQuestCompletion(data.questName, data.tier);
+                                        }
+                                    }
+                                } catch (parseError) {
+                                    console.warn('Error parsing quest completion event:', parseError);
+                                }
+                                continue;
+                            }
                             
                             // Extract the data part more precisely
                             const match = event.match(/^data: (.+)$/m);

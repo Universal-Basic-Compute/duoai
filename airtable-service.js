@@ -705,15 +705,42 @@ async function getUserActiveQuests(username, characterName) {
 }
 
 /**
+ * Get completed quests for a user and character
+ * @param {string} username - Username to get quests for
+ * @param {string} characterName - Character name to filter by
+ * @returns {Promise<Array>} - Array of completed quest records
+ */
+async function getCompletedQuests(username, characterName) {
+    if (!airtableEnabled) return [];
+    
+    try {
+        const questsTable = base('USER_QUESTS');
+        const records = await questsTable.select({
+            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'completed')`,
+            maxRecords: 50,
+            sort: [{ field: 'CompletedAt', direction: 'desc' }]
+        }).firstPage();
+        
+        return records.map(record => ({
+            id: record.id,
+            ...record.fields
+        }));
+    } catch (error) {
+        console.error('Error getting completed quests:', error);
+        return [];
+    }
+}
+
+/**
  * Check for quest triggers in a conversation
  * @param {string} username - Username
  * @param {string} characterName - Character name
  * @param {string} userMessage - User's message
  * @param {string} aiResponse - AI's response
- * @returns {Promise<void>}
+ * @returns {Promise<Object|null>} - Quest completion info or null
  */
 async function checkQuestTriggers(username, characterName, userMessage, aiResponse) {
-    if (!airtableEnabled) return;
+    if (!airtableEnabled) return null;
     
     try {
         // Get active quests
@@ -722,7 +749,7 @@ async function checkQuestTriggers(username, characterName, userMessage, aiRespon
         // If no active quests, activate initial ones
         if (activeQuests.length === 0) {
             await activateInitialQuests(username, characterName);
-            return;
+            return null;
         }
         
         // Simple keyword-based trigger system
@@ -757,10 +784,20 @@ async function checkQuestTriggers(username, characterName, userMessage, aiRespon
                 });
                 
                 console.log(`Completed quest "${questName}" for ${username}`);
+                
+                // Return quest completion info
+                return {
+                    completed: true,
+                    questName: questName,
+                    tier: quest.Tier || 1
+                };
             }
         }
+        
+        return null;
     } catch (error) {
         console.error('Error checking quest triggers:', error);
+        return null;
     }
 }
 
@@ -1282,6 +1319,7 @@ module.exports = {
     getUserAdaptations,
     saveAdaptation,
     getUserActiveQuests,
+    getCompletedQuests,
     checkQuestTriggers,
     activateInitialQuests,
     completeQuest,
