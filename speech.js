@@ -839,7 +839,97 @@ class SpeechManager {
                         console.error('Audio element error:', e);
                         if (e.target.error && e.target.error.code === 4) {
                             console.error('CSP error detected when loading audio');
+                            
+                            // CSP workaround for Electron: Use a data URL instead of blob URL
+                            try {
+                                console.log('Attempting CSP workaround with data URL');
+                                // Convert blob to data URL
+                                const reader = new FileReader();
+                                reader.onload = (event) => {
+                                    try {
+                                        // Create a new audio element with the data URL
+                                        const dataUrl = event.target.result;
+                                        console.log('Created data URL for audio, length:', dataUrl.length);
+                                        
+                                        // Clean up the old blob URL
+                                        URL.revokeObjectURL(audioUrl);
+                                        
+                                        // Create a new audio element
+                                        this.audioElement = new Audio(dataUrl);
+                                        this.audioElement.volume = this.volume;
+                                        
+                                        // Set up event handlers
+                                        this.audioElement.onended = () => {
+                                            console.log('Audio playback ended (data URL)');
+                                            
+                                            // Tell main process we're done with audio
+                                            if (this.isElectronEnv && ipcRenderer) {
+                                                ipcRenderer.send('keep-app-running', false);
+                                            }
+                                            
+                                            // Reset audio playing flag
+                                            this.isPlayingAudio = false;
+                                            
+                                            // Resume continuous listening if it was active before
+                                            if (wasListening && this.isContinuousListening) {
+                                                console.log('Resuming continuous listening after audio playback');
+                                                this.startContinuousListening(this.speechCallback, this.endCallback)
+                                                    .catch(err => console.error('Error resuming continuous listening:', err));
+                                            }
+                                            
+                                            // Set up proactive messaging timer after audio playback ends
+                                            if (typeof setupProactiveMessaging === 'function') {
+                                                setupProactiveMessaging();
+                                            }
+                                            
+                                            resolve();
+                                        };
+                                        
+                                        this.audioElement.onerror = (dataUrlError) => {
+                                            console.error('Error with data URL audio playback:', dataUrlError);
+                                            
+                                            // Tell main process we're done with audio
+                                            if (this.isElectronEnv && ipcRenderer) {
+                                                ipcRenderer.send('keep-app-running', false);
+                                            }
+                                            
+                                            // Reset audio playing flag
+                                            this.isPlayingAudio = false;
+                                            
+                                            // Resume continuous listening if it was active before
+                                            if (wasListening && this.isContinuousListening) {
+                                                console.log('Resuming continuous listening after audio error');
+                                                this.startContinuousListening(this.speechCallback, this.endCallback)
+                                                    .catch(err => console.error('Error resuming continuous listening:', err));
+                                            }
+                                            
+                                            resolve();
+                                        };
+                                        
+                                        // Play the audio
+                                        this.audioElement.play().catch(playError => {
+                                            console.error('Error playing data URL audio:', playError);
+                                            resolve();
+                                        });
+                                    } catch (dataUrlError) {
+                                        console.error('Error setting up data URL audio:', dataUrlError);
+                                        resolve();
+                                    }
+                                };
+                                
+                                reader.onerror = (readerError) => {
+                                    console.error('Error reading blob as data URL:', readerError);
+                                    resolve();
+                                };
+                                
+                                // Start reading the blob as data URL
+                                reader.readAsDataURL(audioBlob);
+                                return; // Exit early as we're handling this asynchronously
+                            } catch (workaroundError) {
+                                console.error('CSP workaround failed:', workaroundError);
+                            }
                         }
+                        
                         URL.revokeObjectURL(audioUrl);
                         
                         // Tell main process we're done with audio
