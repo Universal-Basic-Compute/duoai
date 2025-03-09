@@ -582,12 +582,12 @@ async function getUserAdaptations(username, characterName = null) {
         const adaptationsTable = base('ADAPTATIONS');
         
         // Build filter formula with proper escaping of single quotes
-        // Replace single quotes with escaped single quotes
-        const escapedUsername = username.replace(/'/g, "\\'");
+        // Replace single quotes with double single quotes (Airtable's escape syntax)
+        const escapedUsername = username.replace(/'/g, "''");
         let filterFormula = `{Username} = '${escapedUsername}'`;
         
         if (characterName) {
-            const escapedCharacterName = characterName.replace(/'/g, "\\'");
+            const escapedCharacterName = characterName.replace(/'/g, "''");
             filterFormula += ` AND {Character} = '${escapedCharacterName}'`;
         }
         
