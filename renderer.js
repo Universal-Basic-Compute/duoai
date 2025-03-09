@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Variable to track continuous listening state
     let continuousListeningActive = true; // Start with continuous listening enabled
+    let proactiveMessageTimer = null;
     
     const menuTab = document.getElementById('menuTab');
     const sideMenu = document.getElementById('sideMenu');
@@ -657,6 +658,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // End usage tracking
         await endUsageTracking();
     
+        // Clear proactive message timer when chat is closed
+        if (proactiveMessageTimer) {
+            clearTimeout(proactiveMessageTimer);
+            proactiveMessageTimer = null;
+        }
+    
         // Don't call speechManager.cleanup() here as it would stop audio playback
         // Instead, just hide the chat container
     
@@ -810,6 +817,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Clean up old screenshots
             screenshotUtil.cleanupOldScreenshots();
+            
+            // Reset proactive message timer after user sends a message
+            setupProactiveMessaging();
         } catch (error) {
             console.error('Error sending message:', error);
             
@@ -903,6 +913,108 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         return messageElement;
+    }
+    
+    // Function to handle proactive messaging
+    function setupProactiveMessaging() {
+        // Clear any existing timer
+        if (proactiveMessageTimer) {
+            clearTimeout(proactiveMessageTimer);
+            proactiveMessageTimer = null;
+        }
+        
+        // Check if proactive mode is enabled
+        const isProactiveMode = localStorage.getItem('assistantMode') === 'proactive';
+        if (!isProactiveMode) {
+            console.log('Proactive mode is disabled, not setting up timer');
+            return;
+        }
+        
+        console.log('Setting up proactive message timer (30 seconds)');
+        
+        // Set a timer to send a proactive message after 30 seconds
+        proactiveMessageTimer = setTimeout(async () => {
+            // Only send a proactive message if:
+            // 1. We're not already waiting for an answer (no typing indicator visible)
+            // 2. Audio is not currently playing
+            // 3. Chat is open
+            const isWaitingForAnswer = document.querySelector('.typing') !== null;
+            const isChatOpen = chatContainer.style.right === '0px';
+            
+            if (!isWaitingForAnswer && !speechManager.isPlayingAudio && isChatOpen) {
+                console.log('Sending proactive message');
+                
+                try {
+                    // Capture screenshot
+                    const screenshotPath = await screenshotUtil.captureScreenshot();
+                    
+                    // Create a message element for the AI response
+                    const messageElement = document.createElement('div');
+                    messageElement.classList.add('message', 'ai-message');
+                    
+                    // Create a text element that will be updated as we receive chunks
+                    const textElement = document.createElement('div');
+                    textElement.textContent = ''; // Start empty
+                    messageElement.appendChild(textElement);
+                    
+                    // Add the message element to the chat
+                    chatMessages.appendChild(messageElement);
+                    
+                    // Add typing indicator
+                    messageElement.classList.add('typing');
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Get current character
+                    const currentCharacter = localStorage.getItem('currentCharacter');
+                    
+                    // Get the auth token
+                    const authToken = localStorage.getItem('authToken');
+                    
+                    // Call Claude API with streaming
+                    let fullResponse = '';
+                    
+                    await claudeAPI.sendMessageWithScreenshotStreaming(
+                        '*proactive message*', // Special flag to indicate this is a proactive message
+                        screenshotPath,
+                        currentCharacter,
+                        // On chunk callback
+                        (chunk) => {
+                            // Update the text element with the new chunk
+                            textElement.textContent += chunk;
+                            
+                            // Scroll to bottom as new text arrives
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        },
+                        // On complete callback
+                        (completeResponse) => {
+                            // Remove typing indicator
+                            messageElement.classList.remove('typing');
+                            
+                            // Store the full response
+                            fullResponse = completeResponse;
+                            
+                            // Speak the response
+                            speechManager.speak(fullResponse).catch(error => {
+                                console.error('Error speaking message:', error);
+                            });
+                        },
+                        authToken
+                    );
+                    
+                    // Clean up old screenshots
+                    screenshotUtil.cleanupOldScreenshots();
+                } catch (error) {
+                    console.error('Error sending proactive message:', error);
+                }
+            } else {
+                console.log('Skipping proactive message: ' + 
+                            (isWaitingForAnswer ? 'waiting for answer' : '') +
+                            (speechManager.isPlayingAudio ? ', audio playing' : '') +
+                            (!isChatOpen ? ', chat closed' : ''));
+            }
+        }, 30000); // 30 seconds
     }
     
     // Function to add loading indicator
@@ -1070,6 +1182,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const isProactive = assistantModeToggle.checked;
         localStorage.setItem('assistantMode', isProactive ? 'proactive' : 'reactive');
         console.log(`Assistant mode set to: ${isProactive ? 'Proactive' : 'Reactive'}`);
+        
+        // Clear and potentially set up proactive messaging based on new setting
+        if (isProactive) {
+            setupProactiveMessaging();
+        } else {
+            // Clear any existing timer if switching to reactive mode
+            if (proactiveMessageTimer) {
+                clearTimeout(proactiveMessageTimer);
+                proactiveMessageTimer = null;
+            }
+        }
     });
     
     // Load saved assistant mode setting

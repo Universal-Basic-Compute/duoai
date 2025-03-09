@@ -276,7 +276,11 @@ class ClaudeAPI {
                 
                     // Format the user message based on whether it's empty or not and message count
                     let formattedUserMessage;
-                    if (messageCount < 20) {
+                    
+                    // Special case for proactive messages
+                    if (userMessage === '*proactive message*') {
+                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. The user hasn't interacted in a while. Proactively comment on something interesting you notice on their screen or ask a question about what they might be doing. Be brief (1-2 sentences) and conversational. Your response:`;
+                    } else if (messageCount < 20) {
                         // Onboarding mode - explicitly instruct Claude to ask questions
                         if (userMessage && userMessage.trim()) {
                             // Normal user message in onboarding mode

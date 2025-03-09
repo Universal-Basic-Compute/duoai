@@ -891,6 +891,11 @@ class SpeechManager {
                                 .catch(err => console.error('Error resuming continuous listening:', err));
                         }
                         
+                        // Set up proactive messaging timer after audio playback ends
+                        if (typeof setupProactiveMessaging === 'function') {
+                            setupProactiveMessaging();
+                        }
+                        
                         resolve();
                     };
                     
