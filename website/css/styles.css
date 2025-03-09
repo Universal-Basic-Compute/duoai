@@ -908,6 +908,256 @@
     100% { text-shadow: 0 0 5px rgba(126, 87, 194, 0.5); }
 }
 
+/* Download Page Styles */
+.download-section {
+    padding: 80px 0;
+    background: var(--primary-bg);
+}
+
+.download-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 50px;
+}
+
+.download-info {
+    flex: 1;
+}
+
+.download-preview {
+    flex: 1;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.download-preview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.preview-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.download-info h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.download-info p {
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.system-requirements {
+    background: rgba(30, 30, 36, 0.5);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+}
+
+.system-requirements h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.system-requirements ul {
+    list-style: none;
+}
+
+.system-requirements ul li {
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.system-requirements ul li i {
+    color: var(--accent-color);
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+.download-button-container {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    position: relative;
+}
+
+.download-button i {
+    margin-right: 10px;
+    font-size: 1.4rem;
+}
+
+.version {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-left: 10px;
+}
+
+.download-size {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.coming-soon {
+    margin-top: 40px;
+}
+
+.coming-soon h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: white;
+    text-align: center;
+}
+
+.platform-badges {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.platform-badge {
+    background: rgba(30, 30, 36, 0.5);
+    border-radius: 15px;
+    padding: 15px 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    opacity: 0.7;
+}
+
+.platform-badge i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.platform-badge span {
+    color: var(--text-secondary);
+}
+
+.installation-guide {
+    padding: 80px 0;
+    background: var(--secondary-bg);
+}
+
+.steps-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.step-item {
+    display: flex;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 60px;
+    left: 25px;
+    width: 2px;
+    height: calc(100% - 30px);
+    background: var(--accent-color);
+    opacity: 0.3;
+}
+
+.step-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--accent-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 20px;
+    flex-shrink: 0;
+}
+
+.step-content {
+    padding-top: 5px;
+}
+
+.step-content h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.step-content p {
+    color: var(--text-secondary);
+}
+
+/* Responsive styles for download page */
+@media (max-width: 1024px) {
+    .download-content {
+        flex-direction: column;
+    }
+    
+    .download-preview {
+        order: -1;
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .platform-badges {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .platform-badge {
+        width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .download-button {
+        padding: 12px 20px;
+        font-size: 1rem;
+    }
+    
+    .step-item:not(:last-child)::after {
+        left: 20px;
+    }
+    
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+}
+
 /* Global styles */
 * {
     margin: 0;
