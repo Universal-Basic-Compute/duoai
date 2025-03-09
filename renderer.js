@@ -597,15 +597,53 @@ document.addEventListener('DOMContentLoaded', () => {
             const authToken = localStorage.getItem('authToken');
             if (!authToken) return;
             
-            const response = await fetch(`${authBridge.baseUrl}/api/quests/relationship?character=${encodeURIComponent(characterName)}`, {
-                headers: { 'Authorization': `Bearer ${authToken}` }
-            });
+            // Try to get cached relationship data first
+            const cachedData = getCachedResponse(`relationship_${characterName}`);
+            let data;
             
-            if (!response.ok) {
-                throw new Error(`Failed to fetch relationship depth: ${response.status}`);
+            try {
+                const response = await fetch(`${authBridge.baseUrl}/api/quests/relationship?character=${encodeURIComponent(characterName)}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                
+                if (!response.ok) {
+                    console.warn(`Failed to fetch relationship depth: ${response.status}`);
+                    // If we have cached data, use it instead of throwing an error
+                    if (cachedData) {
+                        data = cachedData;
+                        console.log('Using cached relationship data');
+                    } else {
+                        // Use default values if no cached data
+                        data = { 
+                            level: "New Acquaintance", 
+                            tier: 1, 
+                            progress: 0, 
+                            score: 0,
+                            completedCount: 0
+                        };
+                    }
+                } else {
+                    data = await response.json();
+                    // Cache the successful response
+                    cacheResponse(`relationship_${characterName}`, data);
+                }
+            } catch (fetchError) {
+                console.warn('Network error fetching relationship data:', fetchError);
+                // If we have cached data, use it
+                if (cachedData) {
+                    data = cachedData;
+                    console.log('Using cached relationship data due to network error');
+                } else {
+                    // Use default values if no cached data
+                    data = { 
+                        level: "New Acquaintance", 
+                        tier: 1, 
+                        progress: 0, 
+                        score: 0,
+                        completedCount: 0
+                    };
+                }
             }
-            
-            const data = await response.json();
             
             // Update UI elements
             const levelElement = document.querySelector('.relationship-level');
@@ -623,12 +661,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add score tooltip
             const indicator = document.querySelector('.relationship-indicator');
             if (indicator) {
-                indicator.title = `Relationship Score: ${data.score} points\nCompleted Quests: ${data.completedCount}`;
+                indicator.title = `Relationship Score: ${data.score} points\nCompleted Quests: ${data.completedCount || 0}`;
             }
             
             console.log('Updated relationship depth:', data);
         } catch (error) {
             console.error('Error updating relationship depth:', error);
+            // Don't let this error affect the rest of the application
         }
     }
 
