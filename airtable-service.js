@@ -391,13 +391,18 @@ async function getSubscription(recordId) {
  * @param {string} role - The message role ('user' or 'assistant')
  * @param {string} content - The message content
  * @param {string} characterName - The AI character name
+ * @param {string} context - The message context ('standard' or 'onboarding')
+ * @param {boolean} triggeredQuest - Whether this message has triggered quest verification
+ * @param {boolean} triggeredAdaptation - Whether this message has triggered adaptation
  * @returns {Promise<Object>} - The created message object
  */
-async function saveMessage(username, role, content, characterName = null) {
+async function saveMessage(username, role, content, characterName = null, context = 'standard', triggeredQuest = false, triggeredAdaptation = false) {
     console.log(`[AIRTABLE] Attempting to save ${role} message for user ${username}`);
     console.log(`[AIRTABLE] Message length: ${content ? content.length : 0} characters`);
     console.log(`[AIRTABLE] Character: ${characterName || 'None'}`);
     console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
+    console.log(`[AIRTABLE] Triggered Quest: ${triggeredQuest}`);
+    console.log(`[AIRTABLE] Triggered Adaptation: ${triggeredAdaptation}`);
     
     if (!airtableEnabled) {
         // Return mock message data
@@ -408,7 +413,10 @@ async function saveMessage(username, role, content, characterName = null) {
             Role: role,
             Content: content,
             Character: characterName,
-            Timestamp: new Date().toISOString()
+            Timestamp: new Date().toISOString(),
+            Context: context,
+            TriggeredQuest: triggeredQuest,
+            TriggeredAdaptation: triggeredAdaptation
         };
     }
     
@@ -449,7 +457,10 @@ async function saveMessage(username, role, content, characterName = null) {
                 Role: role,
                 Content: truncatedContent,
                 Character: characterName || '',
-                Timestamp: new Date().toISOString()
+                Timestamp: new Date().toISOString(),
+                Context: context,
+                TriggeredQuest: triggeredQuest,
+                TriggeredAdaptation: triggeredAdaptation
             }
         };
         console.log('[AIRTABLE] Record to create:', JSON.stringify(recordToCreate, null, 2));
@@ -933,6 +944,288 @@ async function activateNextTierQuests(username, characterName, tier) {
     }
 }
 
+/**
+ * Verify quest completions using LLM analysis
+ * @param {string} username - Username to check quests for
+ * @param {string} characterName - Character name
+ * @returns {Promise<Object>} - Results of quest verification
+ */
+async function verifyQuestsWithLLM(username, characterName) {
+    if (!airtableEnabled) return { verified: [] };
+    
+    try {
+        // Get active quests
+        const activeQuests = await getUserActiveQuests(username, characterName);
+        
+        if (activeQuests.length === 0) {
+            console.log(`[QUESTS] No active quests for ${username}, activating initial quests`);
+            await activateInitialQuests(username, characterName);
+            return { verified: [] };
+        }
+        
+        // Get recent conversation history (last 20 messages)
+        const recentMessages = await getUserMessages(username, 20, characterName);
+        
+        if (!recentMessages || recentMessages.length === 0) {
+            console.log(`[QUESTS] No recent messages found for ${username}`);
+            return { verified: [] };
+        }
+        
+        // Format the conversation for the LLM
+        const conversationText = recentMessages
+            .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
+            .map(msg => `${msg.Role === 'user' ? 'Player' : 'AI'}: ${msg.Content}`)
+            .join('\n\n');
+        
+        // Format the quests for the LLM
+        const questsText = activeQuests.map(quest => 
+            `Quest: ${quest.QuestName}\nDescription: ${quest.QuestDescription || 'No description available'}\nID: ${quest.QuestId}`
+        ).join('\n\n');
+        
+        // Create the prompt for the LLM
+        const prompt = `
+You are analyzing a gaming conversation to determine if any quests have been completed.
+
+ACTIVE QUESTS:
+${questsText}
+
+RECENT CONVERSATION:
+${conversationText}
+
+For each quest, determine if it has been completed based on the conversation. 
+A quest is completed when there is clear evidence in the conversation that matches the quest's objective.
+
+Respond with a JSON object in this format:
+{
+  "verified": [
+    {
+      "questId": "quest-id-1",
+      "completed": true,
+      "evidence": "Clear explanation of why this quest is considered completed, citing specific parts of the conversation",
+      "confidence": 0.95
+    },
+    {
+      "questId": "quest-id-2",
+      "completed": false,
+      "evidence": "Explanation of why this quest is not considered completed",
+      "confidence": 0.8
+    }
+  ]
+}
+
+Only mark a quest as completed if there is strong evidence (confidence > 0.8). Include all active quests in your response.
+`;
+
+        // Call Claude API for verification
+        const payload = {
+            model: 'claude-3-7-sonnet-latest',
+            system: "You are an AI assistant that analyzes gaming conversations to verify quest completions. Respond only with valid JSON.",
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: prompt
+                        }
+                    ]
+                }
+            ],
+            max_tokens: 2000
+        };
+        
+        console.log('[QUESTS] Sending quest verification request to Claude API');
+        
+        const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': process.env.ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            }
+        });
+        
+        // Extract the JSON response
+        const verificationText = response.data.content[0].text;
+        console.log('[QUESTS] Received verification response');
+        
+        // Parse the JSON
+        let verificationData;
+        try {
+            verificationData = JSON.parse(verificationText);
+            console.log('[QUESTS] Successfully parsed verification JSON');
+            
+            // Process completed quests
+            for (const result of verificationData.verified) {
+                if (result.completed && result.confidence >= 0.8) {
+                    console.log(`[QUESTS] Quest ${result.questId} verified as completed with confidence ${result.confidence}`);
+                    
+                    // Complete the quest
+                    await completeQuest(username, characterName, result.questId, {
+                        evidence: result.evidence,
+                        confidence: result.confidence,
+                        verifiedByLLM: true,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            }
+            
+            return verificationData;
+        } catch (parseError) {
+            console.error('[QUESTS] Error parsing verification JSON:', parseError);
+            console.error('[QUESTS] Raw response:', verificationText);
+            return { verified: [] };
+        }
+    } catch (error) {
+        console.error('[QUESTS] Error verifying quests with LLM:', error);
+        return { verified: [] };
+    }
+}
+
+/**
+ * Find messages that need quest or adaptation verification
+ * @param {string} username - Username to check messages for
+ * @param {string} characterName - Character name
+ * @param {number} messageCount - Number of messages to check
+ * @returns {Promise<Object>} - Messages that need verification
+ */
+async function findMessagesNeedingVerification(username, characterName, messageCount = 10) {
+    if (!airtableEnabled) return { needsQuestVerification: false, needsAdaptationVerification: false };
+    
+    try {
+        // Get recent messages
+        const messagesTable = base('MESSAGES');
+        
+        // Build filter formula
+        let filterFormula = `AND({Username} = '${username}', {Character} = '${characterName}')`;
+        
+        // Query Airtable
+        const records = await messagesTable.select({
+            filterByFormula: filterFormula,
+            sort: [{ field: 'Timestamp', direction: 'desc' }],
+            maxRecords: messageCount
+        }).firstPage();
+        
+        // Check if we have enough messages
+        if (records.length < 10) {
+            return { needsQuestVerification: false, needsAdaptationVerification: false };
+        }
+        
+        // Count messages that have triggered quest/adaptation
+        const questTriggered = records.filter(record => record.fields.TriggeredQuest).length;
+        const adaptationTriggered = records.filter(record => record.fields.TriggeredAdaptation).length;
+        
+        // If less than half have triggered, we need verification
+        return {
+            needsQuestVerification: questTriggered < 5,
+            needsAdaptationVerification: adaptationTriggered < 5
+        };
+    } catch (error) {
+        console.error('[AIRTABLE] Error finding messages needing verification:', error);
+        return { needsQuestVerification: false, needsAdaptationVerification: false };
+    }
+}
+
+/**
+ * Mark recent messages as having triggered verification
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @param {string} verificationType - Type of verification ('quest' or 'adaptation')
+ * @returns {Promise<void>}
+ */
+async function markRecentMessagesAsVerified(username, characterName, verificationType) {
+    if (!airtableEnabled) return;
+    
+    try {
+        // Get recent messages
+        const messagesTable = base('MESSAGES');
+        
+        // Build filter formula
+        let filterFormula = `AND({Username} = '${username}', {Character} = '${characterName}')`;
+        
+        if (verificationType === 'quest') {
+            filterFormula += `, {TriggeredQuest} = FALSE()`;
+        } else if (verificationType === 'adaptation') {
+            filterFormula += `, {TriggeredAdaptation} = FALSE()`;
+        }
+        
+        // Query Airtable
+        const records = await messagesTable.select({
+            filterByFormula: filterFormula,
+            sort: [{ field: 'Timestamp', direction: 'desc' }],
+            maxRecords: 10
+        }).firstPage();
+        
+        // Update records
+        const updates = records.map(record => ({
+            id: record.id,
+            fields: verificationType === 'quest' 
+                ? { TriggeredQuest: true }
+                : { TriggeredAdaptation: true }
+        }));
+        
+        if (updates.length > 0) {
+            await messagesTable.update(updates);
+            console.log(`[AIRTABLE] Marked ${updates.length} messages as having triggered ${verificationType} verification`);
+        }
+    } catch (error) {
+        console.error(`[AIRTABLE] Error marking messages as verified for ${verificationType}:`, error);
+    }
+}
+
+/**
+ * Periodically check for quest completions and adaptations
+ * @param {string} username - Username to check quests for
+ * @param {string} characterName - Character name
+ * @param {number} messageCount - Current message count
+ * @returns {Promise<Object>} - Results of verification
+ */
+async function periodicQuestAndAdaptationCheck(username, characterName, messageCount) {
+    if (!airtableEnabled) return { questsVerified: false, adaptationRun: false };
+    
+    try {
+        console.log(`[QUESTS] Performing periodic check for user ${username} with ${characterName}, message count: ${messageCount}`);
+        
+        // Check if we have enough messages to run verification
+        if (messageCount < 10) {
+            console.log(`[QUESTS] Not enough messages (${messageCount}) to run verification`);
+            return { questsVerified: false, adaptationRun: false };
+        }
+        
+        // Check if we need to run verification based on message flags
+        const { needsQuestVerification, needsAdaptationVerification } = 
+            await findMessagesNeedingVerification(username, characterName);
+        
+        let questsVerified = false;
+        let adaptationRun = false;
+        
+        // Run quest verification if needed
+        if (needsQuestVerification) {
+            console.log(`[QUESTS] Running quest verification for ${username}`);
+            const verificationResults = await verifyQuestsWithLLM(username, characterName);
+            
+            // Mark messages as having triggered quest verification
+            await markRecentMessagesAsVerified(username, characterName, 'quest');
+            
+            questsVerified = true;
+        }
+        
+        // Run adaptation if needed
+        if (needsAdaptationVerification) {
+            console.log(`[ADAPTATION] Running adaptation analysis for ${username}`);
+            
+            // Mark messages as having triggered adaptation
+            await markRecentMessagesAsVerified(username, characterName, 'adaptation');
+            
+            adaptationRun = true;
+        }
+        
+        return { questsVerified, adaptationRun };
+    } catch (error) {
+        console.error('Error in periodic quest and adaptation check:', error);
+        return { questsVerified: false, adaptationRun: false };
+    }
+}
+
 module.exports = {
     findUserByGoogleId,
     findUserByEmail,
@@ -953,5 +1246,9 @@ module.exports = {
     activateInitialQuests,
     completeQuest,
     checkTierProgression,
-    activateNextTierQuests
+    activateNextTierQuests,
+    verifyQuestsWithLLM,
+    findMessagesNeedingVerification,
+    markRecentMessagesAsVerified,
+    periodicQuestAndAdaptationCheck
 };

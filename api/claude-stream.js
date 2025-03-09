@@ -225,19 +225,21 @@ module.exports = async (req, res) => {
         // Save user message to Airtable immediately
         try {
             console.log('[STREAM] Saving user message to Airtable...');
-            
+                
             // Determine the context based on message count
             const context = messageCount < 20 ? 'onboarding' : 'standard';
             console.log(`[STREAM] Message context: ${context} (message count: ${messageCount})`);
-            
+                
             const savedUserMessage = await airtableService.saveMessage(
                 username,
                 'user',
                 userMessage || `*${username} did not type a specific message at this time*`,
                 characterName,
-                context // Add context parameter
+                context, // Add context parameter
+                false,   // triggeredQuest
+                false    // triggeredAdaptation
             );
-            
+                
             if (savedUserMessage) {
                 console.log('[STREAM] User message saved to Airtable successfully with ID:', savedUserMessage.id);
             } else {
@@ -352,6 +354,49 @@ module.exports = async (req, res) => {
                 } else {
                     console.error('[STREAM] No response text to save to Airtable');
                 }
+                
+                // Increment message count after saving
+                messageCount++;
+                
+                // Run periodic quest and adaptation check every 10 messages
+                if (messageCount % 10 === 0) {
+                    console.log(`[STREAM] Message count ${messageCount} is a multiple of 10, running verification checks`);
+                    
+                    // Run verification asynchronously
+                    setTimeout(async () => {
+                        try {
+                            const verificationResults = await airtableService.periodicQuestAndAdaptationCheck(
+                                username, 
+                                characterName, 
+                                messageCount
+                            );
+                            
+                            console.log('[STREAM] Verification results:', verificationResults);
+                            
+                            // If adaptation should run, process it
+                            if (verificationResults.adaptationRun) {
+                                // Get the full conversation history for context
+                                const conversationMessages = await airtableService.getUserMessages(username, 20, characterName);
+                                
+                                if (conversationMessages && conversationMessages.length > 0) {
+                                    // Convert to the format expected by the adaptation processor
+                                    const formattedMessages = conversationMessages
+                                        .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
+                                        .map(msg => ({
+                                            role: msg.Role === 'user' ? 'user' : 'assistant',
+                                            content: [{ type: 'text', text: msg.Content }]
+                                        }));
+                                    
+                                    // Process the adaptation
+                                    await processAdaptation(username, characterName, formattedMessages);
+                                    console.log('[STREAM] Adaptation processing completed');
+                                }
+                            }
+                        } catch (verificationError) {
+                            console.error('[STREAM] Error in verification checks:', verificationError);
+                        }
+                    }, 100); // Small delay to ensure response is sent first
+                }
             } catch (saveError) {
                 console.error('[STREAM] Error saving assistant message to Airtable:', saveError);
                 console.error('[STREAM] Error message:', saveError.message);
@@ -375,35 +420,6 @@ module.exports = async (req, res) => {
             } catch (questError) {
                 console.error('[QUESTS] Error processing quests:', questError);
             }
-            
-            // Process adaptation asynchronously
-            // This won't block the response to the client
-            setTimeout(async () => {
-                try {
-                    console.log('[STREAM] Starting asynchronous adaptation processing');
-                    
-                    // Get the full conversation history for context
-                    const conversationMessages = await airtableService.getUserMessages(username, 20, characterName);
-                    
-                    if (conversationMessages && conversationMessages.length > 0) {
-                        // Convert to the format expected by the adaptation processor
-                        const formattedMessages = conversationMessages
-                            .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
-                            .map(msg => ({
-                                role: msg.Role === 'user' ? 'user' : 'assistant',
-                                content: [{ type: 'text', text: msg.Content }]
-                            }));
-                        
-                        // Process the adaptation
-                        await processAdaptation(username, characterName, formattedMessages);
-                        console.log('[STREAM] Adaptation processing completed');
-                    } else {
-                        console.log('[STREAM] No conversation history found for adaptation processing');
-                    }
-                } catch (adaptationError) {
-                    console.error('[STREAM] Error in asynchronous adaptation processing:', adaptationError);
-                }
-            }, 100); // Small delay to ensure response is sent first
         });
         
         // Handle errors in the stream
