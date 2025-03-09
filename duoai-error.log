@@ -1,1 +1,4 @@
 [2025-03-08T21:26:59.985Z] index.html not found at: C:\Users\conta\duoai\index.html
+[2025-03-08T23:02:18.561Z] (node:9296) electron: Failed to load URL: file:///C:/Users/conta/duoai/settings.html with error: ERR_FILE_NOT_FOUND
+(Use `electron --trace-warnings ...` to show where the warning was created)
+[2025-03-08T23:02:29.102Z] (node:9296) electron: Failed to load URL: file:///C:/Users/conta/duoai/settings.html with error: ERR_FILE_NOT_FOUND

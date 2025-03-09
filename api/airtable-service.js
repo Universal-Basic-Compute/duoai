@@ -391,14 +391,12 @@ async function getSubscription(recordId) {
  * @param {string} role - The message role ('user' or 'assistant')
  * @param {string} content - The message content
  * @param {string} characterName - The AI character name
- * @param {string} context - The conversation context ('onboarding' or 'standard')
  * @returns {Promise<Object>} - The created message object
  */
-async function saveMessage(username, role, content, characterName = null, context = 'standard') {
+async function saveMessage(username, role, content, characterName = null) {
     console.log(`[AIRTABLE] Attempting to save ${role} message for user ${username}`);
     console.log(`[AIRTABLE] Message length: ${content ? content.length : 0} characters`);
     console.log(`[AIRTABLE] Character: ${characterName || 'None'}`);
-    console.log(`[AIRTABLE] Context: ${context}`);
     console.log(`[AIRTABLE] airtableEnabled: ${airtableEnabled}`);
     
     if (!airtableEnabled) {
@@ -410,7 +408,6 @@ async function saveMessage(username, role, content, characterName = null, contex
             Role: role,
             Content: content,
             Character: characterName,
-            Context: context,
             Timestamp: new Date().toISOString()
         };
     }
@@ -452,7 +449,6 @@ async function saveMessage(username, role, content, characterName = null, contex
                 Role: role,
                 Content: truncatedContent,
                 Character: characterName || '',
-                Context: context,
                 Timestamp: new Date().toISOString()
             }
         };
