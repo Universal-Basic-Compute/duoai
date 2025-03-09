@@ -278,10 +278,10 @@ class ClaudeAPI {
                     let formattedUserMessage;
                     if (userMessage && userMessage.trim()) {
                         // Normal user message
-                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n${userMessage}\n\nAnswer in one sentence. Your answer:`;
+                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n${userMessage}\n\nAnswer in 1-2 short sentences. Your answer:`;
                     } else {
                         // Default message when user didn't type anything
-                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n*${username} did not type a specific message at this time*\n\nSay whatever you feel like, in one sentence. Your answer:`;
+                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n*${username} did not type a specific message at this time*\n\nSay whatever you feel like, in 1-2 short sentences. Your answer:`;
                     }
 
                     // Send the request to the backend server using the streaming endpoint
