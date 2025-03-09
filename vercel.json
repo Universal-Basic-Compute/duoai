@@ -27,6 +27,8 @@
     { "src": "/api/quests/relationship", "dest": "/api/quests/relationship.js" },
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/test", "dest": "/api/test.js" },
+    { "src": "/api/airtable-service", "dest": "/airtable-service.js" },
+    { "src": "/api/test-airtable", "dest": "/api/test-airtable.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
   ],
   "env": {
