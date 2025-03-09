@@ -841,6 +841,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                         // Store the full response
                         fullResponse = completeResponse;
+                        
+                        // Check if this is a rate limit error message
+                        if (completeResponse.includes('reached your message limit')) {
+                            // Add a special class to highlight the error
+                            messageElement.classList.add('rate-limit-error');
+                            
+                            // Add a button to visit the pricing page
+                            const upgradeButton = document.createElement('button');
+                            upgradeButton.className = 'primary-button';
+                            upgradeButton.textContent = 'Upgrade Subscription';
+                            upgradeButton.onclick = () => {
+                                ipcRenderer.send('open-external-url', 'https://www.duogaming.ai/pricing.html');
+                            };
+                            messageElement.appendChild(upgradeButton);
+                        }
                     
                         // Cache the response for offline use
                         cacheResponse('initial_message', fullResponse);
