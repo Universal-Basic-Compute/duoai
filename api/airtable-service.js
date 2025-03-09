@@ -581,17 +581,15 @@ async function getUserAdaptations(username, characterName = null) {
         // Get adaptations table
         const adaptationsTable = base('ADAPTATIONS');
         
-        // Build filter formula with proper escaping
-        // Replace single quotes with escaped single quotes AND double the backslashes
-        const escapedUsername = username.replace(/'/g, "\\\\'");
+        // Build filter formula with proper escaping of single quotes
+        // Replace single quotes with escaped single quotes
+        const escapedUsername = username.replace(/'/g, "\\'");
         let filterFormula = `{Username} = '${escapedUsername}'`;
         
         if (characterName) {
-            const escapedCharacterName = characterName.replace(/'/g, "\\\\'");
+            const escapedCharacterName = characterName.replace(/'/g, "\\'");
             filterFormula += ` AND {Character} = '${escapedCharacterName}'`;
         }
-        
-        console.log(`[AIRTABLE] Using filter formula: ${filterFormula}`);
         
         // Query Airtable
         const records = await adaptationsTable.select({
