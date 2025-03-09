@@ -1009,6 +1009,23 @@ input:checked + .toggle-slider:before {
     background-color: rgba(244, 67, 54, 0.8);
 }
 
+.rate-limit-error {
+    background: rgba(244, 67, 54, 0.1) !important;
+    border-left: 3px solid #f44336 !important;
+}
+
+.rate-limit-error .primary-button {
+    margin-top: 15px;
+    background: linear-gradient(135deg, #f44336, #ff9800);
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+}
+
+.rate-limit-error .primary-button:hover {
+    background: linear-gradient(135deg, #ff5252, #ffb74d);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(244, 67, 54, 0.6);
+}
+
 /* Server status styles removed */
 
 /* Quest Journal Styles */

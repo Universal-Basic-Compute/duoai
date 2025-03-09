@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const airtableService = require('./airtable-service');
+const rateLimiter = require('./rate-limiter');
 
 module.exports = async (req, res) => {
   // Set CORS headers to allow requests from any origin
@@ -132,6 +133,18 @@ async function generateSystemPrompt(characterName) {
     }
     
     console.log('Final username for message:', username);
+    
+    // Check rate limit
+    const rateLimitResult = await rateLimiter.checkRateLimit(username);
+    if (rateLimitResult.limited) {
+        console.log(`Rate limit exceeded for user: ${username}`);
+        return res.status(429).json({
+            error: 'Rate limit exceeded',
+            message: 'You have reached your message limit for this time period. Please upgrade your subscription at https://www.duogaming.ai/pricing.html to continue.',
+            reset: rateLimitResult.reset,
+            limit: rateLimitResult.limit
+        });
+    }
     
     // Extract character name from system prompt if available
     let characterName = null;

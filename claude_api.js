@@ -349,6 +349,27 @@ class ClaudeAPI {
                         // Use 'text' instead of 'stream' for browser compatibility
                         responseType: 'text'
                     });
+                    
+                    // Check for rate limit exceeded
+                    if (response.status === 429) {
+                        const errorData = await response.json();
+                        console.error('Rate limit exceeded:', errorData);
+                        
+                        // Calculate time until reset
+                        const resetTime = new Date(errorData.reset);
+                        const now = new Date();
+                        const minutesUntilReset = Math.ceil((resetTime - now) / (60 * 1000));
+                        
+                        // Create a user-friendly error message
+                        const errorMessage = `You've reached your message limit for the free tier. Please upgrade your subscription at https://www.duogaming.ai/pricing.html to continue, or try again in about ${minutesUntilReset} minutes.`;
+                        
+                        // Call onComplete with the error message
+                        if (onComplete) {
+                            onComplete(errorMessage);
+                        }
+                        
+                        return errorMessage;
+                    }
 
                     // Process the response text as SSE
                     if (response.data) {

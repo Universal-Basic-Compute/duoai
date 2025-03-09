@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const airtableService = require('./airtable-service');
+const rateLimiter = require('./rate-limiter');
 
 // Function to process adaptation
 async function processAdaptation(username, characterName, conversationHistory) {
@@ -182,6 +183,18 @@ module.exports = async (req, res) => {
         }
     
         console.log('[STREAM] Final username for message:', username);
+        
+        // Check rate limit
+        const rateLimitResult = await rateLimiter.checkRateLimit(username);
+        if (rateLimitResult.limited) {
+            console.log(`[STREAM] Rate limit exceeded for user: ${username}`);
+            return res.status(429).json({
+                error: 'Rate limit exceeded',
+                message: 'You have reached your message limit for this time period. Please upgrade your subscription at https://www.duogaming.ai/pricing.html to continue.',
+                reset: rateLimitResult.reset,
+                limit: rateLimitResult.limit
+            });
+        }
         
         // Use character name from request
         console.log('[STREAM] Character name from request:', characterName || 'None');
