@@ -667,6 +667,272 @@ async function saveAdaptation(username, characterName, adaptationData) {
     }
 }
 
+/**
+ * Get active quests for a user and character
+ * @param {string} username - Username to get quests for
+ * @param {string} characterName - Character name to filter by
+ * @returns {Promise<Array>} - Array of active quest records
+ */
+async function getUserActiveQuests(username, characterName) {
+    if (!airtableEnabled) return [];
+    
+    try {
+        const questsTable = base('USER_QUESTS');
+        const records = await questsTable.select({
+            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'active')`,
+            maxRecords: 10
+        }).firstPage();
+        
+        return records.map(record => ({
+            id: record.id,
+            ...record.fields
+        }));
+    } catch (error) {
+        console.error('Error getting active quests:', error);
+        return [];
+    }
+}
+
+/**
+ * Check for quest triggers in a conversation
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @param {string} userMessage - User's message
+ * @param {string} aiResponse - AI's response
+ * @returns {Promise<void>}
+ */
+async function checkQuestTriggers(username, characterName, userMessage, aiResponse) {
+    if (!airtableEnabled) return;
+    
+    try {
+        // Get active quests
+        const activeQuests = await getUserActiveQuests(username, characterName);
+        
+        // If no active quests, activate initial ones
+        if (activeQuests.length === 0) {
+            await activateInitialQuests(username, characterName);
+            return;
+        }
+        
+        // Simple keyword-based trigger system
+        const triggers = {
+            'Ice Breaker': ['haha', 'lol', '😂', 'funny', 'laugh'],
+            'Gaming Origin': ['first game', 'started gaming', 'childhood game'],
+            'Current Obsession': ['playing now', 'current game', 'addicted to'],
+            'Gaming Memory': ['remember when', 'best moment', 'favorite memory'],
+            'Hidden Gem': ['underrated', 'hidden gem', 'not many people'],
+            'Gaming Frustration': ['annoying', 'frustrating', 'hate when'],
+            'Breakthrough Moment': ['finally beat', 'figured out', 'solved']
+        };
+        
+        // Check each active quest
+        for (const quest of activeQuests) {
+            const questName = quest.QuestName;
+            
+            // Skip if no triggers defined
+            if (!triggers[questName]) continue;
+            
+            // Check if any trigger keywords are in the message
+            const keywords = triggers[questName];
+            const messageMatches = keywords.some(keyword => 
+                userMessage.toLowerCase().includes(keyword.toLowerCase()));
+                
+            // If message matches, complete the quest
+            if (messageMatches) {
+                await completeQuest(username, characterName, quest.QuestId, {
+                    userMessage,
+                    aiResponse,
+                    evidence: `Matched keyword in user message: "${userMessage}"`
+                });
+                
+                console.log(`Completed quest "${questName}" for ${username}`);
+            }
+        }
+    } catch (error) {
+        console.error('Error checking quest triggers:', error);
+    }
+}
+
+/**
+ * Activate initial quests for a new user
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @returns {Promise<void>}
+ */
+async function activateInitialQuests(username, characterName) {
+    if (!airtableEnabled) return;
+    
+    try {
+        // Get Tier 1 quests
+        const questsTable = base('QUESTS');
+        const tier1Quests = await questsTable.select({
+            filterByFormula: `{Tier} = 1`,
+            maxRecords: 5
+        }).firstPage();
+        
+        // Activate 3 random quests
+        const selectedQuests = tier1Quests
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3);
+            
+        // Create user quest records
+        const userQuestsTable = base('USER_QUESTS');
+        
+        for (const quest of selectedQuests) {
+            await userQuestsTable.create([{
+                fields: {
+                    Username: username,
+                    QuestId: quest.id,
+                    QuestName: quest.fields.Name,
+                    Character: characterName,
+                    Status: 'active',
+                    ActivatedAt: new Date().toISOString()
+                }
+            }]);
+        }
+        
+        console.log(`Activated ${selectedQuests.length} initial quests for ${username}`);
+    } catch (error) {
+        console.error('Error activating initial quests:', error);
+    }
+}
+
+/**
+ * Complete a quest
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @param {string} questId - Quest ID
+ * @param {Object} data - Evidence data
+ * @returns {Promise<void>}
+ */
+async function completeQuest(username, characterName, questId, data) {
+    if (!airtableEnabled) return;
+    
+    try {
+        // Update quest status
+        const userQuestsTable = base('USER_QUESTS');
+        const records = await userQuestsTable.select({
+            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {QuestId} = '${questId}', {Status} = 'active')`
+        }).firstPage();
+        
+        if (records.length === 0) return;
+        
+        // Mark as completed
+        await userQuestsTable.update([{
+            id: records[0].id,
+            fields: {
+                Status: 'completed',
+                CompletedAt: new Date().toISOString(),
+                Evidence: JSON.stringify(data)
+            }
+        }]);
+        
+        // Check if we should activate next tier quests
+        await checkTierProgression(username, characterName);
+    } catch (error) {
+        console.error('Error completing quest:', error);
+    }
+}
+
+/**
+ * Check if we should activate next tier quests
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @returns {Promise<void>}
+ */
+async function checkTierProgression(username, characterName) {
+    if (!airtableEnabled) return;
+    
+    try {
+        // Get completed quests
+        const userQuestsTable = base('USER_QUESTS');
+        const completedQuests = await userQuestsTable.select({
+            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'completed')`
+        }).firstPage();
+        
+        // Get quest details to check tiers
+        const questIds = completedQuests.map(record => record.fields.QuestId);
+        
+        if (questIds.length === 0) return;
+        
+        // Get quest details
+        const questsTable = base('QUESTS');
+        const quests = await questsTable.select({
+            filterByFormula: `OR(${questIds.map(id => `RECORD_ID() = '${id}'`).join(',')})`
+        }).firstPage();
+        
+        // Count completed quests by tier
+        const completedByTier = {};
+        quests.forEach(quest => {
+            const tier = quest.fields.Tier;
+            completedByTier[tier] = (completedByTier[tier] || 0) + 1;
+        });
+        
+        // Check if we should activate next tier
+        // Require at least 3 completed quests to unlock next tier
+        for (let tier = 1; tier <= 4; tier++) {
+            if ((completedByTier[tier] || 0) >= 3) {
+                // Activate next tier quests
+                await activateNextTierQuests(username, characterName, tier + 1);
+            }
+        }
+    } catch (error) {
+        console.error('Error checking tier progression:', error);
+    }
+}
+
+/**
+ * Activate quests from the next tier
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @param {number} tier - Tier to activate
+ * @returns {Promise<void>}
+ */
+async function activateNextTierQuests(username, characterName, tier) {
+    if (!airtableEnabled) return;
+    
+    try {
+        // Check if user already has active quests from this tier
+        const userQuestsTable = base('USER_QUESTS');
+        const existingQuests = await userQuestsTable.select({
+            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Tier} = ${tier})`
+        }).firstPage();
+        
+        if (existingQuests.length > 0) return; // Already has quests from this tier
+        
+        // Get quests from the next tier
+        const questsTable = base('QUESTS');
+        const nextTierQuests = await questsTable.select({
+            filterByFormula: `{Tier} = ${tier}`,
+            maxRecords: 5
+        }).firstPage();
+        
+        // Activate 2 random quests
+        const selectedQuests = nextTierQuests
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 2);
+            
+        // Create user quest records
+        for (const quest of selectedQuests) {
+            await userQuestsTable.create([{
+                fields: {
+                    Username: username,
+                    QuestId: quest.id,
+                    QuestName: quest.fields.Name,
+                    Character: characterName,
+                    Tier: tier,
+                    Status: 'active',
+                    ActivatedAt: new Date().toISOString()
+                }
+            }]);
+        }
+        
+        console.log(`Activated ${selectedQuests.length} tier ${tier} quests for ${username}`);
+    } catch (error) {
+        console.error('Error activating next tier quests:', error);
+    }
+}
+
 module.exports = {
     findUserByGoogleId,
     findUserByEmail,
@@ -681,5 +947,11 @@ module.exports = {
     saveMessage,
     getUserMessages,
     getUserAdaptations,
-    saveAdaptation
+    saveAdaptation,
+    getUserActiveQuests,
+    checkQuestTriggers,
+    activateInitialQuests,
+    completeQuest,
+    checkTierProgression,
+    activateNextTierQuests
 };

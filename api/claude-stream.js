@@ -363,6 +363,19 @@ module.exports = async (req, res) => {
             res.end();
             console.log('[STREAM] Response ended');
             
+            // Check quest triggers
+            try {
+                console.log('[QUESTS] Checking quest triggers for user:', username);
+                await airtableService.checkQuestTriggers(
+                    username, 
+                    characterName, 
+                    userMessage || "*the user did not type a specific message at this time*", 
+                    fullResponse
+                );
+            } catch (questError) {
+                console.error('[QUESTS] Error processing quests:', questError);
+            }
+            
             // Process adaptation asynchronously
             // This won't block the response to the client
             setTimeout(async () => {
