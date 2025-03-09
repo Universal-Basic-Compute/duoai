@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     { "src": "website/**", "use": "@vercel/static" },
-    { "src": "api/**/*.js", "use": "@vercel/node", "config": { "includeFiles": ["api/package.json", "airtable-service.js", "api/prompts/**", "node_modules/airtable/**", "api/airtable-service.js"] } }
+    { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
     { "src": "/api/claude-base64", "dest": "/api/claude-base64.js" },
@@ -24,11 +24,10 @@
     { "src": "/api/usage/end", "dest": "/api/usage/end.js" },
     { "src": "/api/quests/journal", "dest": "/api/quests/journal.js" },
     { "src": "/api/quests/completed", "dest": "/api/quests/completed.js" },
-    { "src": "/api/quests/relationship", "dest": "/api/quests/relationship.js", "config": { "includeFiles": ["airtable-service.js"] } },
+    { "src": "/api/quests/relationship", "dest": "/api/quests/relationship.js" },
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/test", "dest": "/api/test.js" },
     { "src": "/api/airtable-service", "dest": "/airtable-service.js" },
-    { "src": "/airtable-service.js", "dest": "/airtable-service.js" },
     { "src": "/airtable-service.js", "dest": "/airtable-service.js" },
     { "src": "/api/test-airtable", "dest": "/api/test-airtable.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
