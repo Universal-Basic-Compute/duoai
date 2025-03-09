@@ -538,12 +538,16 @@ async function getUserAdaptations(username, characterName = null) {
         // Get adaptations table
         const adaptationsTable = base('ADAPTATIONS');
         
-        // Build filter formula without any special escaping
-        let filterFormula = `{Username} = '${username}'`;
-        
+        // Build filter formula using SEARCH() instead of direct comparison
+        // This avoids issues with special characters
+        let filterFormula;
         if (characterName) {
-            filterFormula += ` AND {Character} = '${characterName}'`;
+            filterFormula = `AND(SEARCH("${username}", {Username}) > 0, SEARCH("${characterName}", {Character}) > 0)`;
+        } else {
+            filterFormula = `SEARCH("${username}", {Username}) > 0`;
         }
+        
+        console.log(`[AIRTABLE] Using filter formula: ${filterFormula}`);
         
         // Query Airtable
         const records = await adaptationsTable.select({
