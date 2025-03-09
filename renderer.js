@@ -258,6 +258,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let menuOpen = false;
     let currentCharacter = null;
     
+    // Create journal button
+    const journalButton = document.createElement('button');
+    journalButton.className = 'journal-button';
+    journalButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>';
+    journalButton.title = 'Companion Journal';
+    journalButton.onclick = openQuestJournal;
+    
     // Add offline support utilities
     const responseCache = new Map();
     
