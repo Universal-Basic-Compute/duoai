@@ -122,8 +122,8 @@ module.exports = async (req, res) => {
         console.log('[STREAM] Character name:', characterName || 'None');
         console.log('[STREAM] User message:', userMessage);
         
-        // Generate system prompt based on character and message count
-        const systemPrompt = await generateSystemPrompt(characterName, messageCount);
+        // Generate system prompt based on character and username
+        const systemPrompt = await generateSystemPrompt(characterName, messageCount, username);
         console.log('[STREAM] Generated system prompt for character:', characterName, 'with message count:', messageCount);
         
         // Set up headers for SSE
