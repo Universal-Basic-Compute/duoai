@@ -1,4 +1,20 @@
+// Load header and footer components
+function loadComponents() {
+  // Load header component
+  const headerScript = document.createElement('script');
+  headerScript.src = 'components/header.js';
+  document.head.appendChild(headerScript);
+  
+  // Load footer component
+  const footerScript = document.createElement('script');
+  footerScript.src = 'components/footer.js';
+  document.head.appendChild(footerScript);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Load components
+    loadComponents();
+    
     // Mobile menu toggle
     const menuToggle = document.querySelector('.menu-toggle');
     const nav = document.querySelector('nav');
