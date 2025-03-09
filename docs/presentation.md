@@ -1,59 +1,71 @@
 # DUOAI: Your Intelligent Gaming Companion
 
-## Introduction
+## Core Capabilities
 
-DUOAI is a revolutionary AI-powered gaming assistant designed to enhance your gaming experience across multiple platforms. By leveraging advanced machine learning algorithms and natural language processing, DUOAI provides real-time assistance, strategy optimization, and personalized gaming insights.
+DUOAI is an AI-powered gaming assistant that:
+
+- **Sees your screen** in real-time to provide contextual assistance
+- **Listens and speaks** for natural voice interaction during gameplay
+- **Adapts to your style** through an advanced relationship-building system
+- **Remembers your preferences** and gaming history across sessions
+- **Offers multiple AI personalities** to match your preferred interaction style
 
 ## Key Features
 
-### Adaptive Learning
+### 1. Real-Time Screen Analysis
+- Provides advice based on what's happening in your game
+- Identifies game elements, UI, and gameplay situations
+- Offers timely suggestions without interrupting gameplay
 
-- **Player Behavior Analysis**: DUOAI learns from your gameplay patterns to provide tailored advice
-- **Skill Level Adjustment**: Automatically adapts to your skill progression
-- **Cross-Game Knowledge Transfer**: Applies learnings from one game to improve recommendations in others
+### 2. Voice Interaction
+- Natural conversation during gameplay
+- High-quality voice synthesis with character-specific voices
+- Continuous listening with automatic speech detection
 
-### Real-Time Assistance
+### 3. Relationship Building System
+- Progressive relationship development through conversation
+- Companion Journal tracking your shared experiences
+- Relationship status evolving from "New Acquaintance" to deeper connections
 
-- **Voice-Activated Help**: Get immediate answers without pausing gameplay
-- **Context-Aware Suggestions**: Receives timely tips based on your current game situation
-- **Resource Optimization**: Recommendations for efficient resource management
+### 4. Multiple AI Characters
+- **Zephyr**: Playful and witty, focuses on fun and creativity
+- **Nova**: Analytical and precise, excels at optimization
+- **Orion**: Motivational and energetic, pushes you to improve
+- **Lyra**: Patient and educational, helps you learn
+- **Thorne**: Protective and strategic, guides you through challenges
 
-### Strategic Insights
-
-- **Advanced Pattern Recognition**: Identifies enemy tactics and suggests counter-strategies
-- **Decision Tree Analysis**: Evaluates potential outcomes of different actions
-- **Performance Metrics**: Detailed analytics on gameplay efficiency and improvement areas
+### 5. Adaptive Personality
+- Learns your preferences through natural conversation
+- Remembers important gaming moments and preferences
+- Adjusts advice style based on your needs and feedback
 
 ## Technical Architecture
 
-DUOAI operates on a hybrid cloud-edge architecture:
+- **Electron Desktop App**: Lightweight, always-available interface
+- **Claude 3.7 Sonnet**: Advanced vision-language model for screen analysis
+- **ElevenLabs Voice AI**: Character-specific voice synthesis
+- **Whisper API**: Accurate speech recognition
+- **Airtable Backend**: Secure user data and conversation storage
 
-1. **Edge Component**: Runs locally on your gaming device for low-latency responses
-2. **Cloud Backend**: Handles complex processing and cross-user learning
-3. **Secure API Layer**: Integrates with game platforms while maintaining privacy
+## User Experience
 
-## Platform Compatibility
+- **Minimal Interface**: Focus on your game, not the assistant
+- **Proactive Mode**: AI initiates conversation when it notices something interesting
+- **Reactive Mode**: AI responds only when you speak to it
+- **Companion Journal**: Track your evolving relationship with each AI character
+- **Relationship Milestones**: Celebrate moments of connection as your relationship deepens
 
-- PC Gaming (Steam, Epic Games, etc.)
+## Privacy and Security
 
-## Implementation Roadmap
+- **Local Processing**: Screenshot analysis happens on your device
+- **Secure Data Storage**: Encrypted conversation history
+- **User Control**: Clear options to delete data or pause the assistant
+- **Transparent Design**: No hidden data collection or monitoring
 
-| Phase | Timeline | Key Deliverables |
-|-------|----------|------------------|
-| Alpha | Q1 2023 | Core engine, limited game support on PC |
-| Beta | Q2 2023 | Expanded PC game library, voice commands |
-| Release | Q4 2023 | Full PC platform support, advanced analytics |
-| 2.0 | Q2 2024 | Multiplayer coordination, AR overlay for PC |
+## Roadmap
 
-## User Benefits
-
-- **Reduced Learning Curve**: Master new PC games faster
-- **Enhanced Enjoyment**: Less frustration, more accomplishment
-- **Skill Development**: Structured improvement path based on personal gameplay data
-- **Time Efficiency**: Optimize gaming sessions for maximum enjoyment
-
-## Conclusion
-
-DUOAI represents the next evolution in PC gaming assistance technology, combining the latest advances in artificial intelligence with an intuitive user experience. Whether you're a casual PC gamer looking to enhance your enjoyment or a competitive player seeking to refine your skills, DUOAI adapts to your unique needs.
-
-Sign up for our beta today and be among the first to experience the future of intelligent gaming assistance.
+- **Game-Specific Modules**: Enhanced support for popular game genres
+- **Multiplayer Support**: Assist with team coordination and strategy
+- **Advanced Customization**: Fine-tune your AI companion's personality
+- **Community Features**: Share tips and strategies with other players
+- **Mobile Companion App**: Take your AI assistant on the go
