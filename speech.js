@@ -840,91 +840,68 @@ class SpeechManager {
                         if (e.target.error && e.target.error.code === 4) {
                             console.error('CSP error detected when loading audio');
                             
-                            // CSP workaround for Electron: Use a data URL instead of blob URL
+                            // CSP workaround for Electron: Use the ipcRenderer to play audio through the main process
                             try {
-                                console.log('Attempting CSP workaround with data URL');
-                                // Convert blob to data URL
-                                const reader = new FileReader();
-                                reader.onload = (event) => {
-                                    try {
-                                        // Create a new audio element with the data URL
-                                        const dataUrl = event.target.result;
-                                        console.log('Created data URL for audio, length:', dataUrl.length);
-                                        
-                                        // Clean up the old blob URL
-                                        URL.revokeObjectURL(audioUrl);
-                                        
-                                        // Create a new audio element
-                                        this.audioElement = new Audio(dataUrl);
-                                        this.audioElement.volume = this.volume;
-                                        
-                                        // Set up event handlers
-                                        this.audioElement.onended = () => {
-                                            console.log('Audio playback ended (data URL)');
+                                console.log('Attempting CSP workaround with temporary file playback');
+                                
+                                // Clean up the old blob URL
+                                URL.revokeObjectURL(audioUrl);
+                                
+                                if (this.isElectronEnv && ipcRenderer) {
+                                    // Convert blob to array buffer for sending through IPC
+                                    const reader = new FileReader();
+                                    reader.onload = (event) => {
+                                        try {
+                                            const arrayBuffer = event.target.result;
+                                            console.log('Created array buffer for audio, length:', arrayBuffer.byteLength);
                                             
-                                            // Tell main process we're done with audio
-                                            if (this.isElectronEnv && ipcRenderer) {
+                                            // Send the audio data to the main process for playback
+                                            ipcRenderer.send('play-audio-file', {
+                                                buffer: Array.from(new Uint8Array(arrayBuffer)),
+                                                volume: this.volume
+                                            });
+                                            
+                                            // Set up a listener for when audio playback is complete
+                                            ipcRenderer.once('audio-playback-complete', () => {
+                                                console.log('Audio playback ended (main process)');
+                                                
+                                                // Tell main process we're done with audio
                                                 ipcRenderer.send('keep-app-running', false);
-                                            }
-                                            
-                                            // Reset audio playing flag
-                                            this.isPlayingAudio = false;
-                                            
-                                            // Resume continuous listening if it was active before
-                                            if (wasListening && this.isContinuousListening) {
-                                                console.log('Resuming continuous listening after audio playback');
-                                                this.startContinuousListening(this.speechCallback, this.endCallback)
-                                                    .catch(err => console.error('Error resuming continuous listening:', err));
-                                            }
-                                            
-                                            // Set up proactive messaging timer after audio playback ends
-                                            if (typeof setupProactiveMessaging === 'function') {
-                                                setupProactiveMessaging();
-                                            }
-                                            
+                                                
+                                                // Reset audio playing flag
+                                                this.isPlayingAudio = false;
+                                                
+                                                // Resume continuous listening if it was active before
+                                                if (wasListening && this.isContinuousListening) {
+                                                    console.log('Resuming continuous listening after audio playback');
+                                                    this.startContinuousListening(this.speechCallback, this.endCallback)
+                                                        .catch(err => console.error('Error resuming continuous listening:', err));
+                                                }
+                                                
+                                                // Set up proactive messaging timer after audio playback ends
+                                                if (typeof setupProactiveMessaging === 'function') {
+                                                    setupProactiveMessaging();
+                                                }
+                                                
+                                                resolve();
+                                            });
+                                        } catch (error) {
+                                            console.error('Error setting up main process audio playback:', error);
                                             resolve();
-                                        };
-                                        
-                                        this.audioElement.onerror = (dataUrlError) => {
-                                            console.error('Error with data URL audio playback:', dataUrlError);
-                                            
-                                            // Tell main process we're done with audio
-                                            if (this.isElectronEnv && ipcRenderer) {
-                                                ipcRenderer.send('keep-app-running', false);
-                                            }
-                                            
-                                            // Reset audio playing flag
-                                            this.isPlayingAudio = false;
-                                            
-                                            // Resume continuous listening if it was active before
-                                            if (wasListening && this.isContinuousListening) {
-                                                console.log('Resuming continuous listening after audio error');
-                                                this.startContinuousListening(this.speechCallback, this.endCallback)
-                                                    .catch(err => console.error('Error resuming continuous listening:', err));
-                                            }
-                                            
-                                            resolve();
-                                        };
-                                        
-                                        // Play the audio
-                                        this.audioElement.play().catch(playError => {
-                                            console.error('Error playing data URL audio:', playError);
-                                            resolve();
-                                        });
-                                    } catch (dataUrlError) {
-                                        console.error('Error setting up data URL audio:', dataUrlError);
+                                        }
+                                    };
+                                    
+                                    reader.onerror = (readerError) => {
+                                        console.error('Error reading blob as array buffer:', readerError);
                                         resolve();
-                                    }
-                                };
-                                
-                                reader.onerror = (readerError) => {
-                                    console.error('Error reading blob as data URL:', readerError);
-                                    resolve();
-                                };
-                                
-                                // Start reading the blob as data URL
-                                reader.readAsDataURL(audioBlob);
-                                return; // Exit early as we're handling this asynchronously
+                                    };
+                                    
+                                    // Start reading the blob as array buffer
+                                    reader.readAsArrayBuffer(audioBlob);
+                                    return; // Exit early as we're handling this asynchronously
+                                } else {
+                                    console.warn('Electron environment not detected, cannot use main process audio playback');
+                                }
                             } catch (workaroundError) {
                                 console.error('CSP workaround failed:', workaroundError);
                             }

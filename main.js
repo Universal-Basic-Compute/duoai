@@ -432,6 +432,134 @@ ipcMain.on('keep-app-running', (event, keepRunning) => {
     }
 });
 
+// Add these imports at the top of main.js if not already present
+const os = require('os');
+
+// Handle audio playback in the main process to bypass CSP restrictions
+ipcMain.on('play-audio-file', (event, data) => {
+    try {
+        console.log('Main process received audio playback request');
+        
+        // Create a temporary file for the audio
+        const tempFilePath = path.join(os.tmpdir(), `duoai-audio-${Date.now()}.mp3`);
+        
+        // Convert array back to Buffer
+        const buffer = Buffer.from(data.buffer);
+        
+        // Write the buffer to a temporary file
+        fs.writeFileSync(tempFilePath, buffer);
+        console.log('Wrote audio data to temporary file:', tempFilePath);
+        
+        // Create a hidden browser window to play the audio
+        const audioWindow = new BrowserWindow({
+            width: 1,
+            height: 1,
+            show: false,
+            webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false
+            }
+        });
+        
+        // Create a simple HTML content with an audio player
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Audio Player</title>
+            </head>
+            <body>
+                <audio id="player" autoplay>
+                    <source src="file://${tempFilePath}" type="audio/mpeg">
+                </audio>
+                <script>
+                    const { ipcRenderer } = require('electron');
+                    const player = document.getElementById('player');
+                    
+                    // Set volume
+                    player.volume = ${data.volume || 0.5};
+                    
+                    // When audio ends, notify main process
+                    player.onended = () => {
+                        ipcRenderer.send('audio-playback-complete');
+                    };
+                    
+                    // If there's an error, also notify
+                    player.onerror = (e) => {
+                        console.error('Error playing audio:', e);
+                        ipcRenderer.send('audio-playback-complete');
+                    };
+                </script>
+            </body>
+            </html>
+        `;
+        
+        // Load the HTML content
+        audioWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
+        
+        // Start power save blocker if not already active
+        let tempPowerSaveBlockerId = null;
+        if (powerSaveBlockerId === null) {
+            tempPowerSaveBlockerId = powerSaveBlocker.start('prevent-app-suspension');
+            console.log('Temporary power save blocker started for audio playback with ID:', tempPowerSaveBlockerId);
+        }
+        
+        // Listen for playback complete
+        ipcMain.once('audio-playback-complete', () => {
+            console.log('Audio playback complete, cleaning up');
+            
+            // Clean up temporary file
+            try {
+                fs.unlinkSync(tempFilePath);
+                console.log('Removed temporary audio file');
+            } catch (e) {
+                console.warn('Error removing temporary audio file:', e);
+            }
+            
+            // Stop temporary power save blocker if we created one
+            if (tempPowerSaveBlockerId !== null) {
+                powerSaveBlocker.stop(tempPowerSaveBlockerId);
+                console.log('Stopped temporary power save blocker');
+            }
+            
+            // Close the window
+            audioWindow.close();
+            
+            // Notify the renderer
+            event.sender.send('audio-playback-complete');
+        });
+        
+        // Set a timeout in case the audio doesn't play or end properly
+        setTimeout(() => {
+            // Check if the window still exists
+            if (!audioWindow.isDestroyed()) {
+                console.log('Audio playback timeout reached, cleaning up');
+                
+                // Clean up temporary file
+                try {
+                    fs.unlinkSync(tempFilePath);
+                } catch (e) {
+                    // Ignore errors during cleanup
+                }
+                
+                // Stop temporary power save blocker if we created one
+                if (tempPowerSaveBlockerId !== null) {
+                    powerSaveBlocker.stop(tempPowerSaveBlockerId);
+                }
+                
+                // Close the window
+                audioWindow.close();
+                
+                // Notify the renderer
+                event.sender.send('audio-playback-complete');
+            }
+        }, 30000); // 30 second timeout
+    } catch (error) {
+        console.error('Error playing audio in main process:', error);
+        event.sender.send('audio-playback-complete'); // Notify anyway to prevent hanging
+    }
+});
+
 app.on('window-all-closed', function () {
     // Don't quit if audio is playing
     if (audioPlaybackActive) {
