@@ -34,7 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
             menuTab.style.setProperty('visibility', 'visible', 'important');
             menuTab.style.setProperty('opacity', '1', 'important');
             menuTab.style.setProperty('position', 'fixed', 'important');
-            menuTab.style.setProperty('right', menuOpen ? '300px' : '0', 'important');
+            
+            // Position based on menu state
+            if (menuOpen) {
+                menuTab.style.setProperty('right', '300px', 'important'); // Position at edge of menu when open
+            } else {
+                menuTab.style.setProperty('right', '0', 'important'); // Position at edge of screen when closed
+            }
+            
             menuTab.style.setProperty('top', '50%', 'important');
             menuTab.style.setProperty('transform', 'translateY(-50%)', 'important');
             menuTab.style.setProperty('z-index', '9999', 'important');
@@ -595,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // Show menu
             sideMenu.style.right = '0';
-            menuTab.style.right = '300px';
+            menuTab.style.right = '300px'; // This is correct - position at the edge of the menu
             // Hide chat if it's open
             chatContainer.style.right = '-350px';
             // Resize window to accommodate the open menu
