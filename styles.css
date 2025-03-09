@@ -293,6 +293,11 @@ body {
     text-align: center;
     line-height: 20px; /* Match width of parent */
     pointer-events: none; /* Make sure events pass through to parent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
 }
 
 .tab-loading-indicator {
