@@ -1272,3 +1272,16 @@ input:checked + .toggle-slider:before {
     background: rgba(0, 0, 0, 0.3);
     margin-left: 10px;
 }
+
+/* Version number display */
+.version-number {
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    opacity: 0.6;
+    z-index: 100;
+    pointer-events: none;
+    user-select: none;
+}
