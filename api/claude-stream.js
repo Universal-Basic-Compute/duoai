@@ -217,10 +217,6 @@ module.exports = async (req, res) => {
             } else {
                 console.log('[STREAM] No previous messages found for context');
             }
-            
-            // Generate system prompt based on character and username now that we have all the data
-            const systemPrompt = await generateSystemPrompt(characterName, messageCount, username);
-            console.log('[STREAM] Generated system prompt for character:', characterName, 'with message count:', messageCount, 'and username:', username);
         } catch (historyError) {
             console.error('[STREAM] Error fetching message history:', historyError);
             // Continue without history if there's an error
@@ -254,6 +250,10 @@ module.exports = async (req, res) => {
             // Don't fail the request if saving messages fails
         }
         
+        // Generate system prompt based on character and username now that we have all the data
+        const systemPrompt = await generateSystemPrompt(characterName, messageCount, username);
+        console.log('[STREAM] Generated system prompt for character:', characterName, 'with message count:', messageCount, 'and username:', username);
+
         // Prepare the request payload for Claude API with streaming
         const payload = {
             model: 'claude-3-7-sonnet-latest',
