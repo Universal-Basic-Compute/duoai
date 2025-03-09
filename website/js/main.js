@@ -1,17 +1,24 @@
 // Load header and footer components
 function loadComponents() {
+  console.log('Loading components...');
+  
   // Load header component
   const headerScript = document.createElement('script');
   headerScript.src = 'components/header.js';
+  headerScript.onload = () => console.log('Header script loaded');
+  headerScript.onerror = (e) => console.error('Error loading header script:', e);
   document.head.appendChild(headerScript);
   
   // Load footer component
   const footerScript = document.createElement('script');
   footerScript.src = 'components/footer.js';
+  footerScript.onload = () => console.log('Footer script loaded');
+  footerScript.onerror = (e) => console.error('Error loading footer script:', e);
   document.head.appendChild(footerScript);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing components');
     // Load components
     loadComponents();
     
@@ -136,4 +143,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Check if footer is loaded properly
+    setTimeout(() => {
+        const footers = document.querySelectorAll('.site-footer');
+        if (footers.length === 0) {
+            console.error('No footer elements found on page');
+        } else {
+            footers.forEach((footer, index) => {
+                if (footer.innerHTML.trim() === '') {
+                    console.error(`Footer ${index} exists but is empty`);
+                    // Try to reload the footer component
+                    const footerScript = document.createElement('script');
+                    footerScript.src = 'components/footer.js';
+                    document.head.appendChild(footerScript);
+                } else {
+                    console.log(`Footer ${index} loaded successfully`);
+                }
+            });
+        }
+    }, 1000); // Check after 1 second
 });

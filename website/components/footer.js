@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const footerContainers = document.querySelectorAll('.site-footer');
   
   if (footerContainers.length > 0) {
+    console.log('Found footer containers:', footerContainers.length);
     // Insert the footer HTML into each container
     footerContainers.forEach(container => {
       container.innerHTML = `
@@ -61,6 +62,9 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
       `;
+      console.log('Footer HTML inserted');
     });
+  } else {
+    console.warn('No footer containers found with class "site-footer"');
   }
 });
