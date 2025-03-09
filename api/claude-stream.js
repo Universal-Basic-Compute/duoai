@@ -129,6 +129,7 @@ module.exports = async (req, res) => {
         
         const { userMessage, base64Image, characterName } = req.body;
         let fullResponse = '';
+        let messageCount = 0;
 
         if (!base64Image) {
             console.error('[STREAM] No base64 image in request');
