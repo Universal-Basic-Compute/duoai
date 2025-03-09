@@ -888,8 +888,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // Hide the chat container
         chatContainer.style.right = '-350px';
     
-        // Show the menu tab
+        // Show the menu tab and ensure it's visible
         menuTab.style.right = '0';
+        
+        // Force menu tab to be visible with important flags
+        menuTab.style.setProperty('display', 'block', 'important');
+        menuTab.style.setProperty('visibility', 'visible', 'important');
+        menuTab.style.setProperty('opacity', '1', 'important');
+        menuTab.style.setProperty('z-index', '9999', 'important');
+        menuTab.style.setProperty('pointer-events', 'auto', 'important');
     
         // Resize window
         ipcRenderer.send('resize-window', { width: 50, height: 600 });
@@ -898,8 +905,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // to allow audio to continue playing in the background
         console.log('Chat closed but audio playback will continue if in progress');
         
-        // Ensure menu tab is visible after chat is closed
+        // Set menuOpen to false since the menu should be closed
+        menuOpen = false;
+        
+        // Call ensureMenuTabVisibility multiple times with delays to ensure it takes effect
+        ensureMenuTabVisibility();
         setTimeout(ensureMenuTabVisibility, 100);
+        setTimeout(ensureMenuTabVisibility, 500);
     });
     
     // Send button functionality
