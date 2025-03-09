@@ -526,14 +526,18 @@ async function getUserMessages(username, limit = 100, character = null) {
         const messagesTable = base('MESSAGES');
         
         // Build the filter formula based on whether a character is specified
+        // Properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
         let filterFormula;
+        
         if (character) {
             // Filter by both username and character
-            filterFormula = `AND({Username} = '${username}', {Character} = '${character}')`;
+            const escapedCharacter = character.replace(/'/g, "''");
+            filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacter}')`;
             console.log(`[AIRTABLE] Querying messages with filter: ${filterFormula}`);
         } else {
             // Filter by username only
-            filterFormula = `{Username} = '${username}'`;
+            filterFormula = `{Username} = '${escapedUsername}'`;
             console.log(`[AIRTABLE] Querying messages with filter: ${filterFormula}`);
         }
         
@@ -581,15 +585,17 @@ async function getUserAdaptations(username, characterName = null) {
         // Get adaptations table
         const adaptationsTable = base('ADAPTATIONS');
         
-        // Build filter formula with proper escaping of single quotes
-        // Replace single quotes with escaped single quotes
-        const escapedUsername = username.replace(/'/g, "\\'");
+        // Build filter formula with proper escaping
+        // First, properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
         let filterFormula = `{Username} = '${escapedUsername}'`;
         
         if (characterName) {
-            const escapedCharacterName = characterName.replace(/'/g, "\\'");
+            const escapedCharacterName = characterName.replace(/'/g, "''");
             filterFormula += ` AND {Character} = '${escapedCharacterName}'`;
         }
+        
+        console.log(`[AIRTABLE] Using filter formula: ${filterFormula}`);
         
         // Query Airtable
         const records = await adaptationsTable.select({
@@ -689,8 +695,16 @@ async function getUserActiveQuests(username, characterName) {
     
     try {
         const questsTable = base('USER_QUESTS');
+        
+        // Properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        
+        const filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}', {Status} = 'active')`;
+        console.log(`[AIRTABLE] Getting active quests with filter: ${filterFormula}`);
+        
         const records = await questsTable.select({
-            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'active')`,
+            filterByFormula: filterFormula,
             maxRecords: 10
         }).firstPage();
         
@@ -715,8 +729,15 @@ async function getCompletedQuests(username, characterName) {
     
     try {
         const questsTable = base('USER_QUESTS');
+        
+        // Properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        
+        const filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}', {Status} = 'completed')`;
+        
         const records = await questsTable.select({
-            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'completed')`,
+            filterByFormula: filterFormula,
             maxRecords: 50,
             sort: [{ field: 'CompletedAt', direction: 'desc' }]
         }).firstPage();
@@ -743,7 +764,7 @@ async function checkQuestTriggers(username, characterName, userMessage, aiRespon
     if (!airtableEnabled) return null;
     
     try {
-        // Get active quests
+        // Get active quests - getUserActiveQuests will handle escaping
         const activeQuests = await getUserActiveQuests(username, characterName);
         
         // If no active quests, activate initial ones
@@ -859,8 +880,16 @@ async function completeQuest(username, characterName, questId, data) {
     try {
         // Update quest status
         const userQuestsTable = base('USER_QUESTS');
+        
+        // Properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        const escapedQuestId = questId.replace(/'/g, "''");
+        
+        const filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}', {QuestId} = '${escapedQuestId}', {Status} = 'active')`;
+        
         const records = await userQuestsTable.select({
-            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {QuestId} = '${questId}', {Status} = 'active')`
+            filterByFormula: filterFormula
         }).firstPage();
         
         if (records.length === 0) return;
@@ -894,8 +923,15 @@ async function checkTierProgression(username, characterName) {
     try {
         // Get completed quests
         const userQuestsTable = base('USER_QUESTS');
+        
+        // Properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        
+        const filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}', {Status} = 'completed')`;
+        
         const completedQuests = await userQuestsTable.select({
-            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Status} = 'completed')`
+            filterByFormula: filterFormula
         }).firstPage();
         
         // Get quest details to check tiers
@@ -942,8 +978,15 @@ async function activateNextTierQuests(username, characterName, tier) {
     try {
         // Check if user already has active quests from this tier
         const userQuestsTable = base('USER_QUESTS');
+        
+        // Properly escape single quotes by doubling them
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        
+        const filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}', {Tier} = ${tier})`;
+        
         const existingQuests = await userQuestsTable.select({
-            filterByFormula: `AND({Username} = '${username}', {Character} = '${characterName}', {Tier} = ${tier})`
+            filterByFormula: filterFormula
         }).firstPage();
         
         if (existingQuests.length > 0) return; // Already has quests from this tier
@@ -991,6 +1034,7 @@ async function getActiveQuestsForPrompt(username, characterName) {
     if (!airtableEnabled) return '';
     
     try {
+        // getUserActiveQuests will handle proper escaping
         const activeQuests = await getUserActiveQuests(username, characterName);
         
         if (!activeQuests || activeQuests.length === 0) {
@@ -1257,8 +1301,12 @@ async function findMessagesNeedingVerification(username, characterName, messageC
         // Get recent messages
         const messagesTable = base('MESSAGES');
         
-        // Build filter formula
-        let filterFormula = `AND({Username} = '${username}', {Character} = '${characterName}')`;
+        // Build filter formula with proper escaping
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        let filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}')`;
+        
+        console.log(`[AIRTABLE] Using filter formula for messages: ${filterFormula}`);
         
         // Query Airtable
         const records = await messagesTable.select({
@@ -1301,14 +1349,18 @@ async function markRecentMessagesAsVerified(username, characterName, verificatio
         // Get recent messages
         const messagesTable = base('MESSAGES');
         
-        // Build filter formula
-        let filterFormula = `AND({Username} = '${username}', {Character} = '${characterName}')`;
+        // Build filter formula with proper escaping
+        const escapedUsername = username.replace(/'/g, "''");
+        const escapedCharacterName = characterName.replace(/'/g, "''");
+        let filterFormula = `AND({Username} = '${escapedUsername}', {Character} = '${escapedCharacterName}')`;
         
         if (verificationType === 'quest') {
             filterFormula += `, {TriggeredQuest} = FALSE()`;
         } else if (verificationType === 'adaptation') {
             filterFormula += `, {TriggeredAdaptation} = FALSE()`;
         }
+        
+        console.log(`[AIRTABLE] Using filter formula for marking messages: ${filterFormula}`);
         
         // Query Airtable
         const records = await messagesTable.select({
