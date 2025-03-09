@@ -19,7 +19,7 @@ filesToCopy.forEach(file => {
     // Create a minimal version if it doesn't exist
     if (file === 'airtable-service.js') {
       console.log('Creating minimal airtable-service.js file');
-      fs.writeFileSync(file, `
+      const minimalContent = `
 const Airtable = require('airtable');
 
 // Initialize variables
