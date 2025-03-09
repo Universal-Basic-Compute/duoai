@@ -263,16 +263,16 @@ body {
 }
 
 .menu-tab {
-    position: fixed;
-    top: 50%;
-    right: 0;
-    transform: translateY(-50%);
+    position: fixed !important;
+    top: 50% !important;
+    right: 0 !important;
+    transform: translateY(-50%) !important;
     background: var(--accent-gradient);
     color: white;
     padding: 8px 3px; /* Reduced padding */
     border-radius: 6px 0 0 6px; /* Smaller border radius */
     cursor: pointer;
-    z-index: 9999; /* Extremely high z-index */
+    z-index: 9999 !important; /* Extremely high z-index */
     transition: right 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: -2px 0 10px var(--glow-color); /* Reduced shadow */
     animation: pulse 2s infinite;
@@ -282,6 +282,9 @@ body {
     user-select: none; /* Prevent text selection */
     position: relative; /* Ensure relative positioning for absolute children */
     overflow: visible; /* Allow the loading indicator to overflow */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .tab-handle {

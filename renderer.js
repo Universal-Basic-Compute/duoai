@@ -26,6 +26,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let continuousListeningActive = true; // Start with continuous listening enabled
     let proactiveMessageTimer = null;
     
+    // Function to ensure menu tab is visible and properly positioned
+    function ensureMenuTabVisibility() {
+        if (menuTab) {
+            // Force the menu tab to be visible and positioned correctly
+            menuTab.style.setProperty('display', 'block', 'important');
+            menuTab.style.setProperty('visibility', 'visible', 'important');
+            menuTab.style.setProperty('opacity', '1', 'important');
+            menuTab.style.setProperty('position', 'fixed', 'important');
+            menuTab.style.setProperty('right', menuOpen ? '300px' : '0', 'important');
+            menuTab.style.setProperty('top', '50%', 'important');
+            menuTab.style.setProperty('transform', 'translateY(-50%)', 'important');
+            menuTab.style.setProperty('z-index', '9999', 'important');
+            
+            console.log('Menu tab visibility enforced, position:', menuTab.style.right);
+        } else {
+            console.error('Menu tab element not found when trying to enforce visibility');
+        }
+    }
+    
     const menuTab = document.getElementById('menuTab');
     const sideMenu = document.getElementById('sideMenu');
     const startButton = document.getElementById('startButton');
@@ -581,6 +600,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         console.log('Menu state after click:', menuOpen);
+        
+        // Force visibility and position after state change
+        setTimeout(ensureMenuTabVisibility, 50);
     }
     
     // Add the click event listener
@@ -590,6 +612,18 @@ document.addEventListener('DOMContentLoaded', () => {
     menuTab.addEventListener('mousedown', function(event) {
         console.log('Mouse down on menu tab');
     });
+    
+    // Call this function initially
+    ensureMenuTabVisibility();
+
+    // Also call it after a short delay to override any other scripts that might change it
+    setTimeout(ensureMenuTabVisibility, 500);
+
+    // Call it periodically to ensure it stays visible
+    setInterval(ensureMenuTabVisibility, 5000);
+
+    // Also call it on window resize
+    window.addEventListener('resize', ensureMenuTabVisibility);
     
     // Function to update relationship depth indicator
     async function updateRelationshipDepth(characterName) {
