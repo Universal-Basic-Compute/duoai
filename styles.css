@@ -280,6 +280,8 @@ body {
     height: 30px; /* Reduced height from 40px to 30px */
     pointer-events: auto !important; /* Force pointer events to be enabled */
     user-select: none; /* Prevent text selection */
+    position: relative; /* Ensure relative positioning for absolute children */
+    overflow: visible; /* Allow the loading indicator to overflow */
 }
 
 .tab-handle {
@@ -289,6 +291,37 @@ body {
     text-align: center;
     line-height: 20px; /* Match width of parent */
     pointer-events: none; /* Make sure events pass through to parent */
+}
+
+.tab-loading-indicator {
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 8px 0 0 8px;
+    border: 2px solid transparent;
+    border-right: none;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tab-loading-indicator.active {
+    opacity: 1;
+    animation: tabLoading 1.5s linear infinite;
+}
+
+@keyframes tabLoading {
+    0% {
+        border-image: linear-gradient(to bottom, transparent, var(--accent-color), transparent) 1;
+    }
+    50% {
+        border-image: linear-gradient(to top, transparent, var(--accent-color), transparent) 1;
+    }
+    100% {
+        border-image: linear-gradient(to bottom, transparent, var(--accent-color), transparent) 1;
+    }
 }
 
 .side-menu {

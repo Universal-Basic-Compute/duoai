@@ -487,6 +487,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Ensure menu tab is in the correct position at startup
     menuTab.style.right = '0';
     
+    // Add loading indicator to menu tab
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'tab-loading-indicator';
+    menuTab.appendChild(loadingIndicator);
+    
     // Remove any existing event listeners
     menuTab.removeEventListener('click', null);
     
@@ -575,6 +580,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Please log in to use DUOAI');
                 return;
             }
+            
+            // Show loading indicator on menu tab
+            showMenuTabLoading();
             
             // Check subscription status
             const hasActiveSubscription = await checkSubscriptionStatus();
@@ -669,15 +677,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     (completeResponse) => {
                         // Remove typing indicator
                         messageElement.classList.remove('typing');
-                        
+                    
                         // Store the full response
                         fullResponse = completeResponse;
-                        
+                    
                         // Cache the response for offline use
                         cacheResponse('initial_message', fullResponse);
-                    
+                
                         // Note: We don't need to save the message here as it's already saved in claude-stream.js
-                        
+                    
+                        // Hide loading indicator on menu tab
+                        hideMenuTabLoading();
+                    
                         // Speak the response
                         speechManager.speak(fullResponse).catch(error => {
                             console.error('Error speaking message:', error);
@@ -761,6 +772,9 @@ document.addEventListener('DOMContentLoaded', () => {
     async function sendMessage() {
         const message = userInput.value.trim();
         if (!message) return;
+        
+        // Show loading indicator on menu tab
+        showMenuTabLoading();
         
         // Sanitize input
         const sanitizedMessage = sanitizeInput(message);
@@ -862,6 +876,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // Cache the response for offline use
                     cacheResponse(`message_${sanitizedMessage.substring(0, 50)}`, fullResponse);
+                    
+                    // Hide loading indicator on menu tab
+                    hideMenuTabLoading();
                     
                     // Speak the response
                     speechManager.speak(fullResponse).catch(error => {
@@ -1095,6 +1112,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadingElement = document.getElementById('loadingIndicator');
         if (loadingElement) {
             loadingElement.remove();
+        }
+    }
+    
+    // Function to show the loading indicator on the menu tab
+    function showMenuTabLoading() {
+        const loadingIndicator = document.querySelector('.tab-loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('active');
+        }
+    }
+
+    // Function to hide the loading indicator on the menu tab
+    function hideMenuTabLoading() {
+        const loadingIndicator = document.querySelector('.tab-loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.classList.remove('active');
         }
     }
     
