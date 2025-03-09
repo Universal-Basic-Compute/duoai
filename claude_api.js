@@ -163,32 +163,6 @@ class ClaudeAPI {
             throw new Error(`Failed to get response from Claude: ${error.message}`);
         }
     }
-    /**
-     * Show a quest completion notification
-     * @param {string} questName - Name of the completed quest
-     * @param {number} tier - Quest tier
-     */
-    function showQuestCompletion(questName, tier) {
-        const notification = document.createElement('div');
-        notification.className = 'quest-notification';
-        notification.innerHTML = `
-            <div class="quest-icon">✨</div>
-            <div class="quest-info">
-                <div class="quest-title">Connection Deepened</div>
-                <div class="quest-description">${questName}</div>
-            </div>
-        `;
-        document.body.appendChild(notification);
-        
-        // Animate in
-        setTimeout(() => notification.classList.add('show'), 10);
-        
-        // Animate out after 5 seconds
-        setTimeout(() => {
-            notification.classList.remove('show');
-            setTimeout(() => notification.remove(), 500);
-        }, 5000);
-    }
 
     /**
      * Show a quest completion notification
