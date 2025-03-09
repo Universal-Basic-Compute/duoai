@@ -512,7 +512,7 @@ async function generateSystemPrompt(characterName, messageCount = null, username
             console.log('[PROMPT] Adding onboarding prompt due to low message count:', messageCount);
             
             // Onboarding prompt path
-            const onboardingPromptPath = path.join(rootDir, 'prompts', 'onboarding.txt');
+            const onboardingPromptPath = path.join(rootDir, 'api', 'prompts', 'onboarding.txt');
             
             // Read onboarding prompt
             let onboardingPrompt = '';

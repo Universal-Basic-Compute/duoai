@@ -546,6 +546,123 @@ async function getUserMessages(username, limit = 100, character = null) {
     }
 }
 
+/**
+ * Get adaptations for a specific user and character
+ * @param {string} username - Username to get adaptations for
+ * @param {string} characterName - Character name to filter by (optional)
+ * @returns {Promise<Array>} - Array of adaptation records
+ */
+async function getUserAdaptations(username, characterName = null) {
+    if (!airtableEnabled) {
+        console.log('[AIRTABLE] Using mock adaptations for user:', username);
+        return [];
+    }
+    
+    try {
+        console.log(`[AIRTABLE] Getting adaptations for user: ${username}, character: ${characterName || 'All'}`);
+        
+        // Check if base is initialized
+        if (!base) {
+            console.error('[AIRTABLE] Airtable base not initialized');
+            return [];
+        }
+        
+        // Get adaptations table
+        const adaptationsTable = base('ADAPTATIONS');
+        
+        // Build filter formula
+        let filterFormula = `{Username} = '${username}'`;
+        if (characterName) {
+            filterFormula += ` AND {Character} = '${characterName}'`;
+        }
+        
+        // Query Airtable
+        const records = await adaptationsTable.select({
+            filterByFormula: filterFormula,
+            sort: [{ field: 'CreatedAt', direction: 'desc' }],
+            maxRecords: 10
+        }).firstPage();
+        
+        console.log(`[AIRTABLE] Found ${records.length} adaptations`);
+        
+        // Format records
+        return records.map(record => ({
+            id: record.id,
+            ...record.fields
+        }));
+    } catch (error) {
+        console.error('[AIRTABLE] Error getting adaptations:', error);
+        return [];
+    }
+}
+
+/**
+ * Save adaptation data for a user
+ * @param {string} username - Username to save adaptation for
+ * @param {string} characterName - Character name
+ * @param {Object} adaptationData - Adaptation data
+ * @returns {Promise<Object>} - Saved adaptation record
+ */
+async function saveAdaptation(username, characterName, adaptationData) {
+    if (!airtableEnabled) {
+        console.log('[AIRTABLE] Using mock adaptation for user:', username);
+        return {
+            id: 'mock-adaptation-id',
+            Username: username,
+            Character: characterName,
+            CompanionCharacter: adaptationData.companionCharacter || '',
+            PlayerProfile: adaptationData.playerProfile || '',
+            Memories: adaptationData.memories || '',
+            Requests: adaptationData.requests || '',
+            Ideas: adaptationData.ideas || '',
+            Notes: adaptationData.notes || '',
+            CreatedAt: new Date().toISOString()
+        };
+    }
+    
+    try {
+        console.log(`[AIRTABLE] Saving adaptation for user: ${username}, character: ${characterName}`);
+        
+        // Check if base is initialized
+        if (!base) {
+            console.error('[AIRTABLE] Airtable base not initialized');
+            return null;
+        }
+        
+        // Get adaptations table
+        const adaptationsTable = base('ADAPTATIONS');
+        
+        // Create record in Airtable
+        const records = await adaptationsTable.create([{
+            fields: {
+                Username: username,
+                Character: characterName,
+                CompanionCharacter: adaptationData.companionCharacter || '',
+                PlayerProfile: adaptationData.playerProfile || '',
+                Memories: adaptationData.memories || '',
+                Requests: adaptationData.requests || '',
+                Ideas: adaptationData.ideas || '',
+                Notes: adaptationData.notes || '',
+                CreatedAt: new Date().toISOString()
+            }
+        }]);
+        
+        if (records && records.length > 0) {
+            console.log(`[AIRTABLE] Adaptation saved with ID: ${records[0].id}`);
+            return {
+                id: records[0].id,
+                ...records[0].fields
+            };
+        }
+        
+        console.error('[AIRTABLE] Failed to save adaptation - no records returned');
+        return null;
+    } catch (error) {
+        console.error('[AIRTABLE] Error saving adaptation:', error);
+        return null;
+    }
+}
+
 module.exports = {
     findUserByGoogleId,
     findUserByEmail,
@@ -558,5 +675,7 @@ module.exports = {
     updateUsageHours,
     getSubscription,
     saveMessage,
-    getUserMessages
+    getUserMessages,
+    getUserAdaptations,
+    saveAdaptation
 };
