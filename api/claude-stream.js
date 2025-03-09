@@ -229,11 +229,15 @@ module.exports = async (req, res) => {
             // Determine the context based on message count
             const context = messageCount < 20 ? 'onboarding' : 'standard';
             console.log(`[STREAM] Message context: ${context} (message count: ${messageCount})`);
+            
+            // Save only the original user message without any added text
+            // If userMessage is empty, use a simple placeholder
+            const messageToSave = userMessage || `*${username} did not type a specific message at this time*`;
                 
             const savedUserMessage = await airtableService.saveMessage(
                 username,
                 'user',
-                userMessage || `*${username} did not type a specific message at this time*`,
+                messageToSave,
                 characterName,
                 context, // Add context parameter
                 false,   // triggeredQuest
