@@ -274,9 +274,19 @@ class ClaudeAPI {
                         console.error('Error getting username from localStorage:', e);
                     }
                 
+                    // Format the user message based on whether it's empty or not
+                    let formattedUserMessage;
+                    if (userMessage && userMessage.trim()) {
+                        // Normal user message
+                        formattedUserMessage = `${userMessage}\n\nYour answer, in one short sentence:`;
+                    } else {
+                        // Default message when user didn't type anything
+                        formattedUserMessage = `*${username} did not type a specific message at this time*\n\nSay whatever you feel like, in one short sentence:`;
+                    }
+
                     // Send the request to the backend server using the streaming endpoint
                     const response = await axios.post(streamUrl, {
-                        userMessage: userMessage || '',
+                        userMessage: formattedUserMessage,
                         base64Image: base64Image,
                         characterName: characterName || '',
                         username: username // Add username to the request body

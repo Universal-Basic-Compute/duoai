@@ -578,19 +578,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Call Claude API with streaming
                 console.log('Sending message to Claude API with streaming...');
                 let fullResponse = '';
-                
+            
                 // Get the auth token to include in the request
                 const authToken = localStorage.getItem('authToken');
-            
+        
                 await claudeAPI.sendMessageWithScreenshotStreaming(
-                    `*${getUsernameForMessage()} did not type a specific message at this time*`,
+                    '', // Empty message will trigger the default prompt in claude_api.js
                     screenshotPath,
                     currentCharacter, // Pass character name
                     // On chunk callback
                     (chunk) => {
                         // Update the text element with the new chunk
                         textElement.textContent += chunk;
-                    
+                
                         // Scroll to bottom as new text arrives
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     },
@@ -761,7 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Character:', currentCharacter || 'None');
         
             await claudeAPI.sendMessageWithScreenshotStreaming(
-                sanitizedMessage || `*${getUsernameForMessage()} did not type a specific message at this time*`,
+                sanitizedMessage, // The formatting will be handled in claude_api.js
                 screenshotPath,
                 currentCharacter, // Pass character name
                 // On chunk callback
