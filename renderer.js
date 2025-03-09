@@ -250,10 +250,21 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log('Menu tab element:', menuTab);
     
-    // Apply direct styles to ensure clickability
+    // Apply direct styles to ensure clickability and visibility
     menuTab.style.pointerEvents = 'auto';
     menuTab.style.cursor = 'pointer';
     menuTab.style.zIndex = '9999';
+    menuTab.style.display = 'block';
+    menuTab.style.visibility = 'visible';
+    menuTab.style.opacity = '1';
+    menuTab.style.right = '0'; // Ensure it's positioned at the right edge
+    
+    // Debug menu tab styles
+    console.log('Menu tab display:', window.getComputedStyle(menuTab).display);
+    console.log('Menu tab visibility:', window.getComputedStyle(menuTab).visibility);
+    console.log('Menu tab opacity:', window.getComputedStyle(menuTab).opacity);
+    console.log('Menu tab right position:', window.getComputedStyle(menuTab).right);
+    console.log('Menu tab z-index:', window.getComputedStyle(menuTab).zIndex);
     
     let menuOpen = false;
     let currentCharacter = null;
@@ -441,6 +452,54 @@ document.addEventListener('DOMContentLoaded', () => {
     // Always show menu tab
     menuTab.style.display = 'block';
     
+    // Check if the menu tab is positioned off-screen
+    const rect = menuTab.getBoundingClientRect();
+    console.log('Menu tab position:', rect);
+    console.log('Window dimensions:', {
+        width: window.innerWidth,
+        height: window.innerHeight
+    });
+
+    // If it's off-screen, force it back on-screen
+    if (rect.right < 0 || rect.left > window.innerWidth) {
+        console.log('Menu tab is off-screen, forcing it back');
+        menuTab.style.right = '0';
+    }
+    
+    // Function to debug element styles
+    function debugElementStyles(element) {
+        const styles = [];
+        const sheets = document.styleSheets;
+        
+        for (let i = 0; i < sheets.length; i++) {
+            let rules;
+            try {
+                rules = sheets[i].cssRules || sheets[i].rules;
+            } catch (e) {
+                console.warn('Cannot access stylesheet rules', e);
+                continue;
+            }
+            
+            for (let j = 0; j < rules.length; j++) {
+                try {
+                    if (element.matches(rules[j].selectorText)) {
+                        styles.push({
+                            selector: rules[j].selectorText,
+                            properties: rules[j].cssText
+                        });
+                    }
+                } catch (e) {
+                    // Skip rules that can't be processed
+                }
+            }
+        }
+        
+        console.log('CSS rules affecting menu tab:', styles);
+    }
+
+    // Call the function for the menu tab
+    debugElementStyles(menuTab);
+    
     // Function to select Zephyr by default
     const selectDefaultCharacter = () => {
         // Find the Zephyr character item
@@ -484,6 +543,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Ensure menu tab is in the correct position at startup
     menuTab.style.right = '0';
+    
+    // Force menu tab to be visible with important flags
+    menuTab.style.setProperty('display', 'block', 'important');
+    menuTab.style.setProperty('visibility', 'visible', 'important');
+    menuTab.style.setProperty('opacity', '1', 'important');
     
     // Add loading indicator to menu tab
     const loadingIndicator = document.createElement('div');
