@@ -29,6 +29,7 @@
     { "src": "/api/test", "dest": "/api/test.js" },
     { "src": "/api/airtable-service", "dest": "/airtable-service.js" },
     { "src": "/airtable-service.js", "dest": "/airtable-service.js" },
+    { "src": "/airtable-service.js", "dest": "/airtable-service.js" },
     { "src": "/api/test-airtable", "dest": "/api/test-airtable.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
   ],
