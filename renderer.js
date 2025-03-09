@@ -396,9 +396,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 isLoggedIn = true;
                 localStorage.setItem('isLoggedIn', 'true');
                 
-                // Hide login container and show app
+                // Hide login container
                 loginContainer.classList.add('hidden');
-                menuTab.style.display = 'block';
                 
                 return true;
             } else if (serverStatus.tokenExpired) {
@@ -425,7 +424,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.removeItem('authToken');
                 localStorage.removeItem('refreshToken');
                 loginContainer.classList.remove('hidden');
-                menuTab.style.display = 'none';
                 return false;
             }
         } catch (error) {
@@ -440,8 +438,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // Hide menu tab initially
-    menuTab.style.display = 'none';
+    // Always show menu tab
+    menuTab.style.display = 'block';
     
     // Function to select Zephyr by default
     const selectDefaultCharacter = () => {
@@ -1174,8 +1172,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update UI
         isLoggedIn = false;
         loginContainer.classList.remove('hidden');
-        menuTab.style.display = 'none';
-    
+
         // Hide other containers
         sideMenu.style.right = '-300px';
         chatContainer.style.right = '-350px';

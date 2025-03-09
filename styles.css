@@ -43,13 +43,13 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: calc(100% - 30px);
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
-    z-index: 10000;
+    z-index: 9999;
 }
 
 .login-card {
