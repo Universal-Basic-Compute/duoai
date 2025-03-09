@@ -1022,6 +1022,91 @@ async function getActiveQuestsForPrompt(username, characterName) {
 }
 
 /**
+ * Calculate relationship depth score for a user and character
+ * @param {string} username - Username
+ * @param {string} characterName - Character name
+ * @returns {Promise<Object>} - Relationship depth information
+ */
+async function calculateRelationshipDepth(username, characterName) {
+    if (!airtableEnabled) return { score: 0, level: "New Acquaintance", tier: 1, progress: 0 };
+    
+    try {
+        // Get completed quests
+        const completedQuests = await getCompletedQuests(username, characterName);
+        
+        if (!completedQuests || completedQuests.length === 0) {
+            return { score: 0, level: "New Acquaintance", tier: 1, progress: 0 };
+        }
+        
+        // Calculate base score (1 point per completed quest)
+        let baseScore = completedQuests.length;
+        
+        // Add tier bonuses (higher tier quests are worth more)
+        let tierBonus = 0;
+        let highestTier = 1;
+        
+        // Count quests by tier
+        const questsByTier = {};
+        
+        completedQuests.forEach(quest => {
+            const tier = quest.Tier || 1;
+            questsByTier[tier] = (questsByTier[tier] || 0) + 1;
+            
+            // Track highest tier
+            if (tier > highestTier) highestTier = tier;
+            
+            // Add tier-based bonus points
+            tierBonus += (tier - 1) * 2; // Tier 1: +0, Tier 2: +2, Tier 3: +4, etc.
+        });
+        
+        // Calculate total score
+        const totalScore = baseScore + tierBonus;
+        
+        // Determine relationship level based on score and highest tier
+        const relationshipLevels = [
+            "New Acquaintance",    // 0-5 points
+            "Casual Friend",       // 6-15 points
+            "Gaming Buddy",        // 16-30 points
+            "Trusted Companion",   // 31-50 points
+            "Kindred Spirit",      // 51-75 points
+            "Inseparable Duo"      // 76+ points
+        ];
+        
+        // Calculate level index based on score ranges
+        let levelIndex = 0;
+        if (totalScore > 5) levelIndex = 1;
+        if (totalScore > 15) levelIndex = 2;
+        if (totalScore > 30) levelIndex = 3;
+        if (totalScore > 50) levelIndex = 4;
+        if (totalScore > 75) levelIndex = 5;
+        
+        // Adjust level based on highest tier (can't be more than highest tier + 1)
+        levelIndex = Math.min(levelIndex, highestTier);
+        
+        // Calculate progress to next level (as a percentage)
+        const levelThresholds = [0, 5, 15, 30, 50, 75];
+        const currentThreshold = levelThresholds[levelIndex];
+        const nextThreshold = levelIndex < 5 ? levelThresholds[levelIndex + 1] : currentThreshold * 1.5;
+        
+        const progress = levelIndex < 5 
+            ? (totalScore - currentThreshold) / (nextThreshold - currentThreshold)
+            : 1; // Max level
+        
+        return {
+            score: totalScore,
+            level: relationshipLevels[levelIndex],
+            tier: highestTier,
+            progress: Math.min(1, Math.max(0, progress)), // Ensure between 0-1
+            completedCount: completedQuests.length,
+            questsByTier
+        };
+    } catch (error) {
+        console.error('Error calculating relationship depth:', error);
+        return { score: 0, level: "New Acquaintance", tier: 1, progress: 0 };
+    }
+}
+
+/**
  * Verify quest completions using LLM analysis
  * @param {string} username - Username to check quests for
  * @param {string} characterName - Character name
@@ -1329,5 +1414,6 @@ module.exports = {
     findMessagesNeedingVerification,
     markRecentMessagesAsVerified,
     periodicQuestAndAdaptationCheck,
-    getActiveQuestsForPrompt
+    getActiveQuestsForPrompt,
+    calculateRelationshipDepth
 };

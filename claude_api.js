@@ -189,6 +189,12 @@ class ClaudeAPI {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 500);
         }, 5000);
+        
+        // Update relationship depth
+        const currentCharacter = localStorage.getItem('currentCharacter');
+        if (currentCharacter && typeof updateRelationshipDepth === 'function') {
+            updateRelationshipDepth(currentCharacter);
+        }
     }
     
     /**

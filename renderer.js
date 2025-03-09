@@ -524,6 +524,47 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Mouse down on menu tab');
     });
     
+    // Function to update relationship depth indicator
+    async function updateRelationshipDepth(characterName) {
+        try {
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) return;
+            
+            const response = await fetch(`${authBridge.baseUrl}/api/quests/relationship?character=${encodeURIComponent(characterName)}`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Failed to fetch relationship depth: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Update UI elements
+            const levelElement = document.querySelector('.relationship-level');
+            const progressElement = document.querySelector('.relationship-progress');
+            
+            if (levelElement) {
+                levelElement.textContent = data.level;
+                levelElement.className = `relationship-level tier-${data.tier}`;
+            }
+            
+            if (progressElement) {
+                progressElement.style.width = `${data.progress * 100}%`;
+            }
+            
+            // Add score tooltip
+            const indicator = document.querySelector('.relationship-indicator');
+            if (indicator) {
+                indicator.title = `Relationship Score: ${data.score} points\nCompleted Quests: ${data.completedCount}`;
+            }
+            
+            console.log('Updated relationship depth:', data);
+        } catch (error) {
+            console.error('Error updating relationship depth:', error);
+        }
+    }
+
     // Start button functionality
     startButton.addEventListener('click', async () => {
         console.log('Start button clicked');
@@ -557,7 +598,16 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedCharacter.innerHTML = `
                 <div class="character-avatar">${currentCharacter.charAt(0)}</div>
                 <div class="character-info">${currentCharacter}</div>
+                <div class="relationship-indicator">
+                    <div class="relationship-level">New Acquaintance</div>
+                    <div class="relationship-progress-bar">
+                        <div class="relationship-progress"></div>
+                    </div>
+                </div>
             `;
+            
+            // Fetch relationship depth
+            updateRelationshipDepth(currentCharacter);
             
             // Clear previous messages
             chatMessages.innerHTML = '';
@@ -1402,6 +1452,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check server status periodically
     setInterval(checkServerConnection, 60000); // Check every minute
     
+    // Update relationship depth periodically
+    setInterval(() => {
+        const currentCharacter = localStorage.getItem('currentCharacter');
+        if (currentCharacter && chatContainer.style.right === '0px') {
+            updateRelationshipDepth(currentCharacter);
+        }
+    }, 60000); // Update every 60 seconds
+    
     // Add event listeners for network status changes
     window.addEventListener('online', () => {
         console.log('Device is now online');
@@ -1522,6 +1580,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="relationship-status">
                         <span class="status-label">Relationship:</span>
                         <span class="status-value tier-${relationship.tier}">${relationship.level}</span>
+                        <span class="relationship-score">(${relationship.score} pts)</span>
                     </div>
                 </div>
                 

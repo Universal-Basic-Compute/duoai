@@ -24,6 +24,7 @@
     { "src": "/api/usage/end", "dest": "/api/usage/end.js" },
     { "src": "/api/quests/journal", "dest": "/api/quests/journal.js" },
     { "src": "/api/quests/completed", "dest": "/api/quests/completed.js" },
+    { "src": "/api/quests/relationship", "dest": "/api/quests/relationship.js" },
     { "src": "/api/health", "dest": "/api/health.js" },
     { "src": "/api/test", "dest": "/api/test.js" },
     { "src": "/(.*)", "dest": "/website/$1" }
