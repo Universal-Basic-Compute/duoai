@@ -301,7 +301,6 @@ class AuthBridge {
         
         return results;
     }
-}
 
 // Create a singleton instance
 const authBridge = new AuthBridge();
