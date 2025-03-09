@@ -1603,32 +1603,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Test ElevenLabs TTS
     testElevenLabsTTS();
     
-    // Function to check server connection
-    async function checkServerConnection() {
-        try {
-            console.log('Checking server connection...');
-            const serverRunning = await claudeAPI.checkServerStatus();
-            const statusIndicator = document.getElementById('serverStatus');
-            
-            if (serverRunning) {
-                console.log('Server is connected');
-                statusIndicator.classList.remove('offline');
-                statusIndicator.classList.add('online');
-                statusIndicator.textContent = 'Server connected';
-            } else {
-                console.log('Server is disconnected');
-                statusIndicator.classList.remove('online');
-                statusIndicator.classList.add('offline');
-                statusIndicator.textContent = 'Server disconnected';
-            }
-        } catch (error) {
-            console.error('Error checking server status:', error);
-            const statusIndicator = document.getElementById('serverStatus');
-            statusIndicator.classList.remove('online');
-            statusIndicator.classList.add('offline');
-            statusIndicator.textContent = 'Server error: ' + error.message;
-        }
-    }
+    // Function to check server connection - removed
     
     // Monitor network status
     const networkStatus = document.getElementById('networkStatus');
@@ -1643,10 +1618,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initial checks
     updateNetworkStatus();
-    checkServerConnection();
     
-    // Check server status periodically
-    setInterval(checkServerConnection, 60000); // Check every minute
+    // Server status check removed
     
     // Update relationship depth periodically
     setInterval(() => {
