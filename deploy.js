@@ -19,7 +19,7 @@ filesToCopy.forEach(file => {
     // Create a minimal version if it doesn't exist
     if (file === 'airtable-service.js') {
       console.log('Creating minimal airtable-service.js file');
-      const minimalContent = `
+      fs.writeFileSync(file, `
 const Airtable = require('airtable');
 
 // Initialize variables
@@ -71,9 +71,15 @@ filesToCopy.forEach(file => {
   }
 });
 
-filesToCopy.forEach(file => {
-  fs.copyFileSync(file, path.join('api', file));
-});
+// Install airtable package in the api directory
+console.log('Installing airtable package in api directory...');
+try {
+  const { execSync } = require('child_process');
+  execSync('cd api && npm install airtable@0.12.2', { stdio: 'inherit' });
+  console.log('Successfully installed airtable package in api directory');
+} catch (error) {
+  console.error('Failed to install airtable package:', error);
+}
 
 // Ensure the prompts directory is copied
 if (!fs.existsSync(path.join('api', 'prompts'))) {
