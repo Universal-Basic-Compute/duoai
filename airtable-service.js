@@ -570,10 +570,14 @@ async function getUserAdaptations(username, characterName = null) {
         // Get adaptations table
         const adaptationsTable = base('ADAPTATIONS');
         
-        // Build filter formula
-        let filterFormula = `{Username} = '${username}'`;
+        // Build filter formula with proper escaping of single quotes
+        // Replace single quotes with escaped single quotes
+        const escapedUsername = username.replace(/'/g, "\\'");
+        let filterFormula = `{Username} = '${escapedUsername}'`;
+        
         if (characterName) {
-            filterFormula += ` AND {Character} = '${characterName}'`;
+            const escapedCharacterName = characterName.replace(/'/g, "\\'");
+            filterFormula += ` AND {Character} = '${escapedCharacterName}'`;
         }
         
         // Query Airtable
