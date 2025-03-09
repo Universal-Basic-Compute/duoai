@@ -23,7 +23,7 @@ async function processAdaptation(username, characterName, conversationHistory) {
         
         // Read the adaptation prompt
         const rootDir = process.env.VERCEL ? process.cwd() : __dirname;
-        const adaptationPromptPath = path.join(rootDir, 'prompts', 'adaptation.txt');
+        const adaptationPromptPath = path.join(rootDir, 'api', 'prompts', 'adaptation.txt');
         
         let adaptationPrompt;
         try {
