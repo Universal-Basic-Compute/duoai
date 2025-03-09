@@ -258,8 +258,6 @@ class AuthBridge {
     getLogoutUrl() {
         return `${this.baseUrl}/api/auth/logout`;
     }
-}
-
     /**
      * Test API endpoints to diagnose deployment issues
      * @returns {Promise<Object>} - Results of endpoint tests
@@ -301,6 +299,7 @@ class AuthBridge {
         
         return results;
     }
+}
 
 // Create a singleton instance
 const authBridge = new AuthBridge();
