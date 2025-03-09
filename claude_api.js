@@ -249,10 +249,11 @@ class ClaudeAPI {
      * @param {Function} onChunk - Callback function for each text chunk
      * @param {Function} onComplete - Callback function when streaming is complete
      * @param {string} authToken - Authentication token
+     * @param {number} messageCount - Number of messages in the conversation
      * @returns {Promise<void>} - Resolves when streaming is complete
      * @throws {Error} - If the API call fails or the screenshot is invalid
      */
-    async sendMessageWithScreenshotStreaming(userMessage, screenshotPath, characterName, onChunk, onComplete, authToken) {
+    async sendMessageWithScreenshotStreaming(userMessage, screenshotPath, characterName, onChunk, onComplete, authToken, messageCount = 0) {
         try {
             // Check if server is running
             const serverRunning = await this.checkServerStatus().catch(() => false);

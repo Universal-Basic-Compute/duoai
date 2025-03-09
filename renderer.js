@@ -723,6 +723,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Get the auth token to include in the request
                 const authToken = localStorage.getItem('authToken');
         
+                // Get the current message count
+                const currentMessageCount = chatMessages.querySelectorAll('.message').length || 0;
+            
                 await claudeAPI.sendMessageWithScreenshotStreaming(
                     '', // Empty message will trigger the default prompt in claude_api.js
                     screenshotPath,
@@ -757,7 +760,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                     },
                     // Pass the auth token
-                    authToken
+                    authToken,
+                    // Pass the message count
+                    currentMessageCount
                 );
                 
                 console.log('Streaming response from Claude API completed');
@@ -913,6 +918,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Message:', sanitizedMessage);
             console.log('Character:', currentCharacter || 'None');
         
+            // Get the current message count
+            const currentMessageCount = chatMessages.querySelectorAll('.message').length || 0;
+            
             await claudeAPI.sendMessageWithScreenshotStreaming(
                 sanitizedMessage, // The formatting will be handled in claude_api.js
                 screenshotPath,
@@ -946,7 +954,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     speechManager.speak(fullResponse).catch(error => {
                         console.error('Error speaking message:', error);
                     });
-                }
+                },
+                // Pass the auth token (undefined is fine)
+                undefined,
+                // Pass the message count
+                currentMessageCount
             );
             
             console.log('Streaming response from Claude API completed');
@@ -1111,6 +1123,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Call Claude API with streaming
                     let fullResponse = '';
                     
+                    // Get the current message count
+                    const currentMessageCount = chatMessages.querySelectorAll('.message').length || 0;
+                    
                     await claudeAPI.sendMessageWithScreenshotStreaming(
                         '*proactive message*', // Special flag to indicate this is a proactive message
                         screenshotPath,
@@ -1136,7 +1151,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 console.error('Error speaking message:', error);
                             });
                         },
-                        authToken
+                        authToken,
+                        currentMessageCount
                     );
                     
                     // Clean up old screenshots
