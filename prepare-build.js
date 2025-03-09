@@ -16,7 +16,8 @@ if (!fs.existsSync(resourcesDir)) {
 // Copy critical files to the resources directory
 const filesToCopy = [
   'index.html',
-  'styles.css'
+  'styles.css',
+  'quest-creator.js'
 ];
 
 filesToCopy.forEach(file => {
@@ -95,6 +96,30 @@ if (fs.existsSync(promptsSourceDir)) {
       }
     });
   }
+}
+
+// Copy API prompts directory
+const apiPromptsSourceDir = path.join(__dirname, 'api', 'prompts');
+const apiPromptsDestDir = path.join(resourcesDir, 'api', 'prompts');
+
+if (fs.existsSync(apiPromptsSourceDir)) {
+  // Create API prompts directory in resources
+  if (!fs.existsSync(apiPromptsDestDir)) {
+    fs.mkdirSync(apiPromptsDestDir, { recursive: true });
+  }
+  
+  // Copy API prompt files
+  const apiPromptFiles = fs.readdirSync(apiPromptsSourceDir);
+  
+  apiPromptFiles.forEach(file => {
+    const sourcePath = path.join(apiPromptsSourceDir, file);
+    const destPath = path.join(apiPromptsDestDir, file);
+    
+    if (fs.statSync(sourcePath).isFile()) {
+      fs.copyFileSync(sourcePath, destPath);
+      console.log(`Copied ${file} to resources/api/prompts`);
+    }
+  });
 }
 
 console.log('Build preparation complete!');

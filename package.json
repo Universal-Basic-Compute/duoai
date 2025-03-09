@@ -43,8 +43,10 @@
         "filter": [
           "index.html",
           "styles.css",
+          "quest-creator.js",
           "images/**/*",
-          "prompts/**/*"
+          "prompts/**/*",
+          "api/prompts/**/*"
         ]
       }
     ],
