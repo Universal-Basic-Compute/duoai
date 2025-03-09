@@ -36,9 +36,9 @@ module.exports = async (req, res) => {
         console.log('[STREAM] Character name:', characterName || 'None');
         console.log('[STREAM] User message:', userMessage);
         
-        // Generate system prompt based on character
-        const systemPrompt = await generateSystemPrompt(characterName);
-        console.log('[STREAM] Generated system prompt for character:', characterName);
+        // Generate system prompt based on character and message count
+        const systemPrompt = await generateSystemPrompt(characterName, messageCount);
+        console.log('[STREAM] Generated system prompt for character:', characterName, 'with message count:', messageCount);
         
         // Set up headers for SSE
         res.writeHead(200, {
@@ -83,13 +83,21 @@ module.exports = async (req, res) => {
         // Fetch previous messages for context
         console.log('[STREAM] Fetching previous messages for context...');
         let previousMessages = [];
+        let messageCount = 0;
         try {
-            // Get previous messages from Airtable (limit to 10 for context)
-            // Filter by both username and character name
-            const messages = await airtableService.getUserMessages(username, 10, characterName);
+            // Get previous messages from Airtable
+            // First get all messages to count them
+            const allMessages = await airtableService.getUserMessages(username, 100, characterName);
+            
+            // Set the message count for onboarding detection
+            messageCount = allMessages ? allMessages.length : 0;
+            console.log(`[STREAM] Total message count for this user and character: ${messageCount}`);
+            
+            // Now get a smaller set for context
+            const messages = allMessages ? allMessages.slice(0, 10) : [];
             
             if (messages && messages.length > 0) {
-                console.log(`[STREAM] Found ${messages.length} previous messages for context`);
+                console.log(`[STREAM] Using ${messages.length} previous messages for context`);
                 
                 // Convert Airtable messages to Claude message format
                 // Sort by timestamp ascending (oldest first)
@@ -266,7 +274,7 @@ module.exports = async (req, res) => {
 };
 
 // Function to generate system prompts based on character
-async function generateSystemPrompt(characterName) {
+async function generateSystemPrompt(characterName, messageCount = null) {
     try {
         // Base prompt path - use process.cwd() for Vercel
         const rootDir = process.env.VERCEL ? process.cwd() : __dirname;
@@ -301,8 +309,30 @@ async function generateSystemPrompt(characterName) {
             return basePrompt; // Return base prompt if character prompt not found
         }
         
-        // Combine prompts
-        const fullPrompt = `${basePrompt}\n\n${'='.repeat(50)}\n\n${characterPrompt}`;
+        // Combine base and character prompts
+        let fullPrompt = `${basePrompt}\n\n${'='.repeat(50)}\n\n${characterPrompt}`;
+        
+        // Check if we need to add the onboarding prompt based on message count
+        if (messageCount !== null && messageCount < 20) {
+            console.log('[PROMPT] Adding onboarding prompt due to low message count:', messageCount);
+            
+            // Onboarding prompt path
+            const onboardingPromptPath = path.join(rootDir, 'prompts', 'onboarding.txt');
+            
+            // Read onboarding prompt
+            let onboardingPrompt = '';
+            try {
+                onboardingPrompt = fs.readFileSync(onboardingPromptPath, 'utf8');
+                console.log('[PROMPT] Read onboarding prompt successfully');
+                
+                // Add onboarding prompt to the full prompt
+                fullPrompt += `\n\n${'='.repeat(50)}\n\nONBOARDING MODE:\n${onboardingPrompt}`;
+            } catch (error) {
+                console.error('[PROMPT] Error reading onboarding prompt:', error);
+                // Continue without onboarding prompt if it can't be read
+            }
+        }
+        
         console.log(`[PROMPT] Generated full prompt for ${characterName} (length: ${fullPrompt.length})`);
         
         return fullPrompt;
