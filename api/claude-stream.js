@@ -520,8 +520,10 @@ async function generateSystemPrompt(characterName, messageCount = null, username
                 onboardingPrompt = fs.readFileSync(onboardingPromptPath, 'utf8');
                 console.log('[PROMPT] Read onboarding prompt successfully');
                 
-                // Add onboarding prompt to the full prompt
-                fullPrompt += `\n\n${'='.repeat(50)}\n\nONBOARDING MODE:\n${onboardingPrompt}`;
+                // Add onboarding prompt to the full prompt with more emphasis
+                fullPrompt = `IMPORTANT - ONBOARDING MODE ACTIVE:\n${onboardingPrompt}\n\n${'='.repeat(50)}\n\nBACKGROUND INFORMATION (Secondary to onboarding):\n${fullPrompt}`;
+                
+                console.log('[PROMPT] Added onboarding prompt with high priority');
             } catch (error) {
                 console.error('[PROMPT] Error reading onboarding prompt:', error);
                 // Continue without onboarding prompt if it can't be read

@@ -274,14 +274,26 @@ class ClaudeAPI {
                         console.error('Error getting username from localStorage:', e);
                     }
                 
-                    // Format the user message based on whether it's empty or not
+                    // Format the user message based on whether it's empty or not and message count
                     let formattedUserMessage;
-                    if (userMessage && userMessage.trim()) {
-                        // Normal user message
-                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n${userMessage}\n\nAnswer in 1-2 short sentences. Your answer:`;
+                    if (messageCount < 20) {
+                        // Onboarding mode - explicitly instruct Claude to ask questions
+                        if (userMessage && userMessage.trim()) {
+                            // Normal user message in onboarding mode
+                            formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n${userMessage}\n\nRespond briefly (1-2 sentences) and end with a question to keep the conversation going. Your response:`;
+                        } else {
+                            // Default message when user didn't type anything in onboarding mode
+                            formattedUserMessage = `You are in ONBOARDING MODE with ${username}. Here is ${username}'s current screen. Don't describe it, but focus on getting to know the player through engaging questions.\n\n*${username} did not type a specific message at this time*\n\nIntroduce yourself briefly (1-2 sentences) and ask an engaging question to start the conversation. Your response:`;
+                        }
                     } else {
-                        // Default message when user didn't type anything
-                        formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n*${username} did not type a specific message at this time*\n\nSay whatever you feel like, in 1-2 short sentences. Your answer:`;
+                        // Standard mode - continue as before
+                        if (userMessage && userMessage.trim()) {
+                            // Normal user message
+                            formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n${userMessage}\n\nAnswer in 1-2 short sentences. Your answer:`;
+                        } else {
+                            // Default message when user didn't type anything
+                            formattedUserMessage = `You are playing with ${username}. Here is ${username}'s current screen. Don't describe it, but continue the conversation naturally as a gaming partner.\n\n*${username} did not type a specific message at this time*\n\nSay whatever you feel like, in 1-2 short sentences. Your answer:`;
+                        }
                     }
 
                     // Send the request to the backend server using the streaming endpoint
