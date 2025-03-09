@@ -146,10 +146,6 @@ module.exports = async (req, res) => {
         console.log('[STREAM] Character name:', characterName || 'None');
         console.log('[STREAM] User message:', userMessage);
         
-        // Generate system prompt based on character and username
-        const systemPrompt = await generateSystemPrompt(characterName, messageCount, username);
-        console.log('[STREAM] Generated system prompt for character:', characterName, 'with message count:', messageCount, 'and username:', username);
-        
         // Set up headers for SSE
         res.writeHead(200, {
             'Content-Type': 'text/event-stream',
@@ -221,6 +217,10 @@ module.exports = async (req, res) => {
             } else {
                 console.log('[STREAM] No previous messages found for context');
             }
+            
+            // Generate system prompt based on character and username now that we have all the data
+            const systemPrompt = await generateSystemPrompt(characterName, messageCount, username);
+            console.log('[STREAM] Generated system prompt for character:', characterName, 'with message count:', messageCount, 'and username:', username);
         } catch (historyError) {
             console.error('[STREAM] Error fetching message history:', historyError);
             // Continue without history if there's an error
