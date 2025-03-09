@@ -31,5 +31,6 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "installCommand": "npm install && cd api && npm install"
 }
