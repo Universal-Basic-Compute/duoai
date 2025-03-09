@@ -4,6 +4,92 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const airtableService = require('./airtable-service');
 
+// Function to process adaptation
+async function processAdaptation(username, characterName, conversationHistory) {
+    try {
+        console.log('[ADAPTATION] Processing adaptation for user:', username);
+        
+        // Skip if no conversation history
+        if (!conversationHistory || conversationHistory.length < 2) {
+            console.log('[ADAPTATION] Not enough conversation history to process adaptation');
+            return null;
+        }
+        
+        // Format the conversation history for the prompt
+        const formattedConversation = conversationHistory.map(msg => {
+            const role = msg.role === 'user' ? 'Player' : 'AI';
+            return `${role}: ${msg.content[0].text}`;
+        }).join('\n\n');
+        
+        // Read the adaptation prompt
+        const rootDir = process.env.VERCEL ? process.cwd() : __dirname;
+        const adaptationPromptPath = path.join(rootDir, 'prompts', 'adaptation.txt');
+        
+        let adaptationPrompt;
+        try {
+            adaptationPrompt = fs.readFileSync(adaptationPromptPath, 'utf8');
+            console.log('[ADAPTATION] Read adaptation prompt successfully');
+        } catch (error) {
+            console.error('[ADAPTATION] Error reading adaptation prompt:', error);
+            return null;
+        }
+        
+        // Replace placeholder with actual conversation
+        adaptationPrompt = adaptationPrompt.replace('{{conversation}}', formattedConversation);
+        
+        // Call Claude API for adaptation analysis
+        const payload = {
+            model: 'claude-3-7-sonnet-latest',
+            system: "You are an AI assistant that analyzes conversations and extracts insights in JSON format.",
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        {
+                            type: 'text',
+                            text: adaptationPrompt
+                        }
+                    ]
+                }
+            ],
+            max_tokens: 1000
+        };
+        
+        console.log('[ADAPTATION] Sending adaptation request to Claude API');
+        
+        const response = await axios.post('https://api.anthropic.com/v1/messages', payload, {
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': process.env.ANTHROPIC_API_KEY,
+                'anthropic-version': '2023-06-01'
+            }
+        });
+        
+        // Extract the JSON response
+        const adaptationText = response.data.content[0].text;
+        console.log('[ADAPTATION] Received adaptation response:', adaptationText);
+        
+        // Parse the JSON
+        let adaptationData;
+        try {
+            adaptationData = JSON.parse(adaptationText);
+            console.log('[ADAPTATION] Successfully parsed adaptation JSON');
+        } catch (parseError) {
+            console.error('[ADAPTATION] Error parsing adaptation JSON:', parseError);
+            console.error('[ADAPTATION] Raw response:', adaptationText);
+            return null;
+        }
+        
+        // Save the adaptation to Airtable
+        await airtableService.saveAdaptation(username, characterName, adaptationData);
+        
+        return adaptationData;
+    } catch (error) {
+        console.error('[ADAPTATION] Error processing adaptation:', error);
+        return null;
+    }
+}
+
 module.exports = async (req, res) => {
     try {
         // Set CORS headers to allow requests from any origin
@@ -244,6 +330,35 @@ module.exports = async (req, res) => {
             res.write('event: message_stop\ndata: {"type": "message_stop"}\n\n');
             res.end();
             console.log('[STREAM] Response ended');
+            
+            // Process adaptation asynchronously
+            // This won't block the response to the client
+            setTimeout(async () => {
+                try {
+                    console.log('[STREAM] Starting asynchronous adaptation processing');
+                    
+                    // Get the full conversation history for context
+                    const conversationMessages = await airtableService.getUserMessages(username, 20, characterName);
+                    
+                    if (conversationMessages && conversationMessages.length > 0) {
+                        // Convert to the format expected by the adaptation processor
+                        const formattedMessages = conversationMessages
+                            .sort((a, b) => new Date(a.Timestamp) - new Date(b.Timestamp))
+                            .map(msg => ({
+                                role: msg.Role === 'user' ? 'user' : 'assistant',
+                                content: [{ type: 'text', text: msg.Content }]
+                            }));
+                        
+                        // Process the adaptation
+                        await processAdaptation(username, characterName, formattedMessages);
+                        console.log('[STREAM] Adaptation processing completed');
+                    } else {
+                        console.log('[STREAM] No conversation history found for adaptation processing');
+                    }
+                } catch (adaptationError) {
+                    console.error('[STREAM] Error in asynchronous adaptation processing:', adaptationError);
+                }
+            }, 100); // Small delay to ensure response is sent first
         });
         
         // Handle errors in the stream
@@ -274,7 +389,7 @@ module.exports = async (req, res) => {
 };
 
 // Function to generate system prompts based on character
-async function generateSystemPrompt(characterName, messageCount = null) {
+async function generateSystemPrompt(characterName, messageCount = null, username = null) {
     try {
         // Base prompt path - use process.cwd() for Vercel
         const rootDir = process.env.VERCEL ? process.cwd() : __dirname;
@@ -311,6 +426,54 @@ async function generateSystemPrompt(characterName, messageCount = null) {
         
         // Combine base and character prompts
         let fullPrompt = `${basePrompt}\n\n${'='.repeat(50)}\n\n${characterPrompt}`;
+        
+        // Check if we have adaptations for this user and character
+        if (username) {
+            try {
+                const adaptations = await airtableService.getUserAdaptations(username, characterName);
+                
+                if (adaptations && adaptations.length > 0) {
+                    console.log(`[PROMPT] Found ${adaptations.length} adaptations for user ${username} and character ${characterName}`);
+                    
+                    // Get the most recent adaptation
+                    const latestAdaptation = adaptations[0];
+                    
+                    // Add adaptation data to the prompt
+                    fullPrompt += '\n\n' + '='.repeat(50) + '\n\n';
+                    fullPrompt += 'PLAYER INSIGHTS:\n';
+                    
+                    if (latestAdaptation.CompanionCharacter) {
+                        fullPrompt += `\nCompanion Character: ${latestAdaptation.CompanionCharacter}\n`;
+                    }
+                    
+                    if (latestAdaptation.PlayerProfile) {
+                        fullPrompt += `\nPlayer Profile: ${latestAdaptation.PlayerProfile}\n`;
+                    }
+                    
+                    if (latestAdaptation.Memories) {
+                        fullPrompt += `\nMemories: ${latestAdaptation.Memories}\n`;
+                    }
+                    
+                    if (latestAdaptation.Requests) {
+                        fullPrompt += `\nRequests: ${latestAdaptation.Requests}\n`;
+                    }
+                    
+                    if (latestAdaptation.Ideas) {
+                        fullPrompt += `\nIdeas for Interaction: ${latestAdaptation.Ideas}\n`;
+                    }
+                    
+                    if (latestAdaptation.Notes) {
+                        fullPrompt += `\nAdditional Notes: ${latestAdaptation.Notes}\n`;
+                    }
+                    
+                    console.log('[PROMPT] Added adaptation data to system prompt');
+                } else {
+                    console.log(`[PROMPT] No adaptations found for user ${username} and character ${characterName}`);
+                }
+            } catch (adaptationError) {
+                console.error('[PROMPT] Error getting adaptations:', adaptationError);
+            }
+        }
         
         // Check if we need to add the onboarding prompt based on message count
         if (messageCount !== null && messageCount < 20) {
