@@ -63,7 +63,11 @@
     "win": {
       "target": [
         "nsis",
-        "appx"
+        {
+          "target": "appx",
+          "arch": ["x64"],
+          "sign": false
+        }
       ],
       "icon": "build/icon.ico",
       "signtoolOptions": {
