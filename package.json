@@ -2,6 +2,11 @@
   "name": "duoai",
   "version": "0.1.0",
   "private": true,
+  "description": "AI-powered assistant for gamers that sees your screen, listens and speaks for natural interaction, and adapts to your gaming style.",
+  "author": {
+    "name": "Nicolas Reynolds",
+    "email": "contact@duogaming.ai"
+  },
   "main": "main.js",
   "scripts": {
     "dev": "next dev",
@@ -14,7 +19,7 @@
     "create-ico": "node create-ico.js",
     "pack": "npm run prepare-build && npm run create-ico && electron-builder --dir",
     "dist": "npm run prepare-build && npm run create-ico && electron-builder",
-    "dist:msix": "npm run prepare-build && npm run create-ico && npm run create-cert && electron-builder --win msix",
+    "dist:msix": "npm run prepare-build && npm run create-ico && npm run create-cert && electron-builder --win appx",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
