@@ -75,8 +75,7 @@
       "applicationId": "DUOAI",
       "languages": ["en-us"],
       "addAutoLaunchExtension": false,
-      "manifestPath": "./AppxManifest.xml",
-      "architectures": ["x64"]
+      "customManifestPath": "./AppxManifest.xml"
     },
     "nsis": {
       "oneClick": false,
