@@ -179,6 +179,8 @@ class AuthBridge {
                     } catch (fallbackError) {
                         console.error('Fallback login failed:', fallbackError);
                     }
+                } else {
+                    console.log('No stored credentials available for fallback login');
                 }
                 
                 // If we get here, both refresh and fallback login failed
