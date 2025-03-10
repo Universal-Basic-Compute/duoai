@@ -2,6 +2,10 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 
+console.log('Creating ICO file from SVG logo...');
+
+// Define paths
+const sourceIcon = path.join(__dirname, 'website', 'images', 'logo.svg');
 const buildDir = path.join(__dirname, 'build');
 const pngPath = path.join(buildDir, 'icon.png');
 const icoPath = path.join(buildDir, 'icon.ico');
@@ -11,25 +15,29 @@ if (!fs.existsSync(buildDir)) {
   fs.mkdirSync(buildDir, { recursive: true });
 }
 
-// Check if PNG exists
-if (!fs.existsSync(pngPath)) {
-  console.log('PNG icon not found, creating a placeholder...');
+// Check if the source icon exists
+if (!fs.existsSync(sourceIcon)) {
+  console.error('Source SVG logo not found at:', sourceIcon);
+  console.error('Please ensure you have the logo.svg file in the website/images directory');
   
-  // Create a simple placeholder icon
+  // Create a fallback icon if the SVG is missing
+  console.log('Creating a fallback icon...');
+  
   sharp({
     create: {
       width: 512,
       height: 512,
       channels: 4,
-      background: { r: 26, g: 26, b: 26, alpha: 1 }
+      background: { r: 26, g: 26, b: 42, alpha: 1 } // #1a1a2e
     }
   })
   .composite([
     {
       input: Buffer.from(
         `<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-          <rect width="512" height="512" fill="#1a1a1a"/>
-          <text x="256" y="256" font-family="Arial" font-size="200" fill="white" text-anchor="middle" dominant-baseline="middle">D</text>
+          <rect width="512" height="512" fill="#1a1a2e"/>
+          <text x="256" y="256" font-family="Arial" font-size="200" font-weight="bold" fill="#4a4ae6" text-anchor="middle" dominant-baseline="middle">D</text>
+          <text x="256" y="400" font-family="Arial" font-size="100" font-weight="bold" fill="#e64a8c" text-anchor="middle" dominant-baseline="middle">AI</text>
         </svg>`
       ),
       top: 0,
@@ -38,15 +46,33 @@ if (!fs.existsSync(pngPath)) {
   ])
   .toFile(pngPath)
   .then(() => {
-    console.log('Created placeholder PNG icon at:', pngPath);
+    console.log('Created fallback PNG icon at:', pngPath);
     createIcoFromPng();
   })
   .catch(err => {
-    console.error('Failed to create placeholder PNG icon:', err);
+    console.error('Failed to create fallback PNG icon:', err);
     process.exit(1);
   });
 } else {
-  createIcoFromPng();
+  // Use the SVG logo
+  createIcoFromSvg();
+}
+
+function createIcoFromSvg() {
+  console.log('Creating icon from SVG logo...');
+  
+  // Create a high-quality PNG from the SVG
+  sharp(sourceIcon)
+    .resize(512, 512)
+    .toFile(pngPath)
+    .then(() => {
+      console.log('Created PNG icon from SVG at:', pngPath);
+      createIcoFromPng();
+    })
+    .catch(err => {
+      console.error('Failed to create PNG from SVG:', err);
+      process.exit(1);
+    });
 }
 
 function createIcoFromPng() {
