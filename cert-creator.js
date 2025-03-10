@@ -48,6 +48,15 @@ function createDummyCertificate() {
   console.log('Creating a dummy certificate for development purposes...');
   
   try {
+    console.log(`Creating dummy certificate at: ${pfxPath}`);
+    
+    // Ensure the directory exists
+    const certDirPath = path.dirname(pfxPath);
+    if (!fs.existsSync(certDirPath)) {
+      fs.mkdirSync(certDirPath, { recursive: true });
+      console.log(`Created certificate directory at: ${certDirPath}`);
+    }
+    
     // Create a simple text file as a placeholder
     const dummyContent = `
       This is a dummy certificate file for development purposes only.
@@ -56,7 +65,13 @@ function createDummyCertificate() {
     `;
     
     fs.writeFileSync(pfxPath, dummyContent);
-    console.log(`Dummy certificate created at: ${pfxPath}`);
+    
+    // Verify the file was created
+    if (fs.existsSync(pfxPath)) {
+      console.log(`Dummy certificate created at: ${pfxPath}`);
+    } else {
+      throw new Error(`Failed to create dummy certificate at: ${pfxPath}`);
+    }
     
     // Also update the package.json to use a dummy publisher
     try {
