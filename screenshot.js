@@ -2,7 +2,7 @@ const { ipcRenderer } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const sharp = require('sharp'); // Add sharp for image resizing
+const sharp = require('sharp');
 
 class ScreenshotUtil {
     constructor() {
@@ -43,13 +43,29 @@ class ScreenshotUtil {
                         fs.writeFileSync(originalFilePath, buffer);
                         console.log('Original screenshot saved to:', originalFilePath);
                         
-                        // Resize the image to 1024px width and reduce quality
+                        // Enhanced image processing:
+                        // 1. Resize to 1024px width
+                        // 2. Apply moderate sharpening to improve text readability
+                        // 3. Optimize quality for better AI vision model processing
                         await sharp(originalFilePath)
-                            .resize({ width: 1024, withoutEnlargement: true })
-                            .jpeg({ quality: 80 }) // Convert to JPEG with 80% quality
+                            .resize({ 
+                                width: 1024, 
+                                withoutEnlargement: true,
+                                fit: 'inside'
+                            })
+                            .sharpen({
+                                sigma: 1.2,
+                                m1: 0.5,
+                                m2: 0.5
+                            })
+                            .jpeg({ 
+                                quality: 85,
+                                progressive: true,
+                                optimizeCoding: true
+                            })
                             .toFile(resizedFilePath);
                         
-                        console.log('Resized screenshot saved to:', resizedFilePath);
+                        console.log('Enhanced screenshot saved to:', resizedFilePath);
                         
                         // Delete the original file to save space
                         fs.unlinkSync(originalFilePath);
@@ -57,7 +73,13 @@ class ScreenshotUtil {
                         resolve(resizedFilePath);
                     } catch (err) {
                         console.error('Error processing screenshot:', err);
-                        reject(err);
+                        // If processing fails, try to return the original file
+                        if (fs.existsSync(originalFilePath)) {
+                            console.log('Returning original screenshot as fallback');
+                            resolve(originalFilePath);
+                        } else {
+                            reject(err);
+                        }
                     }
                 });
                 
@@ -78,6 +100,7 @@ class ScreenshotUtil {
         try {
             const files = fs.readdirSync(this.screenshotDir);
             const now = new Date().getTime();
+            let cleanedCount = 0;
             
             files.forEach(file => {
                 const filePath = path.join(this.screenshotDir, file);
@@ -86,8 +109,13 @@ class ScreenshotUtil {
                 
                 if (fileAge > maxAge) {
                     fs.unlinkSync(filePath);
+                    cleanedCount++;
                 }
             });
+            
+            if (cleanedCount > 0) {
+                console.log(`Cleaned up ${cleanedCount} old screenshots`);
+            }
         } catch (error) {
             console.error('Error cleaning up screenshots:', error);
         }

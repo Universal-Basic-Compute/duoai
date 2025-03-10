@@ -1,0 +1,50 @@
+<svg width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="150" height="150" rx="20" fill="#1a1a2e" />
+  
+  <!-- Outer glow effect -->
+  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="5" result="blur" />
+    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+  </filter>
+  
+  <!-- Gradient for the D -->
+  <linearGradient id="gradientD" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#4a4ae6" />
+    <stop offset="100%" stop-color="#7878ff" />
+  </linearGradient>
+  
+  <!-- Gradient for the AI -->
+  <linearGradient id="gradientAI" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#e64a8c" />
+    <stop offset="100%" stop-color="#ff78b4" />
+  </linearGradient>
+  
+  <!-- Stylized D -->
+  <path d="M40 40 
+           C40 40, 65 40, 75 40
+           C95 40, 110 55, 110 75
+           C110 95, 95 110, 75 110
+           C65 110, 40 110, 40 110
+           Z" 
+        fill="url(#gradientD)" 
+        filter="url(#glow)" />
+  
+  <!-- Inner cutout of D -->
+  <path d="M55 55
+           C55 55, 65 55, 72 55
+           C85 55, 95 62, 95 75
+           C95 88, 85 95, 72 95
+           C65 95, 55 95, 55 95
+           Z" 
+        fill="#1a1a2e" />
+  
+  <!-- AI text -->
+  <text x="75" y="125" 
+        font-family="Arial, sans-serif" 
+        font-weight="bold"
+        font-size="24" 
+        text-anchor="middle" 
+        fill="url(#gradientAI)" 
+        filter="url(#glow)">AI</text>
+</svg>
