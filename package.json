@@ -66,8 +66,10 @@
         "appx"
       ],
       "icon": "build/icon.ico",
-      "certificateFile": "cert/DUOAI.pfx",
-      "certificatePassword": "pass",
+      "signtoolOptions": {
+        "file": "cert/DUOAI.pfx",
+        "password": "pass"
+      },
       "signExts": [".node"]
     },
     "appx": {
@@ -76,7 +78,9 @@
       "publisherDisplayName": "Nicolas Reynolds",
       "applicationId": "DUOAI",
       "languages": ["en-us"],
-      "addAutoLaunchExtension": false
+      "addAutoLaunchExtension": false,
+      "electronUpdaterAware": true,
+      "sign": false
     },
     "nsis": {
       "oneClick": false,
