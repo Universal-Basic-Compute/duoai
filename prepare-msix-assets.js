@@ -83,6 +83,32 @@ async function processAssets() {
     .toFile(splashPath);
     
     console.log(`Created custom ${splashPath}`);
+    
+    // Also create a store logo with a solid background
+    const storeLogoPath = path.join(assetsDir, 'StoreLogo.png');
+    await sharp({
+      create: {
+        width: 50,
+        height: 50,
+        channels: 4,
+        background: { r: 26, g: 26, b: 26, alpha: 1 }
+      }
+    })
+    .composite([
+      {
+        input: Buffer.from(
+          `<svg width="50" height="50" xmlns="http://www.w3.org/2000/svg">
+            <rect width="50" height="50" fill="#1a1a1a"/>
+            <text x="25" y="32" font-family="Arial" font-size="24" fill="white" text-anchor="middle">D</text>
+          </svg>`
+        ),
+        top: 0,
+        left: 0
+      }
+    ])
+    .toFile(storeLogoPath);
+    
+    console.log(`Created custom ${storeLogoPath}`);
   } catch (error) {
     console.error('Error creating splash screen:', error);
   }
