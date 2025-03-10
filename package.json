@@ -73,10 +73,10 @@
       "icon": "build/icon.ico",
       "signtoolOptions": {
         "certificateFile": "cert/DUOAI.pfx",
-        "certificatePassword": "pass"
+        "certificatePassword": "pass",
+        "sign": false
       },
-      "signExts": [".node"],
-      "sign": false
+      "signExts": [".node"]
     },
     "appx": {
       "identityName": "NicolasReynolds.DuoAI",
