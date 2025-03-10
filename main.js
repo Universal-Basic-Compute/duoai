@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, screen, desktopCapturer, shell, protocol, d
 const path = require('path');
 const { spawn } = require('child_process');
 const fs = require('fs');
+const os = require('os');
 
 // Set up error logging to file
 const logFilePath = path.join(__dirname, 'duoai-error.log');
@@ -408,9 +409,77 @@ app.whenReady().then(() => {
     });
 });
 
-// Protocol URL handling removed
+// Protocol URL handling
+if (process.defaultApp) {
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient('duoai', process.execPath, [path.resolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient('duoai');
+}
 
-// Windows protocol handler code removed
+// Windows protocol handler
+if (process.platform === 'win32') {
+  // Handle the protocol on Windows
+  const gotTheLock = app.requestSingleInstanceLock();
+  
+  if (!gotTheLock) {
+    app.quit();
+  } else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+      // Someone tried to run a second instance, we should focus our window.
+      const mainWindow = BrowserWindow.getAllWindows()[0];
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+        
+        // Protocol handling
+        const url = commandLine.pop();
+        if (url && url.startsWith('duoai://')) {
+          handleProtocolUrl(url);
+        }
+      }
+    });
+    
+    // Handle protocol for app launch
+    app.on('open-url', (event, url) => {
+      event.preventDefault();
+      handleProtocolUrl(url);
+    });
+  }
+}
+
+// Function to handle protocol URLs
+function handleProtocolUrl(url) {
+  console.log('Protocol URL received:', url);
+  
+  try {
+    // Parse the URL
+    const parsedUrl = new URL(url);
+    
+    // Get the main window
+    const mainWindow = BrowserWindow.getAllWindows()[0];
+    if (!mainWindow) return;
+    
+    // Handle different protocol actions
+    if (parsedUrl.hostname === 'launch') {
+      // Just focus the window
+      mainWindow.show();
+      mainWindow.focus();
+    } else if (parsedUrl.hostname === 'character') {
+      // Select a specific character
+      const character = parsedUrl.pathname.substring(1);
+      if (character) {
+        mainWindow.webContents.send('select-character', character);
+      }
+    } else if (parsedUrl.hostname === 'screenshot') {
+      // Trigger a screenshot
+      mainWindow.webContents.send('trigger-screenshot');
+    }
+  } catch (error) {
+    console.error('Error handling protocol URL:', error);
+  }
+}
 
 // Add this IPC handler for audio playback
 ipcMain.on('keep-app-running', (event, keepRunning) => {

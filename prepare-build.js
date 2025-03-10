@@ -17,7 +17,8 @@ if (!fs.existsSync(resourcesDir)) {
 const filesToCopy = [
   'index.html',
   'styles.css',
-  'quest-creator.js'
+  'quest-creator.js',
+  'AppxManifest.xml'
 ];
 
 filesToCopy.forEach(file => {
@@ -52,6 +53,30 @@ if (fs.existsSync(imagesSourceDir)) {
     if (fs.statSync(sourcePath).isFile()) {
       fs.copyFileSync(sourcePath, destPath);
       console.log(`Copied ${file} to resources/images`);
+    }
+  });
+}
+
+// Copy assets directory for MSIX packaging
+const assetsSourceDir = path.join(__dirname, 'assets');
+const assetsDestDir = path.join(resourcesDir, 'assets');
+
+if (fs.existsSync(assetsSourceDir)) {
+  // Create assets directory in resources
+  if (!fs.existsSync(assetsDestDir)) {
+    fs.mkdirSync(assetsDestDir, { recursive: true });
+  }
+  
+  // Copy all files from assets directory
+  const assetFiles = fs.readdirSync(assetsSourceDir);
+  
+  assetFiles.forEach(file => {
+    const sourcePath = path.join(assetsSourceDir, file);
+    const destPath = path.join(assetsDestDir, file);
+    
+    if (fs.statSync(sourcePath).isFile()) {
+      fs.copyFileSync(sourcePath, destPath);
+      console.log(`Copied ${file} to resources/assets`);
     }
   });
 }

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:uap4="http://schemas.microsoft.com/appx/manifest/uap/windows10/4"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+  
+  <Identity
+    Name="DUOAITechnologies.DUOAI"
+    Publisher="CN=DUOAI Technologies"
+    Version="1.0.0.0" />
+  
+  <Properties>
+    <DisplayName>DUOAI: Gaming Companion</DisplayName>
+    <PublisherDisplayName>DUOAI Technologies</PublisherDisplayName>
+    <Logo>assets\StoreLogo.png</Logo>
+  </Properties>
+  
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+  </Dependencies>
+  
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  
+  <Applications>
+    <Application Id="DUOAI" 
+                 Executable="app\DUOAI.exe" 
+                 EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="DUOAI: Gaming Companion"
+        Description="AI-powered assistant for gamers that sees your screen, listens and speaks for natural interaction, and adapts to your gaming style."
+        BackgroundColor="transparent"
+        Square150x150Logo="assets\Square150x150Logo.png"
+        Square44x44Logo="assets\Square44x44Logo.png">
+        <uap:DefaultTile 
+          Wide310x150Logo="assets\Wide310x150Logo.png"
+          Square71x71Logo="assets\SmallTile.png"
+          Square310x310Logo="assets\LargeTile.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo"/>
+            <uap:ShowOn Tile="wide310x150Logo"/>
+            <uap:ShowOn Tile="square310x310Logo"/>
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+        <uap:SplashScreen Image="assets\SplashScreen.png" />
+        <uap:LockScreen BadgeLogo="assets\BadgeLogo.png" Notification="badge"/>
+      </uap:VisualElements>
+      
+      <Extensions>
+        <!-- Full Trust Declaration -->
+        <desktop:Extension Category="windows.fullTrustProcess" />
+        
+        <!-- Protocol Handler -->
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="duoai">
+            <uap:DisplayName>DUOAI Protocol</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+        
+        <!-- File Type Associations -->
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="duoai-screenshots">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.png</uap:FileType>
+              <uap:FileType>.jpg</uap:FileType>
+            </uap:SupportedFileTypes>
+            <uap:DisplayName>DUOAI Screenshots</uap:DisplayName>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
+        
+        <!-- App Service -->
+        <uap:Extension Category="windows.appService">
+          <uap:AppService Name="DUOAIService" />
+        </uap:Extension>
+      </Extensions>
+      
+      <ApplicationContentUriRules>
+        <Rule Type="include" Match="https://duoai.vercel.app" WindowsRuntimeAccess="all" />
+        <Rule Type="include" Match="https://api.anthropic.com" WindowsRuntimeAccess="none" />
+        <Rule Type="include" Match="https://api.elevenlabs.io" WindowsRuntimeAccess="none" />
+      </ApplicationContentUriRules>
+    </Application>
+  </Applications>
+  
+  <Capabilities>
+    <!-- Standard Capabilities -->
+    <Capability Name="internetClient" />
+    <uap:Capability Name="picturesLibrary" />
+    <uap:Capability Name="removableStorage" />
+    
+    <!-- Device Capabilities -->
+    <DeviceCapability Name="microphone" />
+    <DeviceCapability Name="webcam" />
+    
+    <!-- Restricted Capabilities -->
+    <rescap:Capability Name="runFullTrust" />
+    <rescap:Capability Name="appDiagnostics" />
+    <rescap:Capability Name="broadFileSystemAccess" />
+  </Capabilities>
+</Package>
