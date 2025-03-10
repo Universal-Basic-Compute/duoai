@@ -63,20 +63,22 @@
         "nsis",
         {
           "target": "appx",
-          "arch": ["x64"],
-          "identityName": "NicolasReynolds.DuoAI",
-          "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
-          "publisherDisplayName": "Nicolas Reynolds",
-          "applicationId": "DUOAI",
-          "languages": ["en-us"],
-          "addAutoLaunchExtension": false,
-          "manifestPath": "./AppxManifest.xml"
+          "arch": ["x64"]
         }
       ],
       "icon": "build/icon.ico",
       "certificateFile": "./cert/DUOAI.pfx",
       "certificatePassword": "",
       "signExts": [".node"]
+    },
+    "appx": {
+      "identityName": "NicolasReynolds.DuoAI",
+      "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
+      "publisherDisplayName": "Nicolas Reynolds",
+      "applicationId": "DUOAI",
+      "languages": ["en-us"],
+      "addAutoLaunchExtension": false,
+      "manifestPath": "./AppxManifest.xml"
     },
     "nsis": {
       "oneClick": false,
