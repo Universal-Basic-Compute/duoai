@@ -83,7 +83,7 @@ try {
     try {
       const powershellCommand = `
         $cert = New-SelfSignedCertificate -Type Custom -Subject "${publisherName}" -KeyUsage DigitalSignature -FriendlyName "DUOAI Development Certificate" -CertStoreLocation "Cert:\\CurrentUser\\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}")
-        $password = ConvertTo-SecureString -String "" -Force -AsPlainText
+        $password = ConvertTo-SecureString -String "pass" -Force -AsPlainText
         Export-PfxCertificate -Cert $cert -FilePath "${pfxPath.replace(/\\/g, '\\\\')}" -Password $password
         Write-Host "Certificate thumbprint: " $cert.Thumbprint
       `;
@@ -112,8 +112,8 @@ try {
       // Generate certificate
       execSync(`openssl req -new -x509 -key "${keyPath}" -out "${crtPath}" -days 365 -subj "/CN=DUOAI Technologies" -nodes`, { stdio: 'inherit' });
       
-      // Create PFX file with empty password
-      execSync(`openssl pkcs12 -export -out "${pfxPath}" -inkey "${keyPath}" -in "${crtPath}" -passout pass:`, { stdio: 'inherit' });
+      // Create PFX file with password "pass"
+      execSync(`openssl pkcs12 -export -out "${pfxPath}" -inkey "${keyPath}" -in "${crtPath}" -passout pass:pass`, { stdio: 'inherit' });
       
       console.log(`Certificate created successfully at: ${pfxPath}`);
     } catch (opensslError) {

@@ -65,7 +65,7 @@
       ],
       "icon": "build/icon.ico",
       "certificateFile": "./cert/DUOAI.pfx",
-      "certificatePassword": "",
+      "certificatePassword": "pass",
       "signExts": [".node"]
     },
     "appx": {
