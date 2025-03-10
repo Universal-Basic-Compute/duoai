@@ -19,7 +19,7 @@ if (!fs.existsSync(certDir)) {
 }
 
 const pfxPath = path.join(certDir, 'DUOAI.pfx');
-const publisherName = 'CN=DUOAI Technologies';
+const publisherName = 'CN=CC08B55D-3547-454B-8E21-F0E3A810C73C';
 
 // Check if certificate already exists
 if (fs.existsSync(pfxPath)) {
