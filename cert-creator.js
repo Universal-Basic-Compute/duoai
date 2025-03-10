@@ -110,12 +110,24 @@ try {
         $password = ConvertTo-SecureString -String "pass" -Force -AsPlainText;
         $cert = New-SelfSignedCertificate -Type Custom -Subject "${publisherName}" -KeyUsage DigitalSignature -FriendlyName "DUOAI Development Certificate" -CertStoreLocation "Cert:\\CurrentUser\\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}");
         Export-PfxCertificate -Cert $cert -FilePath "${pfxPath.replace(/\\/g, '\\\\')}" -Password $password;
-        Write-Host "Certificate thumbprint: " $cert.Thumbprint
+        Write-Host "Certificate thumbprint: " $cert.Thumbprint;
+            
+        # Import the certificate to the trusted root store to avoid signing issues
+        $pfx = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2;
+        $pfx.Import("${pfxPath.replace(/\\/g, '\\\\')}", "pass", "Exportable,PersistKeySet");
+            
+        # Add certificate to trusted publishers
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store("TrustedPublisher", "CurrentUser");
+        $store.Open("ReadWrite");
+        $store.Add($pfx);
+        $store.Close();
+            
+        Write-Host "Certificate added to trusted publishers store";
       `;
-      
+          
       console.log('Executing PowerShell command to create certificate...');
       execSync(`powershell -Command "${powershellCommand}"`, { stdio: 'inherit' });
-      
+          
       // Verify the certificate was created
       if (fs.existsSync(pfxPath)) {
         console.log(`Certificate created successfully at: ${pfxPath}`);
@@ -125,7 +137,7 @@ try {
     } catch (winError) {
       console.error('Error creating certificate with PowerShell:', winError.message);
       console.log('Trying alternative method...');
-      
+          
       if (!createDummyCertificate()) {
         throw new Error('Failed to create certificate using any method');
       }

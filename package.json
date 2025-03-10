@@ -20,7 +20,8 @@
     "create-ico": "node create-ico.js",
     "pack": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder --dir",
     "dist": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder",
-    "dist:msix": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder --win appx",
+    "dist:msix": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder --win appx --publish never",
+    "sign:msix": "node sign-appx.js",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
