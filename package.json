@@ -71,7 +71,9 @@
       "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
       "publisherDisplayName": "Nicolas Reynolds",
       "manifestPath": "AppxManifest.xml",
-      "languages": ["en-us"],
+      "languages": [
+        "en-us"
+      ],
       "capabilities": [
         "internetClient",
         "picturesLibrary",
@@ -109,6 +111,7 @@
     "@types/react-dom": "^19",
     "electron": "^35.0.0",
     "electron-builder": "^25.1.8",
+    "png-to-ico": "^2.1.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
