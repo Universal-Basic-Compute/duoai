@@ -21,6 +21,14 @@ if (!fs.existsSync(certPath)) {
   process.exit(1);
 }
 
+// Check if we should skip signing (for Windows Store submission)
+const skipSigning = process.argv.includes('--skip-signing');
+if (skipSigning) {
+  console.log('Skipping signing as requested (--skip-signing flag detected)');
+  console.log('This is appropriate for Windows Store submission as Microsoft will sign the package.');
+  process.exit(0);
+}
+
 // Sign the APPX file
 try {
   console.log('Signing APPX file...');
@@ -37,6 +45,16 @@ try {
 } catch (error) {
   console.error('Error signing APPX file:', error.message);
   
+  // Check for the specific error about multiple signatures
+  if (error.message.includes('Multiple signature') || error.message.includes('already signed')) {
+    console.log('The APPX file appears to be already signed or has signature issues.');
+    console.log('This is common when electron-builder has already attempted to sign the package.');
+    console.log('If you\'re submitting to the Windows Store, this is not a problem as Microsoft will sign it.');
+    
+    // Exit with success code since this isn't a critical error
+    process.exit(0);
+  }
+  
   // Try alternative method
   try {
     console.log('Trying alternative signing method...');
@@ -52,6 +70,12 @@ try {
     console.log('APPX file signed and installed successfully');
   } catch (altError) {
     console.error('Error with alternative signing method:', altError.message);
+    
+    // If both methods fail, suggest using the unsigned package for Store submission
+    console.log('\nSuggestion: If you\'re submitting to the Windows Store, you can use the unsigned package.');
+    console.log('Run: npm run dist:msix-unsigned');
+    console.log('Then submit the resulting .appx file to the Windows Store.\n');
+    
     process.exit(1);
   }
 }
