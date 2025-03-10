@@ -79,8 +79,7 @@
       "applicationId": "DUOAI",
       "languages": ["en-us"],
       "addAutoLaunchExtension": false,
-      "electronUpdaterAware": true,
-      "sign": false
+      "electronUpdaterAware": true
     },
     "nsis": {
       "oneClick": false,
