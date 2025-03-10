@@ -67,8 +67,8 @@
       ],
       "icon": "build/icon.ico",
       "signtoolOptions": {
-        "file": "cert/DUOAI.pfx",
-        "password": "pass"
+        "certificateFile": "cert/DUOAI.pfx",
+        "certificatePassword": "pass"
       },
       "signExts": [".node"]
     },
