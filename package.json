@@ -66,9 +66,9 @@
     },
     "msix": {
       "applicationId": "DUOAI",
-      "identityName": "DUOAITechnologies.DUOAI",
-      "publisher": "CN=DUOAI Technologies",
-      "publisherDisplayName": "DUOAI Technologies",
+      "identityName": "NicolasReynolds.DuoAI",
+      "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
+      "publisherDisplayName": "Nicolas Reynolds",
       "manifestPath": "AppxManifest.xml",
       "languages": ["en-us"],
       "capabilities": [
