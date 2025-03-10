@@ -61,7 +61,18 @@
     "win": {
       "target": [
         "nsis",
-        "msix"
+        {
+          "target": "appx",
+          "identityName": "NicolasReynolds.DuoAI",
+          "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
+          "publisherDisplayName": "Nicolas Reynolds",
+          "applicationId": "DUOAI",
+          "languages": ["en-us"],
+          "addAutoLaunchExtension": false,
+          "certificateFile": "./cert/DUOAI.pfx",
+          "certificatePassword": "",
+          "appxManifest": "./AppxManifest.xml"
+        }
       ],
       "icon": "build/icon.ico"
     },
@@ -69,26 +80,6 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true
-    },
-    "msix": {
-      "applicationId": "DUOAI",
-      "identityName": "NicolasReynolds.DuoAI",
-      "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
-      "publisherDisplayName": "Nicolas Reynolds",
-      "manifestPath": "AppxManifest.xml",
-      "languages": [
-        "en-us"
-      ],
-      "capabilities": [
-        "internetClient",
-        "picturesLibrary",
-        "removableStorage",
-        "microphone",
-        "webcam"
-      ],
-      "assets": "assets",
-      "certificateFile": "./cert/DUOAI.pfx",
-      "certificatePassword": ""
     }
   },
   "dependencies": {
