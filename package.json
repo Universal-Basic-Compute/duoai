@@ -65,8 +65,7 @@
         "nsis",
         {
           "target": "appx",
-          "arch": ["x64"],
-          "sign": false
+          "arch": ["x64"]
         }
       ],
       "icon": "build/icon.ico",
@@ -74,7 +73,8 @@
         "certificateFile": "cert/DUOAI.pfx",
         "certificatePassword": "pass"
       },
-      "signExts": [".node"]
+      "signExts": [".node"],
+      "sign": false
     },
     "appx": {
       "identityName": "NicolasReynolds.DuoAI",
