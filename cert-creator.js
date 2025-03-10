@@ -5,7 +5,17 @@ const path = require('path');
 // Create directory for certificate if it doesn't exist
 const certDir = path.join(__dirname, 'cert');
 if (!fs.existsSync(certDir)) {
-  fs.mkdirSync(certDir, { recursive: true });
+  try {
+    fs.mkdirSync(certDir, { recursive: true });
+    console.log(`Created certificate directory at: ${certDir}`);
+  } catch (dirError) {
+    console.error(`Error creating certificate directory: ${dirError.message}`);
+    console.error(`Attempting to create directory without recursive option...`);
+    
+    // Try without recursive option for older Node versions
+    fs.mkdirSync(certDir);
+    console.log(`Created certificate directory at: ${certDir}`);
+  }
 }
 
 const pfxPath = path.join(certDir, 'DUOAI.pfx');
@@ -88,8 +98,15 @@ try {
         Write-Host "Certificate thumbprint: " $cert.Thumbprint
       `;
       
+      console.log('Executing PowerShell command to create certificate...');
       execSync(`powershell -Command "${powershellCommand}"`, { stdio: 'inherit' });
-      console.log(`Certificate created successfully at: ${pfxPath}`);
+      
+      // Verify the certificate was created
+      if (fs.existsSync(pfxPath)) {
+        console.log(`Certificate created successfully at: ${pfxPath}`);
+      } else {
+        throw new Error(`Certificate file was not created at: ${pfxPath}`);
+      }
     } catch (winError) {
       console.error('Error creating certificate with PowerShell:', winError.message);
       console.log('Trying alternative method...');

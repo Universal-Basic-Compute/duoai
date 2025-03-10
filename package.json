@@ -16,10 +16,11 @@
     "lint": "next lint",
     "prepare-build": "node prepare-build.js && node prepare-msix-assets.js",
     "create-cert": "node cert-creator.js",
+    "check-cert": "node check-cert.js",
     "create-ico": "node create-ico.js",
-    "pack": "npm run prepare-build && npm run create-ico && electron-builder --dir",
-    "dist": "npm run prepare-build && npm run create-ico && electron-builder",
-    "dist:msix": "npm run prepare-build && npm run create-ico && npm run create-cert && electron-builder --win appx",
+    "pack": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder --dir",
+    "dist": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder",
+    "dist:msix": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder --win appx",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {
@@ -64,7 +65,7 @@
         "appx"
       ],
       "icon": "build/icon.ico",
-      "certificateFile": "./cert/DUOAI.pfx",
+      "certificateFile": "cert/DUOAI.pfx",
       "certificatePassword": "pass",
       "signExts": [".node"]
     },
