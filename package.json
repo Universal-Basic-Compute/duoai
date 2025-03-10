@@ -61,10 +61,7 @@
     "win": {
       "target": [
         "nsis",
-        {
-          "target": "appx",
-          "arch": ["x64"]
-        }
+        "appx"
       ],
       "icon": "build/icon.ico",
       "certificateFile": "./cert/DUOAI.pfx",
@@ -78,7 +75,8 @@
       "applicationId": "DUOAI",
       "languages": ["en-us"],
       "addAutoLaunchExtension": false,
-      "manifestPath": "./AppxManifest.xml"
+      "manifestPath": "./AppxManifest.xml",
+      "architectures": ["x64"]
     },
     "nsis": {
       "oneClick": false,
