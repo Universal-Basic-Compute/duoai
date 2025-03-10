@@ -71,7 +71,7 @@
     },
     "appx": {
       "identityName": "NicolasReynolds.DuoAI",
-      "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
+      "publisher": "CN=DUOAI Technologies",
       "publisherDisplayName": "Nicolas Reynolds",
       "applicationId": "DUOAI",
       "languages": ["en-us"],
