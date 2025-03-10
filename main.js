@@ -502,7 +502,6 @@ ipcMain.on('keep-app-running', (event, keepRunning) => {
 });
 
 // Add these imports at the top of main.js if not already present
-const os = require('os');
 
 // Handle audio playback in the main process to bypass CSP restrictions
 ipcMain.on('play-audio-file', (event, data) => {
