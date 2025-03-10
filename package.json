@@ -24,6 +24,8 @@
     "dist:msix-unsigned": "npm run prepare-build && npm run create-ico && npm run check-cert && electron-builder --win appx --publish never --config.forceCodeSigning=false --config.win.sign=false",
     "dist:msix-store": "npm run dist:msix-unsigned && node sign-appx.js --skip-signing",
     "sign:msix": "node sign-appx.js",
+    "extract-appx": "node extract-unsigned-appx.js",
+    "store-submit": "npm run dist:msix-unsigned && npm run extract-appx",
     "postinstall": "electron-builder install-app-deps"
   },
   "build": {

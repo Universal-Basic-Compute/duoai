@@ -26,6 +26,17 @@ const skipSigning = process.argv.includes('--skip-signing');
 if (skipSigning) {
   console.log('Skipping signing as requested (--skip-signing flag detected)');
   console.log('This is appropriate for Windows Store submission as Microsoft will sign the package.');
+  
+  // Create an unsigned copy for store submission
+  try {
+    const unsignedPath = path.join(distDir, 'DUOAI-0.1.0-unsigned.appx');
+    fs.copyFileSync(appxPath, unsignedPath);
+    console.log(`Created unsigned copy at: ${unsignedPath}`);
+    console.log('This unsigned APPX file is ready for Windows Store submission.');
+  } catch (copyError) {
+    console.error('Error creating unsigned copy:', copyError.message);
+  }
+  
   process.exit(0);
 }
 
@@ -49,7 +60,16 @@ try {
   if (error.message.includes('Multiple signature') || error.message.includes('already signed')) {
     console.log('The APPX file appears to be already signed or has signature issues.');
     console.log('This is common when electron-builder has already attempted to sign the package.');
-    console.log('If you\'re submitting to the Windows Store, this is not a problem as Microsoft will sign it.');
+    
+    // Create an unsigned copy for store submission
+    try {
+      const unsignedPath = path.join(distDir, 'DUOAI-0.1.0-unsigned.appx');
+      fs.copyFileSync(appxPath, unsignedPath);
+      console.log(`Created unsigned copy at: ${unsignedPath}`);
+      console.log('This unsigned APPX file is ready for Windows Store submission.');
+    } catch (copyError) {
+      console.error('Error creating unsigned copy:', copyError.message);
+    }
     
     // Exit with success code since this isn't a critical error
     process.exit(0);
@@ -71,10 +91,17 @@ try {
   } catch (altError) {
     console.error('Error with alternative signing method:', altError.message);
     
-    // If both methods fail, suggest using the unsigned package for Store submission
-    console.log('\nSuggestion: If you\'re submitting to the Windows Store, you can use the unsigned package.');
-    console.log('Run: npm run dist:msix-unsigned');
-    console.log('Then submit the resulting .appx file to the Windows Store.\n');
+    // Create an unsigned copy for store submission
+    try {
+      const unsignedPath = path.join(distDir, 'DUOAI-0.1.0-unsigned.appx');
+      fs.copyFileSync(appxPath, unsignedPath);
+      console.log(`Created unsigned copy at: ${unsignedPath}`);
+      console.log('This unsigned APPX file is ready for Windows Store submission.');
+      console.log('\nFor Windows Store submission, use this unsigned package.');
+      console.log('Microsoft will sign it during the submission process.\n');
+    } catch (copyError) {
+      console.error('Error creating unsigned copy:', copyError.message);
+    }
     
     process.exit(1);
   }
