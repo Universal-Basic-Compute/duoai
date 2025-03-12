@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Use the appropriate base URL depending on the environment
       const apiUrl = isElectron() 
-        ? 'https://duogaming.ai/api/utils/tts' 
+        ? '/api/utils/tts' 
         : '/api/utils/tts';
         
       const response = await fetch(apiUrl, {
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Use the appropriate base URL depending on the environment
       const apiUrl = isElectron() 
-        ? 'https://duogaming.ai/api/utils/stt' 
+        ? '/api/utils/stt' 
         : '/api/utils/stt';
         
       const response = await fetch(apiUrl, {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Use the appropriate base URL depending on the environment
       const apiUrl = isElectron() 
-        ? 'https://duogaming.ai/api/utils/llm' 
+        ? '/api/utils/llm' 
         : '/api/utils/llm';
         
       const response = await fetch(apiUrl, {
