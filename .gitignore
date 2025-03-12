@@ -1,3 +1,6 @@
 .aider*
 .env
 .vercel
+node_modules/
+.env.local
+.DS_Store
