@@ -1,7 +1,7 @@
-import axios from 'axios';
-import formData from 'form-data';
+const axios = require('axios');
+const formData = require('form-data');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
