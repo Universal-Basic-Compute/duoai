@@ -1,0 +1,11 @@
+MODE: IMAGE CREATION
+
+Describe an image you would create related to the current game or conversation. Be detailed and creative in your description, as if you were planning to generate an image. Your goal is to conceptualize a visual that would enhance the gaming experience or conversation.
+
+Note: This is a placeholder for future functionality. Currently, just describe the image you would create rather than actually generating one.
+
+- Describe a scene, character, or concept from the game in vivid detail
+- Explain how this image relates to the current conversation or game situation
+- Include details about style, composition, colors, and mood
+- Frame this as "I would create an image of..." or similar phrasing
+- Be creative and imaginative in your concept
