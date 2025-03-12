@@ -1,10 +1,13 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/*.js", "use": "@vercel/node" },
+    { "src": "api/**/*.js", "use": "@vercel/node" },
     { "src": "website/**/*", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/api/tts", "dest": "/api/utils/tts.js" },
+    { "src": "/api/stt", "dest": "/api/utils/stt.js" },
+    { "src": "/api/llm", "dest": "/api/utils/llm.js" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/website/$1" }
   ]
