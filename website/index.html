@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUOAI - Intelligent Gaming Companion</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="site-header"></header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Your Intelligent Gaming Companion</h1>
+                <p>Enhance your gaming experience with AI-powered assistance, real-time strategy optimization, and personalized insights.</p>
+                <div class="hero-buttons">
+                    <a href="pricing.html" class="btn-primary">Get Started</a>
+                    <a href="#features" class="btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="images/hero-bg.jpg" alt="DUOAI in action">
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Key Features</h2>
+                <p>Discover how DUOAI transforms your gaming experience</p>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Adaptive Learning</h3>
+                    <ul>
+                        <li>Player Behavior Analysis</li>
+                        <li>Skill Level Adjustment</li>
+                        <li>Cross-Game Knowledge Transfer</li>
+                    </ul>
+                    <p>DUOAI learns from your gameplay patterns to provide tailored advice that evolves as you improve.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Real-Time Assistance</h3>
+                    <ul>
+                        <li>Voice-Activated Help</li>
+                        <li>Context-Aware Suggestions</li>
+                        <li>Resource Optimization</li>
+                    </ul>
+                    <p>Get immediate answers without pausing gameplay and receive timely tips based on your current situation.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Strategic Insights</h3>
+                    <ul>
+                        <li>Advanced Pattern Recognition</li>
+                        <li>Decision Tree Analysis</li>
+                        <li>Performance Metrics</li>
+                    </ul>
+                    <p>Identify enemy tactics, evaluate potential outcomes, and get detailed analytics on your gameplay efficiency.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture" class="architecture">
+        <div class="container">
+            <div class="section-header">
+                <h2>Technical Architecture</h2>
+                <p>Powered by cutting-edge technology</p>
+            </div>
+            
+            <div class="architecture-content">
+                <div class="architecture-text">
+                    <p>DUOAI operates on a hybrid cloud-edge architecture:</p>
+                    <ul>
+                        <li><strong>Edge Component:</strong> Runs locally on your gaming device for low-latency responses</li>
+                        <li><strong>Cloud Backend:</strong> Handles complex processing and cross-user learning</li>
+                        <li><strong>Secure API Layer:</strong> Integrates with game platforms while maintaining privacy</li>
+                    </ul>
+                </div>
+                <div class="architecture-image">
+                    <img src="images/feature-2.png" alt="DUOAI Architecture">
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="roadmap" class="roadmap">
+        <div class="container">
+            <div class="section-header">
+                <h2>Implementation Roadmap</h2>
+                <p>Our journey to revolutionize gaming assistance</p>
+            </div>
+            
+            <div class="roadmap-timeline">
+                <div class="roadmap-item">
+                    <div class="roadmap-date">Q1 2023</div>
+                    <div class="roadmap-content">
+                        <h3>Alpha</h3>
+                        <p>Core engine, limited game support</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-date">Q2 2023</div>
+                    <div class="roadmap-content">
+                        <h3>Beta</h3>
+                        <p>Expanded game library, voice commands</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-date">Q4 2023</div>
+                    <div class="roadmap-content">
+                        <h3>Release</h3>
+                        <p>Full platform support, advanced analytics</p>
+                    </div>
+                </div>
+                
+                <div class="roadmap-item">
+                    <div class="roadmap-date">Q2 2024</div>
+                    <div class="roadmap-content">
+                        <h3>2.0</h3>
+                        <p>Multiplayer coordination, AR overlay</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Transform Your Gaming Experience?</h2>
+            <p>Join thousands of gamers who are already leveling up with DUOAI</p>
+            <div class="cta-buttons">
+                <a href="download.html" class="btn-primary">Download Now</a>
+                <a href="pricing.html" class="btn-secondary">View Pricing</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer"></footer>
+
+    <script src="js/main.js"></script>
+    <script>
+      // Fallback to ensure footer is populated
+      setTimeout(function() {
+        const footers = document.querySelectorAll('.site-footer');
+        footers.forEach(footer => {
+          if (footer.innerHTML.trim() === '') {
+            console.log('Footer empty, applying fallback');
+            // Load the footer script directly
+            const script = document.createElement('script');
+            script.src = 'components/footer.js';
+            document.body.appendChild(script);
+          }
+        });
+      }, 1000);
+    </script>
+</body>
+</html>

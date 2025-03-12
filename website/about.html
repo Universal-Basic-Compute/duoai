@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUOAI - About Us</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="site-header"></header>
+
+    <section class="page-hero">
+        <div class="container">
+            <div class="section-header">
+                <h1>About Us</h1>
+                <p>The team behind DUOAI</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-story">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Our Story</h2>
+                    <p>DUOAI was born from a vision to revolutionize how we interact with technology. As an experienced technologist with a background in AI and Web3, I saw an opportunity to create an intelligent assistant that truly understands the context of what you're doing.</p>
+                    <p>Founded by Nicolas Lester Reynolds, DUOAI represents the culmination of years of experience in artificial intelligence, software development, and product design. With previous successful projects in the technology space, I set out to build the digital assistant I always wished existed - one that could provide intelligent, contextual help exactly when needed.</p>
+                    <p>What started as a concept for gaming assistance has evolved into a broader vision for Universal Basic Compute ($UBC) - making advanced AI assistance accessible to everyone, regardless of technical expertise.</p>
+                </div>
+                <div class="about-image">
+                    <img src="images/about-team.jpg" alt="DUOAI Team">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="about-mission">
+        <div class="container">
+            <div class="mission-content">
+                <div class="mission-image">
+                    <img src="images/about-mission.jpg" alt="Our Mission">
+                </div>
+                <div class="mission-text">
+                    <h2>Our Mission</h2>
+                    <p>I believe that advanced computing assistance should be accessible to everyone. Our mission is to provide Universal Basic Compute ($UBC) - intelligent AI assistance that adapts to each user's unique needs and context.</p>
+                    <p>We're committed to:</p>
+                    <ul>
+                        <li>Making technology more accessible to users of all skill levels</li>
+                        <li>Providing contextual assistance that understands what you're doing</li>
+                        <li>Creating AI that respects user privacy and autonomy</li>
+                        <li>Developing technology that enhances human capabilities rather than replacing them</li>
+                    </ul>
+                    <p>Starting with gaming assistance, DUOAI is the first step toward a broader vision where everyone has access to powerful AI tools that make technology more intuitive and helpful.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Meet the Founder</h2>
+                <p>The visionary behind DUOAI</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-image">
+                        <img src="images/team-nicolas.jpg" alt="Nicolas Lester Reynolds">
+                    </div>
+                    <h3>Nicolas Lester Reynolds</h3>
+                    <p class="member-role">Founder &amp; CEO</p>
+                    <p class="member-bio">A technologist with extensive experience in AI, Web3, and software development. Nicolas combines technical expertise with a vision for making advanced computing accessible to everyone through Universal Basic Compute ($UBC).</p>
+                    <div class="member-social">
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Values</h2>
+                <p>The principles that guide our work</p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-universal-access"></i>
+                    </div>
+                    <h3>Universal Access</h3>
+                    <p>We believe advanced AI assistance should be available to everyone, regardless of technical expertise or financial resources - the core principle of Universal Basic Compute ($UBC).</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Integrity</h3>
+                    <p>We respect user privacy and autonomy. DUOAI is designed to assist and enhance human capabilities, not to exploit or replace them.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Innovation</h3>
+                    <p>We're constantly exploring new ways to apply AI technology to real-world challenges, pushing the boundaries of what's possible with contextual assistance.</p>
+                </div>
+                
+                <div class="value-card">
+                    <div class="value-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Community</h3>
+                    <p>We believe in the power of community feedback and actively incorporate user insights into our development process to create technology that truly serves people's needs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h2>Join Us on Our Journey</h2>
+            <p>Be part of the future of gaming assistance</p>
+            <div class="cta-buttons">
+                <a href="pricing.html" class="btn-primary">Get Started</a>
+                <a href="careers.html" class="btn-secondary">Join Our Team</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer"></footer>
+
+    <script src="js/main.js"></script>
+    <script>
+      // Fallback to ensure footer is populated
+      setTimeout(function() {
+        const footers = document.querySelectorAll('.site-footer');
+        footers.forEach(footer => {
+          if (footer.innerHTML.trim() === '') {
+            console.log('Footer empty, applying fallback');
+            // Load the footer script directly
+            const script = document.createElement('script');
+            script.src = 'components/footer.js';
+            document.body.appendChild(script);
+          }
+        });
+      }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="80" fill="#1a1a2e" />
+  
+  <!-- Outer glow effect -->
+  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="15" result="blur" />
+    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+  </filter>
+  
+  <!-- Gradient for the D -->
+  <linearGradient id="gradientD" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#4a4ae6" />
+    <stop offset="100%" stop-color="#7878ff" />
+  </linearGradient>
+  
+  <!-- Gradient for the AI -->
+  <linearGradient id="gradientAI" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#e64a8c" />
+    <stop offset="100%" stop-color="#ff78b4" />
+  </linearGradient>
+  
+  <!-- Stylized D -->
+  <path d="M140 130 
+           C140 130, 220 130, 260 130
+           C320 130, 360 170, 360 256
+           C360 342, 320 382, 260 382
+           C220 382, 140 382, 140 382
+           Z" 
+        fill="url(#gradientD)" 
+        filter="url(#glow)" />
+  
+  <!-- Inner cutout of D -->
+  <path d="M180 170
+           C180 170, 220 170, 250 170
+           C290 170, 320 200, 320 256
+           C320 312, 290 342, 250 342
+           C220 342, 180 342, 180 342
+           Z" 
+        fill="#1a1a2e" />
+  
+  <!-- AI text -->
+  <text x="256" y="430" 
+        font-family="Arial, sans-serif" 
+        font-weight="bold"
+        font-size="80" 
+        text-anchor="middle" 
+        fill="url(#gradientAI)" 
+        filter="url(#glow)">AI</text>
+  
+  <!-- Stylized gaming controller icon -->
+  <g transform="translate(256, 256) scale(0.4) translate(-256, -256)">
+    <path d="M350 200
+             C390 200, 420 230, 420 270
+             L420 330
+             C420 370, 390 400, 350 400
+             L162 400
+             C122 400, 92 370, 92 330
+             L92 270
+             C92 230, 122 200, 162 200
+             Z" 
+          fill="none" 
+          stroke="white" 
+          stroke-width="15"
+          stroke-opacity="0.5" />
+    
+    <!-- D-pad -->
+    <rect x="142" y="270" width="20" height="60" rx="5" fill="white" fill-opacity="0.5" />
+    <rect x="122" y="290" width="60" height="20" rx="5" fill="white" fill-opacity="0.5" />
+    
+    <!-- Buttons -->
+    <circle cx="350" cy="270" r="15" fill="white" fill-opacity="0.5" />
+    <circle cx="350" cy="330" r="15" fill="white" fill-opacity="0.5" />
+    <circle cx="320" cy="300" r="15" fill="white" fill-opacity="0.5" />
+    <circle cx="380" cy="300" r="15" fill="white" fill-opacity="0.5" />
+  </g>
+</svg>

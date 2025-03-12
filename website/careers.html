@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUOAI - Careers</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header class="site-header"></header>
+
+    <section class="page-hero">
+        <div class="container">
+            <div class="section-header">
+                <h1>Join Our Team</h1>
+                <p>Help us shape the future of gaming assistance</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="careers-intro">
+        <div class="container">
+            <div class="careers-content">
+                <div class="careers-text">
+                    <h2>Why Work With Us</h2>
+                    <p>At DUOAI, we're a small but ambitious team of gamers and technologists passionate about enhancing the gaming experience. As we grow, we're looking for talented individuals who share our vision and want to make an impact in the gaming industry.</p>
+                    <p>We believe in creating a workplace that's as enjoyable as the gaming experiences we help create. Our team culture emphasizes creativity, collaboration, and continuous learning.</p>
+                    <h3>What We Offer</h3>
+                    <ul>
+                        <li>Flexible remote work options</li>
+                        <li>Competitive compensation</li>
+                        <li>Gaming equipment stipend</li>
+                        <li>Dedicated time for gaming and research</li>
+                        <li>Professional development opportunities</li>
+                        <li>A voice in shaping our product and company</li>
+                    </ul>
+                </div>
+                <div class="careers-image">
+                    <img src="images/careers-team.jpg" alt="DUOAI Team Working">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="open-positions">
+        <div class="container">
+            <div class="section-header">
+                <h2>Open Positions</h2>
+                <p>Join us on our mission to transform gaming assistance</p>
+            </div>
+            
+            <div class="positions-list">
+                <div class="position-card">
+                    <h3>AI Engineer</h3>
+                    <p class="position-type">Full-time • Remote</p>
+                    <p class="position-desc">We're looking for an AI engineer with experience in natural language processing and computer vision to help enhance our core AI capabilities.</p>
+                    <ul class="position-requirements">
+                        <li>3+ years of experience in machine learning/AI development</li>
+                        <li>Experience with NLP and computer vision technologies</li>
+                        <li>Familiarity with Python and relevant ML frameworks</li>
+                        <li>Passion for gaming and understanding of game mechanics</li>
+                    </ul>
+                    <a href="contact.html" class="btn-secondary">Apply Now</a>
+                </div>
+                
+                <div class="position-card">
+                    <h3>Game Data Specialist</h3>
+                    <p class="position-type">Full-time • Remote</p>
+                    <p class="position-desc">Help us expand our game coverage by analyzing game mechanics and creating structured data to train our AI systems.</p>
+                    <ul class="position-requirements">
+                        <li>Deep knowledge of various game genres and mechanics</li>
+                        <li>Experience in data structuring and documentation</li>
+                        <li>Analytical mindset and attention to detail</li>
+                        <li>Excellent written communication skills</li>
+                    </ul>
+                    <a href="contact.html" class="btn-secondary">Apply Now</a>
+                </div>
+                
+                <div class="position-card">
+                    <h3>Frontend Developer</h3>
+                    <p class="position-type">Full-time • Remote</p>
+                    <p class="position-desc">Create intuitive and responsive interfaces for our desktop application and web platform.</p>
+                    <ul class="position-requirements">
+                        <li>2+ years of experience with modern frontend frameworks</li>
+                        <li>Strong JavaScript/TypeScript skills</li>
+                        <li>Experience with Electron or similar desktop app frameworks</li>
+                        <li>Eye for design and user experience</li>
+                    </ul>
+                    <a href="contact.html" class="btn-secondary">Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="internships">
+        <div class="container">
+            <div class="section-header">
+                <h2>Internship Program</h2>
+                <p>Launching your career in gaming technology</p>
+            </div>
+            
+            <div class="internship-content">
+                <div class="internship-image">
+                    <img src="images/careers-internship.jpg" alt="DUOAI Internship">
+                </div>
+                <div class="internship-text">
+                    <p>We believe in nurturing new talent and providing opportunities for students and recent graduates to gain real-world experience in the gaming technology industry.</p>
+                    <p>Our internship program offers:</p>
+                    <ul>
+                        <li>Hands-on experience with cutting-edge AI and gaming technology</li>
+                        <li>Mentorship from experienced professionals</li>
+                        <li>Meaningful projects that impact our product</li>
+                        <li>Potential for full-time employment after completion</li>
+                    </ul>
+                    <p>We're currently accepting applications for internships in the following areas:</p>
+                    <ul>
+                        <li>AI/Machine Learning</li>
+                        <li>Software Development</li>
+                        <li>Game Analysis</li>
+                        <li>UX/UI Design</li>
+                    </ul>
+                    <a href="contact.html" class="btn-primary">Apply for Internship</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="no-openings">
+        <div class="container">
+            <div class="no-openings-content">
+                <h2>Don't See a Fit?</h2>
+                <p>We're always interested in connecting with talented individuals who are passionate about gaming and technology. If you don't see a position that matches your skills but believe you could contribute to our mission, we'd love to hear from you.</p>
+                <a href="contact.html" class="btn-secondary">Send Us Your Resume</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer"></footer>
+
+    <script src="js/main.js"></script>
+    <script>
+      // Fallback to ensure footer is populated
+      setTimeout(function() {
+        const footers = document.querySelectorAll('.site-footer');
+        footers.forEach(footer => {
+          if (footer.innerHTML.trim() === '') {
+            console.log('Footer empty, applying fallback');
+            // Load the footer script directly
+            const script = document.createElement('script');
+            script.src = 'components/footer.js';
+            document.body.appendChild(script);
+          }
+        });
+      }, 1000);
+    </script>
+</body>
+</html>
