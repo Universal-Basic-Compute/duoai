@@ -10,6 +10,55 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+def check_audio_streams(video_path):
+    """Check audio streams in the video file."""
+    cmd = [
+        'ffprobe',
+        '-v', 'error',
+        '-select_streams', 'a',
+        '-show_entries', 'stream=index,codec_name,channels',
+        '-of', 'json',
+        video_path
+    ]
+    
+    try:
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode == 0:
+            audio_info = json.loads(result.stdout)
+            print(f"Audio streams in input video: {json.dumps(audio_info, indent=2)}")
+            return audio_info
+        else:
+            print(f"Error checking audio streams: {result.stderr}")
+            return None
+    except Exception as e:
+        print(f"Exception during audio stream check: {str(e)}")
+        return None
+
+def verify_output_video(video_path):
+    """Verify that the output video has audio."""
+    cmd = [
+        'ffprobe',
+        '-v', 'error',
+        '-select_streams', 'a',
+        '-show_entries', 'stream=codec_type',
+        '-of', 'json',
+        video_path
+    ]
+    
+    try:
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if result.returncode == 0:
+            info = json.loads(result.stdout)
+            has_audio = 'streams' in info and len(info['streams']) > 0
+            print(f"Output video has audio: {has_audio}")
+            return has_audio
+        else:
+            print(f"Error verifying output video: {result.stderr}")
+            return False
+    except Exception as e:
+        print(f"Exception during output verification: {str(e)}")
+        return False
+
 def check_ffmpeg():
     """Check if FFmpeg is installed and working."""
     try:
@@ -80,6 +129,11 @@ def generate_video_with_advice(input_video_path, transcript_folder_path, output_
     if not os.path.exists(transcript_folder_path):
         print(f"Error: Transcript folder not found at {transcript_folder_path}")
         return False
+        
+    # Check audio streams in input video
+    audio_streams = check_audio_streams(input_video_path)
+    if not audio_streams or 'streams' not in audio_streams or len(audio_streams['streams']) == 0:
+        print("Warning: No audio streams found in input video")
     
     # Generate output path if not provided
     if output_video_path is None:
@@ -117,7 +171,7 @@ def generate_video_with_advice(input_video_path, transcript_folder_path, output_
         cmd = [
             'ffmpeg',
             '-i', input_video_path,
-            '-filter_complex', '[0:a]volume=0.2[a]',
+            '-filter_complex', '[0:a]volume=0.3[a]',
             '-map', '0:v',
             '-map', '[a]',
             '-c:v', 'copy',
@@ -223,7 +277,7 @@ def generate_video_with_advice(input_video_path, transcript_folder_path, output_
         for i in range(len(filtered_advice_segments)):
             mix_inputs += f"[a{i+1}]"
         
-        filter_parts.append(f"{mix_inputs}amix=inputs={len(filtered_advice_segments)+1}:duration=longest[aout]")
+        filter_parts.append(f"{mix_inputs}amix=inputs={len(filtered_advice_segments)+1}:duration=longest:normalize=0[aout]")
         
         # Combine all filter parts
         filter_complex = ";".join(filter_parts)
@@ -243,6 +297,13 @@ def generate_video_with_advice(input_video_path, transcript_folder_path, output_
         try:
             subprocess.run(cmd, check=True)
             print(f"✓ Video successfully created: {output_video_path}")
+            
+            # Verify that the output video has audio
+            if os.path.exists(output_video_path):
+                has_audio = verify_output_video(output_video_path)
+                if not has_audio:
+                    print("Warning: Output video does not have audio!")
+            
             return True
         except subprocess.CalledProcessError as e:
             print(f"Error creating final video: {e}")
