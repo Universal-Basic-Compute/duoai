@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu, MenuItem } = require('electron')
 const path = require('path')
 
 function createWindow() {
@@ -13,6 +13,31 @@ function createWindow() {
   })
 
   mainWindow.loadFile('index.html')
+  
+  // Create a context menu
+  const contextMenu = new Menu()
+  contextMenu.append(new MenuItem({
+    label: 'Inspect Element',
+    click: () => {
+      mainWindow.webContents.inspectElement(rightClickPosition.x, rightClickPosition.y)
+    }
+  }))
+  
+  contextMenu.append(new MenuItem({
+    label: 'Open Developer Tools',
+    click: () => {
+      mainWindow.webContents.openDevTools()
+    }
+  }))
+
+  // Track the position of right-click
+  let rightClickPosition = { x: 0, y: 0 }
+  
+  // Listen for right-click events
+  mainWindow.webContents.on('context-menu', (event, params) => {
+    rightClickPosition = { x: params.x, y: params.y }
+    contextMenu.popup()
+  })
 }
 
 app.whenReady().then(() => {
