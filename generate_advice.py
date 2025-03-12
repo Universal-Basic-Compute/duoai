@@ -72,16 +72,20 @@ Use the knowledge provided below to inform your advice.
 {knowledge_text}
 
 Analyze the game screenshot and transcript carefully. Then provide specific advice that will help the player in their current situation.
-Your advice should be:
-1. Specific to what's visible in the screenshot and mentioned in the transcript
-2. Actionable - tell the player exactly what they should do
-3. Strategic - explain why this is the best course of action
-4. Concise - focus on the most important 2-3 pieces of advice
 
-Format your response in bullet points for readability."""
+Your advice must:
+1. Address the player directly using "you" language
+2. Be specific to what's visible in the screenshot and mentioned in the transcript
+3. Be actionable - tell the player exactly what they should do
+4. Be strategic - explain why this is the best course of action
+5. Be concise - focus on the most important 2-3 pieces of advice
+
+Format your response in bullet points for readability.
+
+IMPORTANT: Respond ONLY with the advice itself. Do not include any introductions, explanations about what you're doing, or conclusions. Start directly with the bullet points of advice."""
     
     # Create user message with transcript
-    user_message = f"Here's a screenshot from my game and the transcript of what's happening. Please give me specific advice for what I should do in this situation:\n\nTRANSCRIPT:\n{transcript_text}"
+    user_message = f"Here's a screenshot from my game and the transcript of what's happening. Give me specific advice for what I should do in this situation:\n\nTRANSCRIPT:\n{transcript_text}"
     
     # Prepare the payload
     if image_base64:
