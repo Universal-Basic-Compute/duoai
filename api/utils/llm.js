@@ -34,8 +34,25 @@ module.exports = async function handler(req, res) {
           console.warn('Could not load character prompt:', charErr.message);
         }
         
+        // Get a random mode from the modes directory
+        const modesDir = path.join(process.cwd(), 'api', 'prompts', 'modes');
+        let modePrompt = '';
+        try {
+          // Read all files in the modes directory
+          const modeFiles = fs.readdirSync(modesDir);
+          if (modeFiles.length > 0) {
+            // Select a random mode file
+            const randomModeFile = modeFiles[Math.floor(Math.random() * modeFiles.length)];
+            const modePath = path.join(modesDir, randomModeFile);
+            modePrompt = fs.readFileSync(modePath, 'utf8');
+            console.log(`Using mode: ${randomModeFile}`);
+          }
+        } catch (modeErr) {
+          console.warn('Could not load mode prompt:', modeErr.message);
+        }
+        
         // Combine prompts
-        systemPrompt = basePrompt + '\n\n' + characterPrompt;
+        systemPrompt = basePrompt + '\n\n' + characterPrompt + '\n\n' + modePrompt;
       } catch (err) {
         console.warn('Could not load base prompt:', err.message);
       }
