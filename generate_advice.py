@@ -80,9 +80,9 @@ Your advice must:
 4. Be strategic - explain why this is the best course of action
 5. Be concise - focus on the most important piece of advice
 
-Format your response in bullet points for readability.
+Format your response as a short paragraph or a few sentences. Do not use bullet points.
 
-IMPORTANT: Respond ONLY with the advice itself. Do not include any introductions, explanations about what you're doing, or conclusions. Start directly with the bullet points of advice."""
+IMPORTANT: Respond ONLY with the advice itself. Do not include any introductions, explanations about what you're doing, or conclusions. Start directly with your advice in sentence form."""
     
     # Create user message with transcript
     user_message = f"Here's a screenshot from my game and the transcript of what's happening. Give me specific advice for what I should do in this situation:\n\nTRANSCRIPT:\n{transcript_text}"
