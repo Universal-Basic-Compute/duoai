@@ -5,9 +5,13 @@
     { "src": "website/**/*", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/api/utils/tts", "dest": "/api/utils/tts.js" },
+    { "src": "/api/utils/stt", "dest": "/api/utils/stt.js" },
+    { "src": "/api/utils/llm", "dest": "/api/utils/llm.js" },
     { "src": "/api/tts", "dest": "/api/utils/tts.js" },
     { "src": "/api/stt", "dest": "/api/utils/stt.js" },
     { "src": "/api/llm", "dest": "/api/utils/llm.js" },
+    { "src": "/api/utils/(.*)", "dest": "/api/utils/$1" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/website/$1" }
   ]
