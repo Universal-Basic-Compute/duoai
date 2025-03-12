@@ -4,16 +4,16 @@
     { "src": "api/**/*.js", "use": "@vercel/node" },
     { "src": "website/**/*", "use": "@vercel/static" }
   ],
-  "routes": [
-    { "src": "/api/utils/tts", "dest": "/api/utils/tts.js" },
-    { "src": "/api/utils/stt", "dest": "/api/utils/stt.js" },
-    { "src": "/api/utils/llm", "dest": "/api/utils/llm.js" },
-    { "src": "/api/tts", "dest": "/api/utils/tts.js" },
-    { "src": "/api/stt", "dest": "/api/utils/stt.js" },
-    { "src": "/api/llm", "dest": "/api/utils/llm.js" },
-    { "src": "/api/utils/(.*)", "dest": "/api/utils/$1" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/website/$1" }
+  "rewrites": [
+    { "source": "/api/utils/tts", "destination": "/api/utils/tts.js" },
+    { "source": "/api/utils/stt", "destination": "/api/utils/stt.js" },
+    { "source": "/api/utils/llm", "destination": "/api/utils/llm.js" },
+    { "source": "/api/tts", "destination": "/api/utils/tts.js" },
+    { "source": "/api/stt", "destination": "/api/utils/stt.js" },
+    { "source": "/api/llm", "destination": "/api/utils/llm.js" },
+    { "source": "/api/utils/(.*)", "destination": "/api/utils/$1" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/website/$1" }
   ],
   "redirects": [
     { "source": "https://www.duogaming.ai/:path*", "destination": "https://duogaming.ai/:path*", "permanent": true }
