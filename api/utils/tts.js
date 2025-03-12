@@ -36,10 +36,10 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'ElevenLabs API key not configured' });
     }
 
-    // Make request to ElevenLabs API
+    // Make request to ElevenLabs API using the streaming endpoint
     const response = await axios({
       method: 'POST',
-      url: `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`,
+      url: `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}/stream?output_format=mp3_44100_128`,
       headers: {
         'Accept': 'audio/mpeg',
         'Content-Type': 'application/json',
@@ -51,17 +51,28 @@ module.exports = async function handler(req, res) {
         voice_settings: {
           stability: 0.5,
           similarity_boost: 0.5
-        }
+        },
+        // Add streaming optimization
+        optimize_streaming_latency: 3 // Use max latency optimizations
       },
-      responseType: 'arraybuffer'
+      responseType: 'stream' // Important: Use stream instead of arraybuffer
     });
 
-    // Set appropriate headers for audio response
+    // Set appropriate headers for audio streaming
     res.setHeader('Content-Type', 'audio/mpeg');
     res.setHeader('Content-Disposition', 'attachment; filename="speech.mp3"');
+    res.setHeader('Transfer-Encoding', 'chunked');
     
-    // Return the audio data
-    return res.status(200).send(Buffer.from(response.data));
+    // Pipe the stream directly to the response
+    response.data.pipe(res);
+    
+    // Handle errors in the stream
+    response.data.on('error', (error) => {
+      console.error('Stream error:', error);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Error streaming audio' });
+      }
+    });
   } catch (error) {
     console.error('ElevenLabs TTS API error:', error.response?.data || error.message);
     return res.status(error.response?.status || 500).json({ 
