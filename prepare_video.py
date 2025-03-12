@@ -4,7 +4,7 @@ import json
 import argparse
 import subprocess
 import requests
-import base64
+import time
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -74,37 +74,64 @@ def transcribe_audio(audio_path, language="en"):
         return None
     
     try:
-        # Read audio file as binary
-        with open(audio_path, 'rb') as audio_file:
-            audio_data = audio_file.read()
-        
-        # Convert to base64
-        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-        
-        # Prepare request
+        # Prepare request with multipart form data instead of base64
         url = "https://api.elevenlabs.io/v1/speech-to-text"
         headers = {
-            "xi-api-key": api_key,
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "audio": audio_base64,
-            "language": language
+            "xi-api-key": api_key
         }
         
-        # Make API request
-        print(f"  Transcribing audio...")
-        response = requests.post(url, headers=headers, json=payload)
+        # Create multipart form data
+        files = {
+            'file': (os.path.basename(audio_path), open(audio_path, 'rb'), 'audio/mpeg')
+        }
         
-        if response.status_code == 200:
-            result = response.json()
-            return result.get("text", "")
-        else:
-            print(f"  ✗ Transcription failed: {response.status_code} - {response.text}")
-            return None
+        data = {
+            'model_id': 'scribe_v1',  # Required parameter
+            'language_code': language if language else None,
+            'tag_audio_events': 'true',
+            'timestamps_granularity': 'word'
+        }
+        
+        # Make API request with retry logic
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                print(f"  Transcribing audio... (attempt {attempt+1}/{max_retries})")
+                response = requests.post(url, headers=headers, files=files, data=data, timeout=30)
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    return result.get("text", "")
+                else:
+                    print(f"  ✗ Transcription failed: {response.status_code} - {response.text}")
+                    if attempt < max_retries - 1:
+                        print(f"  Retrying in {retry_delay} seconds...")
+                        import time
+                        time.sleep(retry_delay)
+                        retry_delay *= 2  # Exponential backoff
+                    else:
+                        return None
+            except requests.exceptions.RequestException as e:
+                print(f"  ✗ Connection error during transcription: {str(e)}")
+                if attempt < max_retries - 1:
+                    print(f"  Retrying in {retry_delay} seconds...")
+                    import time
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    return None
     except Exception as e:
         print(f"  ✗ Error during transcription: {str(e)}")
         return None
+    finally:
+        # Make sure to close the file if it was opened
+        if 'files' in locals() and 'file' in files:
+            try:
+                files['file'][1].close()
+            except:
+                pass
 
 def prepare_video(video_path, base_dir="website/videos", language="en"):
     """Process a video file, extracting frames and audio segments every 30 seconds."""
