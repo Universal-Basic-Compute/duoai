@@ -171,7 +171,7 @@ def generate_video_with_advice(input_video_path, transcript_folder_path, output_
         cmd = [
             'ffmpeg',
             '-i', input_video_path,
-            '-filter_complex', '[0:a]volume=0.3[a]',
+            '-filter_complex', '[0:a]volume=0.0[a]',
             '-map', '0:v',
             '-map', '[a]',
             '-c:v', 'copy',
