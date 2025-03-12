@@ -2,11 +2,21 @@ const axios = require('axios');
 const { handleCors, validateMethod } = require('./common');
 
 module.exports = async function handler(req, res) {
+  console.log('TTS API handler called');
+  
   // Handle CORS and validate request method
-  if (handleCors(req, res)) return;
-  if (!validateMethod(req, res)) return;
+  if (handleCors(req, res)) {
+    console.log('CORS handled, returning early');
+    return;
+  }
+  
+  if (!validateMethod(req, res)) {
+    console.log('Method validation failed, returning early');
+    return;
+  }
 
   try {
+    console.log('Processing TTS request');
     const { text, voiceId, model } = req.body;
     
     // Validate required parameters

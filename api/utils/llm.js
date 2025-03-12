@@ -4,11 +4,21 @@ const path = require('path');
 const { handleCors, validateMethod } = require('./common');
 
 module.exports = async function handler(req, res) {
+  console.log('LLM API handler called');
+  
   // Handle CORS and validate request method
-  if (handleCors(req, res)) return;
-  if (!validateMethod(req, res)) return;
+  if (handleCors(req, res)) {
+    console.log('CORS handled, returning early');
+    return;
+  }
+  
+  if (!validateMethod(req, res)) {
+    console.log('Method validation failed, returning early');
+    return;
+  }
 
   try {
+    console.log('Processing LLM request');
     const { prompt, system, messages, images } = req.body;
     
     // Get API key from environment variable

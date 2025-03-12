@@ -3,11 +3,21 @@ const formData = require('form-data');
 const { handleCors, validateMethod } = require('./common');
 
 module.exports = async function handler(req, res) {
+  console.log('STT API handler called');
+  
   // Handle CORS and validate request method
-  if (handleCors(req, res)) return;
-  if (!validateMethod(req, res)) return;
+  if (handleCors(req, res)) {
+    console.log('CORS handled, returning early');
+    return;
+  }
+  
+  if (!validateMethod(req, res)) {
+    console.log('Method validation failed, returning early');
+    return;
+  }
 
   try {
+    console.log('Processing STT request');
     // Check if we have audio data
     if (!req.body || !req.body.audio) {
       return res.status(400).json({ error: 'Audio data is required' });
