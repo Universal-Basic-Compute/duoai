@@ -11,6 +11,63 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
+def generate_speech_from_advice(advice_text, output_path, api_key, voice_id="pNInz6obpgDQGcFmaJgB"):
+    """Generate speech from advice text using ElevenLabs API."""
+    if not advice_text or not api_key:
+        print("  ✗ Missing advice text or API key for speech generation")
+        return False
+    
+    # Prepare the request to ElevenLabs
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    headers = {
+        "Content-Type": "application/json",
+        "xi-api-key": api_key
+    }
+    
+    # Prepare the payload
+    payload = {
+        "text": advice_text,
+        "model_id": "eleven_multilingual_v2",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.5
+        }
+    }
+    
+    # Make the API request with retry logic
+    max_retries = 3
+    retry_delay = 5  # seconds
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"  Generating speech... (attempt {attempt+1}/{max_retries})")
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            
+            if response.status_code == 200:
+                # Save the audio file
+                with open(output_path, 'wb') as f:
+                    f.write(response.content)
+                print(f"  ✓ Saved speech to {output_path}")
+                return True
+            else:
+                print(f"  ✗ Speech generation failed: {response.status_code} - {response.text}")
+                if attempt < max_retries - 1:
+                    print(f"  Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    return False
+        except Exception as e:
+            print(f"  ✗ Error during speech generation: {str(e)}")
+            if attempt < max_retries - 1:
+                print(f"  Retrying in {retry_delay} seconds...")
+                time.sleep(retry_delay)
+                retry_delay *= 2
+            else:
+                return False
+    
+    return False
+
 def encode_image_to_base64(image_path):
     """Encode an image file to base64."""
     try:
@@ -177,13 +234,21 @@ def generate_advice_with_claude(image_path, transcript_text, knowledge_text, api
     # For backward compatibility, call the new function with empty previous_advices
     return generate_advice_with_claude_and_context(image_path, transcript_text, knowledge_text, [], api_key)
 
-def process_segments(knowledge_dir, transcript_dir):
+def process_segments(knowledge_dir, transcript_dir, generate_speech=False, voice_id="pNInz6obpgDQGcFmaJgB"):
     """Process all segments in the transcript directory."""
     # Get API key
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
         print("Error: ANTHROPIC_API_KEY not found in environment variables.")
         return False
+    
+    # Get ElevenLabs API key if speech generation is enabled
+    elevenlabs_api_key = None
+    if generate_speech:
+        elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
+        if not elevenlabs_api_key:
+            print("Warning: ELEVENLABS_API_KEY not found in environment variables. Speech generation will be skipped.")
+            generate_speech = False
     
     # Load knowledge files
     knowledge_text = load_knowledge_files(knowledge_dir)
@@ -232,9 +297,13 @@ def process_segments(knowledge_dir, transcript_dir):
                 advice_file = f"advice_{segment_num}.txt"
                 advice_path = os.path.join(folder_path, advice_file)
                 
+                # Check if speech file already exists
+                speech_file = f"advice_{segment_num}.mp3"
+                speech_path = os.path.join(folder_path, speech_file)
+                
+                # Load existing advice for context if it exists
                 if os.path.exists(advice_path):
                     print(f"  Advice for segment {segment_num} already exists, loading for context...")
-                    # Load existing advice for context
                     try:
                         with open(advice_path, 'r', encoding='utf-8') as f:
                             existing_advice = f.read().strip()
@@ -243,42 +312,73 @@ def process_segments(knowledge_dir, transcript_dir):
                             # Keep only the last 10
                             if len(last_advices) > 10:
                                 last_advices.pop(0)
+                            
+                            # Generate speech if needed and not already exists
+                            if generate_speech and elevenlabs_api_key and not os.path.exists(speech_path):
+                                print(f"  Generating speech for existing advice...")
+                                generate_speech_from_advice(
+                                    existing_advice, 
+                                    speech_path, 
+                                    elevenlabs_api_key,
+                                    voice_id
+                                )
+                                
+                                # Update metadata with speech file
+                                segment["speechFile"] = speech_file
                     except Exception as e:
                         print(f"  Error loading existing advice: {str(e)}")
-                    continue
-                
-                print(f"  Processing segment {segment_num}...")
-                
-                # Get paths
-                frame_path = os.path.join(folder_path, frame_file)
-                
-                # Generate advice with context from previous advices
-                advice = generate_advice_with_claude_and_context(
-                    frame_path, 
-                    transcript, 
-                    knowledge_text, 
-                    last_advices,
-                    api_key
-                )
-                
-                if advice:
-                    # Save advice
-                    with open(advice_path, 'w', encoding='utf-8') as f:
-                        f.write(advice)
                     
-                    # Update metadata
-                    segment["adviceFile"] = advice_file
-                    segment["advice"] = advice
+                    # Skip to next segment if we're not generating speech or speech already exists
+                    if not generate_speech or os.path.exists(speech_path):
+                        continue
+                
+                # If we need to generate new advice
+                if not os.path.exists(advice_path):
+                    print(f"  Processing segment {segment_num}...")
                     
-                    # Add to last advices
-                    last_advices.append(f"Segment {segment_num}: {advice}")
-                    # Keep only the last 10
-                    if len(last_advices) > 10:
-                        last_advices.pop(0)
+                    # Get paths
+                    frame_path = os.path.join(folder_path, frame_file)
                     
-                    print(f"  ✓ Saved advice to {advice_path}")
-                else:
-                    print(f"  ✗ Failed to generate advice for segment {segment_num}")
+                    # Generate advice with context from previous advices
+                    advice = generate_advice_with_claude_and_context(
+                        frame_path, 
+                        transcript, 
+                        knowledge_text, 
+                        last_advices,
+                        api_key
+                    )
+                    
+                    if advice:
+                        # Save advice
+                        with open(advice_path, 'w', encoding='utf-8') as f:
+                            f.write(advice)
+                        
+                        # Update metadata
+                        segment["adviceFile"] = advice_file
+                        segment["advice"] = advice
+                        
+                        # Add to last advices
+                        last_advices.append(f"Segment {segment_num}: {advice}")
+                        # Keep only the last 10
+                        if len(last_advices) > 10:
+                            last_advices.pop(0)
+                        
+                        print(f"  ✓ Saved advice to {advice_path}")
+                        
+                        # Generate speech if enabled
+                        if generate_speech and elevenlabs_api_key:
+                            speech_success = generate_speech_from_advice(
+                                advice, 
+                                speech_path, 
+                                elevenlabs_api_key,
+                                voice_id
+                            )
+                            
+                            if speech_success:
+                                # Update metadata with speech file
+                                segment["speechFile"] = speech_file
+                    else:
+                        print(f"  ✗ Failed to generate advice for segment {segment_num}")
                 
                 # Wait before processing next segment to avoid rate limiting
                 time.sleep(2)
@@ -299,8 +399,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate game advice based on screenshots and transcripts.")
     parser.add_argument("knowledge_dir", help="Directory containing knowledge files")
     parser.add_argument("transcript_dir", help="Directory containing transcript files and metadata")
+    parser.add_argument("--generate-speech", action="store_true", help="Generate speech for each advice using ElevenLabs")
+    parser.add_argument("--voice-id", default="pNInz6obpgDQGcFmaJgB", help="ElevenLabs voice ID to use (default: pNInz6obpgDQGcFmaJgB)")
     
     args = parser.parse_args()
     
     # Process segments
-    process_segments(args.knowledge_dir, args.transcript_dir)
+    process_segments(
+        args.knowledge_dir, 
+        args.transcript_dir, 
+        generate_speech=args.generate_speech,
+        voice_id=args.voice_id
+    )
