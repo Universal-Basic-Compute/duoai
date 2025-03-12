@@ -102,20 +102,32 @@ def get_video_details(youtube, video_ids):
 def get_video_transcript(video_id):
     """Get transcript for a YouTube video."""
     try:
+        # Get transcript from YouTube
+        print(f"  Requesting transcript for video {video_id}...")
         transcript_list = YouTubeTranscriptApi.get_transcript(video_id)
+        
+        # Debug the response
+        print(f"  Transcript type: {type(transcript_list)}")
+        if isinstance(transcript_list, list) and len(transcript_list) > 0:
+            print(f"  First segment: {transcript_list[0]}")
+        else:
+            print(f"  Transcript content: {transcript_list}")
         
         # Format transcript as plain text
         formatter = TextFormatter()
-        transcript_text = formatter.format_transcript(transcript_list)
+        plain_text = formatter.format_transcript(transcript_list)
         
-        # Also keep the original JSON format with timestamps
+        # Return both formats
         return {
-            'text': transcript_text,
+            'text': plain_text,
             'segments': transcript_list
         }
     
     except Exception as e:
         print(f"Error getting transcript for video {video_id}: {str(e)}")
+        # Print the full exception traceback for debugging
+        import traceback
+        traceback.print_exc()
         return None
 
 def sanitize_filename(filename):
