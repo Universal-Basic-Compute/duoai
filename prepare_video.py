@@ -5,7 +5,6 @@ import argparse
 import subprocess
 import requests
 import time
-import signal
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -117,10 +116,6 @@ def extract_audio_segment(video_path, output_path, start_time, duration=30, time
         print(f"  ✗ Exception during audio extraction: {str(e)}")
         return False
 
-def timeout_handler(signum, frame):
-    """Handler for timeout signal."""
-    raise TimeoutError("Operation timed out")
-
 def transcribe_audio(audio_path, language="en", timeout_seconds=60):
     """Transcribe audio using ElevenLabs API with timeout protection."""
     api_key = os.getenv("ELEVENLABS_API_KEY")
@@ -128,10 +123,7 @@ def transcribe_audio(audio_path, language="en", timeout_seconds=60):
         print("Warning: ELEVENLABS_API_KEY not found in environment variables. Skipping transcription.")
         return None
     
-    # Set up a timeout for the entire function
-    original_handler = signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(timeout_seconds)
-    
+    # Platform-independent timeout handling
     file_handle = None
     try:
         print(f"  Opening audio file: {audio_path}")
@@ -169,7 +161,7 @@ def transcribe_audio(audio_path, language="en", timeout_seconds=60):
                     headers=headers, 
                     files=files, 
                     data=data, 
-                    timeout=20  # 20 second timeout for the request
+                    timeout=timeout_seconds  # Use the full timeout for the request
                 )
                 
                 print(f"  Received response with status code: {response.status_code}")
@@ -193,17 +185,10 @@ def transcribe_audio(audio_path, language="en", timeout_seconds=60):
                     retry_delay *= 2  # Exponential backoff
                 else:
                     return None
-    except TimeoutError:
-        print(f"  ✗ Transcription timed out after {timeout_seconds} seconds")
-        return None
     except Exception as e:
         print(f"  ✗ Error during transcription: {str(e)}")
         return None
     finally:
-        # Reset the alarm and restore the original signal handler
-        signal.alarm(0)
-        signal.signal(signal.SIGALRM, original_handler)
-        
         # Close the file handle if it was opened
         if file_handle is not None:
             try:
