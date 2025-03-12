@@ -3,7 +3,13 @@ import sys
 import json
 import argparse
 import subprocess
+import requests
+import base64
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 def get_video_duration(video_path):
     """Get the duration of a video file using ffprobe."""
@@ -60,7 +66,47 @@ def extract_audio_segment(video_path, output_path, start_time, duration=30):
         return False
     return True
 
-def prepare_video(video_path, base_dir="website/videos"):
+def transcribe_audio(audio_path, language="en"):
+    """Transcribe audio using ElevenLabs API."""
+    api_key = os.getenv("ELEVENLABS_API_KEY")
+    if not api_key:
+        print("Warning: ELEVENLABS_API_KEY not found in environment variables. Skipping transcription.")
+        return None
+    
+    try:
+        # Read audio file as binary
+        with open(audio_path, 'rb') as audio_file:
+            audio_data = audio_file.read()
+        
+        # Convert to base64
+        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
+        
+        # Prepare request
+        url = "https://api.elevenlabs.io/v1/speech-to-text"
+        headers = {
+            "xi-api-key": api_key,
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "audio": audio_base64,
+            "language": language
+        }
+        
+        # Make API request
+        print(f"  Transcribing audio...")
+        response = requests.post(url, headers=headers, json=payload)
+        
+        if response.status_code == 200:
+            result = response.json()
+            return result.get("text", "")
+        else:
+            print(f"  ✗ Transcription failed: {response.status_code} - {response.text}")
+            return None
+    except Exception as e:
+        print(f"  ✗ Error during transcription: {str(e)}")
+        return None
+
+def prepare_video(video_path, base_dir="website/videos", language="en"):
     """Process a video file, extracting frames and audio segments every 30 seconds."""
     if not os.path.exists(video_path):
         print(f"Error: Video file '{video_path}' not found.")
@@ -98,14 +144,35 @@ def prepare_video(video_path, base_dir="website/videos"):
             print(f"  ✓ Extracted audio to {audio_path}")
         else:
             print(f"  ✗ Failed to extract audio")
+            continue
+        
+        # Transcribe audio
+        transcript = transcribe_audio(audio_path, language)
+        transcript_path = os.path.join(output_dir, f"transcript_{i}.txt")
+        
+        if transcript:
+            # Save transcript to file
+            with open(transcript_path, 'w', encoding='utf-8') as f:
+                f.write(transcript)
+            print(f"  ✓ Created transcript: {transcript_path}")
+        else:
+            print(f"  ✗ No transcript generated")
+            transcript_path = None
         
         # Add segment info
-        segments.append({
+        segment_info = {
             "segment": i,
             "startTime": start_time,
             "frameFile": f"frame_{i}.jpg",
             "audioFile": f"audio_{i}.mp3"
-        })
+        }
+        
+        # Add transcript info if available
+        if transcript:
+            segment_info["transcriptFile"] = f"transcript_{i}.txt"
+            segment_info["transcript"] = transcript
+        
+        segments.append(segment_info)
     
     # Create metadata file
     metadata = {
@@ -127,6 +194,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process a video file, extracting frames and audio segments every 30 seconds.")
     parser.add_argument("video_path", help="Path to the video file to process")
     parser.add_argument("--output-dir", default="website/videos", help="Base directory for output (default: website/videos)")
+    parser.add_argument("--language", default="en", help="Language code for transcription (default: en)")
     
     args = parser.parse_args()
     
@@ -134,4 +202,4 @@ if __name__ == "__main__":
     os.makedirs(args.output_dir, exist_ok=True)
     
     # Process the video
-    prepare_video(args.video_path, args.output_dir)
+    prepare_video(args.video_path, args.output_dir, args.language)
