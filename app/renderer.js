@@ -26,8 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Use relative URL
-      const apiUrl = '/api/utils/tts';
+      // Use different URLs based on environment
+      let apiUrl;
+      if (isElectron()) {
+        // When running in Electron, use the full URL to the production API
+        apiUrl = 'https://duogaming.ai/api/utils/tts';
+      } else {
+        // When running in a browser, use a relative URL
+        apiUrl = '/api/utils/tts';
+      }
       
       // Log the URL being used
       console.log('Calling TTS API at:', apiUrl);
@@ -58,8 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Use relative URL
-      const apiUrl = '/api/utils/stt';
+      // Use different URLs based on environment
+      let apiUrl;
+      if (isElectron()) {
+        // When running in Electron, use the full URL to the production API
+        apiUrl = 'https://duogaming.ai/api/utils/stt';
+      } else {
+        // When running in a browser, use a relative URL
+        apiUrl = '/api/utils/stt';
+      }
       
       // Log the URL being used
       console.log('Calling STT API at:', apiUrl);
@@ -155,8 +169,15 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this new function to call the LLM API
   async function callLLMApi(message) {
     try {
-      // Use relative URL
-      const apiUrl = '/api/utils/llm';
+      // Use different URLs based on environment
+      let apiUrl;
+      if (isElectron()) {
+        // When running in Electron, use the full URL to the production API
+        apiUrl = 'https://duogaming.ai/api/utils/llm';
+      } else {
+        // When running in a browser, use a relative URL
+        apiUrl = '/api/utils/llm';
+      }
       
       // Log the URL being used
       console.log('Calling LLM API at:', apiUrl);
