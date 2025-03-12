@@ -9,6 +9,7 @@ from googleapiclient.discovery import build
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
 from dotenv import load_dotenv
+from time import sleep
 
 # Load environment variables from .env file
 load_dotenv()
@@ -142,17 +143,89 @@ def sanitize_filename(filename):
     
     return filename
 
+def extract_knowledge_with_claude(transcript, api_key):
+    """Process transcript with Claude to extract specific knowledge and tips."""
+    if not transcript or not api_key:
+        return None
+    
+    # Prepare the request to Claude
+    url = "https://api.anthropic.com/v1/messages"
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01"
+    }
+    
+    # Create the system prompt and user message
+    system_prompt = transcript  # Use transcript as system prompt as requested
+    
+    user_message = "Make a complete list of specific knowledge/advice/tips about the game based on the transcript."
+    
+    payload = {
+        "model": "claude-3-7-sonnet-20240229",  # Using the model you specified
+        "max_tokens": 4000,
+        "temperature": 0.2,  # Lower temperature for more focused extraction
+        "system": system_prompt,
+        "messages": [
+            {"role": "user", "content": user_message}
+        ]
+    }
+    
+    # Make the API request with retry logic
+    max_retries = 3
+    retry_delay = 5  # seconds
+    
+    for attempt in range(max_retries):
+        try:
+            print(f"  Making Claude API request (attempt {attempt+1}/{max_retries})...")
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            
+            if response.status_code == 200:
+                result = response.json()
+                # Extract the text content from the response
+                content = result.get("content", [])
+                if isinstance(content, list) and len(content) > 0:
+                    # Handle the Claude API response format
+                    text_blocks = [block.get("text", "") for block in content if block.get("type") == "text"]
+                    return "\n".join(text_blocks)
+                return "No text content found in response"
+            else:
+                print(f"  ✗ Claude API request failed: {response.status_code} - {response.text}")
+                if attempt < max_retries - 1:
+                    print(f"  Retrying in {retry_delay} seconds...")
+                    sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    return None
+        except Exception as e:
+            print(f"  ✗ Error during Claude API request: {str(e)}")
+            if attempt < max_retries - 1:
+                print(f"  Retrying in {retry_delay} seconds...")
+                sleep(retry_delay)
+                retry_delay *= 2
+            else:
+                return None
+    
+    return None
+
 def prepare_knowledge(output_folder, queries, max_results_per_query=10):
     """Main function to prepare knowledge from YouTube videos."""
     # Set up YouTube API
     youtube = setup_youtube_api()
     
+    # Get Anthropic API key
+    anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not anthropic_api_key:
+        print("Warning: ANTHROPIC_API_KEY not found in environment variables. Will skip knowledge extraction.")
+    
     # Create output directories
     transcripts_dir = os.path.join(output_folder, 'transcripts')
     metadata_dir = os.path.join(output_folder, 'metadata')
+    knowledge_dir = os.path.join(output_folder, 'knowledge')  # New directory for extracted knowledge
     
     os.makedirs(transcripts_dir, exist_ok=True)
     os.makedirs(metadata_dir, exist_ok=True)
+    os.makedirs(knowledge_dir, exist_ok=True)  # Create knowledge directory
     
     # Search for videos matching each query
     all_videos = []
@@ -190,8 +263,10 @@ def prepare_knowledge(output_folder, queries, max_results_per_query=10):
     
     print(f"Saved metadata for {len(unique_videos)} videos to {metadata_path}")
     
-    # Process each video to get transcript
+    # Process each video to get transcript and extract knowledge
     successful_transcripts = 0
+    successful_knowledge_extractions = 0
+    
     for i, video in enumerate(unique_videos):
         video_id = video['id']
         title = video['title']
@@ -217,6 +292,23 @@ def prepare_knowledge(output_folder, queries, max_results_per_query=10):
             
             successful_transcripts += 1
             print(f"  ✓ Saved transcript to {text_path}")
+            
+            # Extract knowledge using Claude if API key is available
+            if anthropic_api_key:
+                print(f"  Extracting knowledge with Claude...")
+                knowledge = extract_knowledge_with_claude(transcript['text'], anthropic_api_key)
+                
+                if knowledge:
+                    # Save extracted knowledge
+                    knowledge_path = os.path.join(knowledge_dir, f"{filename_base}_knowledge.txt")
+                    with open(knowledge_path, 'w', encoding='utf-8') as f:
+                        f.write(knowledge)
+                    
+                    successful_knowledge_extractions += 1
+                    print(f"  ✓ Saved extracted knowledge to {knowledge_path}")
+                else:
+                    print(f"  ✗ Failed to extract knowledge")
+            
         else:
             print(f"  ✗ No transcript available")
         
@@ -226,6 +318,7 @@ def prepare_knowledge(output_folder, queries, max_results_per_query=10):
     print(f"\nKnowledge preparation complete!")
     print(f"Found {len(unique_videos)} videos")
     print(f"Successfully downloaded {successful_transcripts} transcripts")
+    print(f"Successfully extracted knowledge from {successful_knowledge_extractions} transcripts")
     print(f"All data saved to {output_folder}")
 
 if __name__ == "__main__":
