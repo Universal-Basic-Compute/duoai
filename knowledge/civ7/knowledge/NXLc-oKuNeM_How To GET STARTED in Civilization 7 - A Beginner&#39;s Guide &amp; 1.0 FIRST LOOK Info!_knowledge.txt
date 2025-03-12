@@ -1,0 +1,59 @@
+# Civilization 7 Tips and Knowledge
+
+## Game Setup
+- The game releases on February 11, 2025, with a deluxe edition available February 6th
+- You can start in one of three ages: Antiquity, Exploration, or Modern Age
+- Advanced start mode is available for Exploration and Modern Age starts, allowing you to place cities and units before beginning
+- Difficulty levels range from Scribe (easiest) to Deity (hardest)
+- Map types include Continents Plus, Continents, Archipelago, Fractal, Shuffle, and Terra Incognito
+- Map sizes include Tiny (4 players), Small (6 players), and Standard (8 players)
+- You can manually select which AI leaders you'll play against
+
+## Civilizations and Leaders
+- Leaders are separate from civilizations, giving different bonuses
+- Augustus of Rome is strong in the Antiquity age with military and cultural bonuses
+- Other leaders include Isabella (Persia), Harriet Tubman, Confucius (Han), Katherine the Great, and Benjamin Franklin
+- Each civilization has unique buildings and bonuses
+- Leaders and civilizations can change between ages (e.g., Rome can become other civilizations in later ages)
+
+## Game Mechanics
+- Cities start as towns and must be upgraded to cities
+- There's a soft cap of 3 cities (can be exceeded)
+- Resources include food, production, science, culture, gold, and influence
+- Influence (10 per turn) can be used to befriend independent villages
+- Independent villages can be befriended, conquered, or incorporated as new towns
+- Relationships with other leaders can be adjusted using diplomatic points
+- Crises occur at the end of eras/beginning of new ages (like Viking invasions)
+- The UI shows reminders of actions you need to take before ending your turn
+- The game recommends good settlement locations with color-coded areas (green is good, yellow is okay, red is poor)
+
+## Military
+- Military units can be "packed" together under a commander
+- Commanders can be promoted with special abilities (like Quartermaster for +1 gold per packed unit)
+- Fortifying units increases their defensive capabilities
+- Hostile tribes appear on the map and will attack your units and settlements
+- Naval units can travel on rivers and coastal waters
+
+## Expansion and Development
+- Focus on food, production, and science early
+- Scouts are important for exploring the map and finding resources
+- Building near mountains, rivers, and resources provides bonuses
+- Expanding toward water provides access to fish and naval movement
+- You can build farms, pastures, and other improvements on tiles
+- Ruins and discoveries on the map can provide bonuses when explored
+
+## Strategy Tips
+- Think about your next age, not just your next turn
+- Consider which victory type you're aiming for (Military, Cultural, Science, Economic)
+- If going for military victory, consider hindering enemies pursuing science
+- If going for economic victory, secure trade routes and resources
+- Always maintain some military units for defense against hostile tribes
+- Use the water to bypass hostile units, as they tend to stay inland
+- Befriend independent villages for potential military allies
+- Consider the terrain when settling - defensible positions near mountains and rivers are valuable
+
+## Visual and Audio
+- Each civilization has its own architectural style that changes as you progress
+- Music changes based on the civilization you discover
+- The map shows detailed terrain including mountains, rivers, and resources
+- The game has beautiful visuals with animated units and detailed landscapes

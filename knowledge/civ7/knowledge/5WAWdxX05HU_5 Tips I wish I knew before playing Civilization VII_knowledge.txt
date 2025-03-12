@@ -1,0 +1,48 @@
+# Civilization 7 Tips & Knowledge
+
+## Scout Units
+- Scouts have 2 movement points like Warriors but possess special abilities
+- "Lookout" ability: Increases sight range by 1 permanently when activated (costs remaining movement)
+- "Search" ability: Increases sight range by 1 for one turn AND reveals all discoveries within twice that range
+- Use Search to find goodie huts (coastal edifices) from far away
+- Scouts are more valuable than they initially appear despite having the same movement as Warriors
+
+## Army Commanders
+- Can stack multiple units on the same tile
+- Can deploy units with a single button
+- Special combat abilities: "Coordinated Attack" (for melee) and "Focus Fire" (for ranged)
+- These abilities give +2 combat strength to attacking units
+- Can use these abilities even with just one unit to get the combat bonus
+- Using these abilities consumes the Army Commander's movement points
+- Can only use one of these abilities per turn
+
+## Resources System
+- Five different types of resources in the game (three shown in video)
+- Empire resources: Stack up and apply bonuses to your entire empire
+- City resources: Can only be assigned to cities
+- Bonus resources: Can be assigned to towns or cities
+- Resources stack (example: 3 horses give +6 combat strength to cavalry)
+- Need to acquire new resources to unlock the ability to reassign existing ones
+
+## Settlement Types
+- Cities: Have production queues and can purchase buildings/units
+- Towns: Convert excess production into gold, can only purchase buildings/units
+- Towns have a "focus" that dictates how they use resources
+- Towns can be converted into cities by spending gold
+- "Settlement" is an umbrella term for cities, towns, and independent villages
+
+## Influence Management
+- Influence is a valuable resource that should be spent carefully
+- Used for diplomatic options like research collaboration
+- Used for befriending independents (costs 170 in Antiquity age, 340 in Exploration age)
+- Critical for managing war support and war weariness
+- Can spend influence to increase war support during conflicts
+- Higher war support reduces combat penalties from war weariness
+- War support affects happiness across your empire
+
+## War Support System
+- War support affects unit combat strength
+- Low war support causes war weariness penalties to units (-2 combat strength)
+- Can spend influence to increase your war support
+- War support is measured in tokens compared to your opponent
+- Higher war support improves happiness across your empire

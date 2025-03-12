@@ -1,0 +1,100 @@
+# Civilization 7 Tips and Knowledge
+
+## Starting the Game
+- Leaders are permanent throughout the game and can be ranked up across multiple games
+- You unlock "momentos" for leaders that can be assigned to any leader in future games
+- You'll play as three different civilizations throughout a normal game (one per age)
+- Default map size is small, and maps grow through the game
+- Consider playing on quick speed and lower difficulty for your first game
+
+## Early Exploration
+- Scouts are more important than ever and considered a "no-brainer" first build
+- Discoveries are powerful and the world is very varied
+- Navigable rivers play a key role in future ages
+- Resources like salt are extremely valuable
+
+## City Growth and Management
+- Cities grow by accumulating excess food, expanding to new tiles
+- New tiles become "rural tiles" (farms, woodcutters, fisheries, etc.)
+- Rural tiles instantly improve resources and their natural yields
+- Food is king for growth, alongside production for building
+- "Ageless" buildings (like Granary and Spit) carry benefits through ages and cannot be replaced
+- Most buildings can be overbuilt except for ageless ones
+
+## Urban Development
+- Urban tiles add another layer of complexity
+- You can build urban tiles over existing rural improvements or on blank tiles
+- Adjacency bonuses are important when placing buildings
+- Mountains, resources, rivers, and coastlines provide important adjacency bonuses
+- You can usually place two buildings on one tile to form a "quarter"
+- Unique quarters can be created by placing civilization-specific buildings on the same tile
+- Don't place unique buildings on separate tiles - put them together
+
+## Technology and Civics
+- Tech tree unlocks innate bonuses for tiles (e.g., production on camps and woodcutters)
+- Early technologies like animal husbandry, pottery, and sailing boost tiles
+- Civics tree is the cultural technology tree
+- Unique Civics tend to be very good, often unlocking unique buildings and wonders
+- Don't ignore Mastery options - they provide great benefits
+
+## Towns vs. Cities
+- New settlements start as towns, not cities
+- "Settlements" is the collective term for both cities and towns
+- Towns can be specialized, but it's best to let them grow first before specializing
+- Specializations often limit growth or change yield calculations
+- Towns can be converted to cities by spending gold
+- Building with gold allows instant construction and border expansion
+- Expand aggressively as the AI is hungry for land
+
+## Combat
+- Commander units are a major change, able to gather nearby units
+- First assault promotion and any promotion that improves movement and deployment are fundamental
+- Commanders operate in three domains: land, sea, and sky
+- Fortifications have changed significantly - walls can be built around any tile connected to city center
+- Fortified tiles must be destroyed before capturing a city
+
+## Diplomacy
+- AI is very willing to fight you regardless of difficulty level
+- Hover over leader emojis to see why relationships are positive or negative
+- Influence is a new resource used to improve relationships
+- Treaties and Endeavors (except denouncement) improve relationships
+- Denouncing, stealing, and being caught will damage relationships
+- Influence is also needed to woo independent settlements
+- War support is crucial - positive war support reduces opponent's happiness and combat strength
+
+## Age Progression
+- Each age has Legacy paths with goals in culture, military, science, and economics
+- Completing Legacy goals speeds up age progression and unlocks rewards
+- Legacy options provide abilities for future ages
+- Crises occur toward the end of every age
+- Crisis policies must be assigned (often with negative effects)
+- The Revolt crisis can cause you to lose a city if happiness is low
+- Age transition shows rankings and rewards compared to other players
+
+## Changing Civilizations Between Ages
+- Pick a civilization with unique units or buildings that complement your strategy
+- Choose yields you're already good at to achieve goals for the next age
+- Your leader will unlock geographical choices
+- Previous gameplay may unlock additional options
+
+## Legacy Rewards
+- How well you did in the previous age determines available rewards
+- Generic options like attribute points for your leader are always available
+- Moving your capital city is often a good idea, especially to powerful coastal cities
+- Put extra points into non-specific benefits when possible
+
+## Exploration Age
+- New Legacy path options become available in each age
+- Goals change to match new game features and mechanics
+- Exploration Age focuses on making money and reaching distant lands
+- Technologies like cartography and shipbuilding are important
+- Only civilization-specific policies carry over between ages
+- Towns need to be reconverted to cities in new ages
+- Stay at or slightly above your settlement limit
+- Avoid deep ocean tiles when exploring
+- The "new world" is usually close and contains treasure resources
+- Specialists can be placed on tiles to enhance yields without expanding
+
+## Victory Mechanics
+- In the final age, you build up legacies toward victory conditions
+- The final age doesn't have a crisis like the first two ages

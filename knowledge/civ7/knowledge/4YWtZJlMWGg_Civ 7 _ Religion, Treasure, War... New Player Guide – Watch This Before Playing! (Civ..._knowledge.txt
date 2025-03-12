@@ -1,0 +1,107 @@
+# Civilization 7 Exploration Age Guide
+
+## General Age Mechanics
+- Exploration Age follows the Antiquity Age
+- Focus on exploring new continents and finding treasure resources
+- The age ends with a plague crisis event
+- Anything not unlocked in the tech/civic trees by the end of the age will be lost
+
+## Legacies
+- Choose legacies based on your performance in the previous age
+- Settlement limit increases are particularly valuable in this age
+- When in doubt, take attribute points as they're versatile for any playstyle
+
+## Capital Placement
+- Having your capital on the coast is advantageous
+- You can change your capital at the start of the age if needed
+
+## Technology
+- Key technologies to research:
+  - Astronomy (unlocks first science building)
+  - Cartography (allows civilian/support units to enter ocean terrain)
+  - Education (needed for science victory path, increases specialist limit)
+  - Shipbuilding (allows safe ocean travel, unlocks treasure fleets)
+- Urban Planning unlocks the ability to stack specialists
+
+## Civics
+- Try to unlock all civics by the end of the age
+  - Piety (unlocks religion)
+  - Economics (unlocks trade routes)
+  - Focus on civics that increase settlement limit (Mastery of Society, Mastery of Colonialism, Social Class, Sovereignty, Imperialism)
+- Complete your civilization-specific civic tree for bonuses
+
+## Units & Exploration
+- Units from previous age can be useful, especially commanders
+- Cogs are your starting naval units - build several for exploration
+- Cogs take damage in open ocean until you research Shipbuilding
+- Cogs can survive 5-6 tiles of open ocean before sinking
+- Cogs can perform coastal raids on encampments and camps
+- Heal damaged ships before continuing exploration
+- Fleet commanders work like land commanders but for naval units
+  - The "Order" promotion gives +5 combat strength to nearby units
+  - The left promotion tree gives combat damage and splash damage
+
+## Settlements
+- Focus on settling distant lands rather than your home continent
+- Use the continent lens to identify distant lands (purple arrow)
+- Aim for 3 cities maximum, with at least one on distant lands
+- Convert towns to cities when they reach 5 population and have improved resources
+- You can buy settlers with gold in towns with 5+ population
+- Keep towns on "Growing Town" focus initially, then switch to "Farming Town"
+- Your settlement limit increases throughout the age - use all available slots
+
+## Resources & Treasure Fleets
+- Prioritize settling near "treasure resources" (creates treasure fleets)
+- Build fishing keys to access sea resources
+- Treasure fleets spawn from treasure resources and must be escorted to your homeland
+- Each treasure fleet provides points toward the treasure victory condition
+- You need 30 treasure points to win the treasure victory
+- Check the resource menu to see how many turns until treasure fleets spawn
+
+## Buildings & Overbuilding
+- Most buildings from the previous age no longer provide benefits
+- Exceptions are "Ageless" buildings (Roman Temple of Jupiter, Basilica) and warehouses (Granary)
+- Bigger numbers generally equal bigger yields
+- Don't build unique buildings on tiles where you've already placed something else
+
+## Religion
+- Build a temple to found a religion
+- Missionaries have 3 charges and must convert urban and rural populations separately
+- Spreading religion to other civilizations is more beneficial than keeping it in your own lands
+- Look for founder beliefs that give yields from foreign civilizations following your religion
+- Relic beliefs can generate relics which provide culture and happiness
+- The Theology civic tree boosts religion significantly
+
+## Government & Policies
+- If unsure which government to choose, Feudal Monarchy gives 20% food which is always useful
+- Suzerainty of city-states allows you to choose bonuses
+
+## Specialists
+- Education increases specialist limit, allowing two specialists on the same tile
+- Stack specialists on tiles with the most yields for maximum benefit
+- When urbanizing, you don't lose population - rural improvements are removed but can be rebuilt
+
+## Combat
+- Defending is easier than attacking
+- One-way cliffs allow you to attack enemies who can't attack back
+- Commanders can be targeted and killed - protect yours and target enemy commanders
+- Plague can kill units, including commanders
+
+## Plague Crisis
+- Plague will appear toward the end of the age
+- It makes citizens unhappy and damages tiles
+- Use physicians (purchased with gold) to treat plague
+- Plague can kill units standing in affected tiles
+- Plague generates migrant population as it resolves
+- Plague will eventually end regardless of your actions
+
+## Economy
+- Your economy grows significantly in this age
+- Use excess gold to purchase buildings and save production for wonders
+- Wonders provide stacking benefits and carry over to the next age
+
+## Miscellaneous Tips
+- If a tile is damaged by disasters, population is temporarily lost but returns when repaired
+- When suzerain of a city-state, you can choose your bonus
+- Escort treasure fleets with military ships for protection
+- Alliances may force you into wars you didn't plan for

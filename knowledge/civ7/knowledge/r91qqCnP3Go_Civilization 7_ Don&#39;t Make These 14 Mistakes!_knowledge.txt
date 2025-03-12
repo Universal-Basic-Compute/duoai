@@ -1,0 +1,58 @@
+# Civilization 7 Tips and Advice
+
+## Starting the Game
+- Begin by exploring the area around your first settlement.
+- Use Scouts' special ability to temporarily gain extra vision and reveal Discovery Tiles at double distance.
+- Locate rival civilizations and independent peoples early.
+- Start claiming territory once your Capital reaches 5 population and you can train a settler.
+
+## Settlement Management
+- Monitor the settlement cap on the top banner to avoid happiness penalties.
+- Increase settlement cap through Civic and Tech Tree unlocks and leader attributes.
+- Place settlements near multiple resources - they can expand to cover tiles up to 3 tiles away.
+- Resources either apply flat effects to your entire civilization or can be assigned to individual settlements.
+- Resource bonuses stack, so duplicates are beneficial.
+- Secure access to oceans on both east and west coasts when possible for exploration.
+- Repair damaged district tiles using gold rather than production for efficiency.
+- Purchase buildings with gold, especially for towns (only way to add buildings to them).
+- Be strategic about building placement, especially for unique District types that require two unique buildings in the same district.
+
+## Resources and Trade
+- Claim distant resources like cocoa, sugar, tea, and spices to prevent rivals from getting them.
+- These resources are especially vital for the Economics Legacy path.
+- Build merchants to establish trade routes.
+- Try to have a trade route with every friendly settlement in range.
+- By default, you can have one trade route per civilization, but can spend influence to add more.
+
+## Military and Combat
+- Always have a Commander with your military units during combat to gain XP and promotions.
+- Commanders can occupy the same tiles as your soldiers and affect nearby units.
+- Units that can't stack into a commander are lost when the age progresses.
+- Send reinforcements to commanders from distant settlements.
+- Expand the unit's action bar (arrow on left) to access upgrade and heal options.
+- Units have severe strength penalties while embarked (including on river tiles).
+- Ships can travel inland on navigable rivers to help attack or defend territories.
+
+## Independent Peoples
+- Hover over hostile units to see which village they belong to.
+- Options for dealing with independent peoples:
+  1. Use influence to befriend them (takes several turns but grants bonuses)
+  2. Eventually incorporate them into your empire with enough influence
+  3. Disperse them militarily for a one-time reward
+
+## Influence and Diplomacy
+- Keep some influence saved for blocking denouncements or quickly converting independents.
+- Monitor rivals' progress by hovering over your portrait in the top right.
+- Consider military action against rivals who are getting ahead.
+
+## Age Progression
+- Track age progress on the trophy in the top left corner.
+- At 75% completion, a universal crisis event triggers (plagues, revolts, etc.).
+- Ages progress at different rates, speeding up as civilizations complete Legacy path Milestones.
+- Golden Age rewards at the end of each Legacy track are the most valuable.
+- Falling behind early can be overcome, but might require aggressive strategies.
+
+## Other Important Tips
+- Secure distant lands for the Economics Legacy path.
+- If militarily behind, consider taking well-placed cities from rivals or eliminating weaker competitors.
+- Avoid fighting everyone at once - be strategic about relationships.

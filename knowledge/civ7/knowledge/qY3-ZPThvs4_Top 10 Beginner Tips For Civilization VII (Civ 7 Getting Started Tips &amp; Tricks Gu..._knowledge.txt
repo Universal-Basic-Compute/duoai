@@ -1,0 +1,60 @@
+# Civilization 7 Beginner Tips
+
+1. **Produce Multiple Scouts Early**
+   - Make 2-3 scouts as your first units
+   - Send them in different directions to uncover the map quickly
+   - Understanding your map layout is crucial for planning
+
+2. **Use In-Game Tutorials and Encyclopedia**
+   - Enable in-game tutorials for popup explanations
+   - Read the Civ 7 encyclopedia thoroughly through the game menu
+   - Learning all mechanics is essential to avoid mistakes
+
+3. **Don't Blindly Follow Advisor Recommendations**
+   - You'll choose an advisor type at the start (Economic, Military, Scientific, or Cultural)
+   - Use advisor recommendations as guidance, not strict rules
+   - Make decisions based on your current needs and strategy
+
+4. **Start Peacefully with Other Leaders**
+   - Greet leaders peacefully in your first playthrough
+   - Peaceful relations allow free border access, more trade routes, and resources
+   - You can become hostile later if needed
+
+5. **Expand Your Empire Quickly**
+   - Produce settlers early to establish new settlements
+   - Try to dominate the majority of your starting continent
+   - Choose settlement locations with abundant resource tiles nearby
+
+6. **Continuously Produce Military Units**
+   - Always have some military production happening
+   - Maintain at least 1-2 military units at every settlement
+   - Aim for an army commander with full troops at each settlement eventually
+   - Include naval units for coastal or river settlements
+
+7. **Leave Towns as Towns Initially**
+   - New settlements start as towns before they can be converted to cities
+   - Towns can produce things immediately with gold instead of waiting turns
+   - Towns can be specialized to increase resource yields
+   - Convert to cities only after you've produced what you need
+
+8. **Utilize Espionage Actions**
+   - Use espionage to steal technology and government styles from other leaders
+   - These actions cost influence but are worth the investment
+   - Getting caught typically only results in diplomatic penalties
+
+9. **Don't Worry About Water in the Antiquity Age**
+   - You can't access open ocean tiles until the Exploration Age
+   - Focus on uncovering land tiles first
+   - Save naval exploration for after the Antiquity Age
+
+10. **Keep Up with Your Legacy Path**
+    - Your advisor choice determines your Legacy Path (like a main quest)
+    - Complete Legacy Path objectives to make progress
+    - Your progress is compared to other leaders at the end of each age
+    - Try to advance further than AI leaders on your chosen path
+
+11. **Additional Notes**
+    - Maps in Civ 7 are randomized
+    - Happiness level affects your civilization's stability
+    - Different civilizations may have unique units (settlers might be called something different)
+    - You can specialize towns to boost specific resources

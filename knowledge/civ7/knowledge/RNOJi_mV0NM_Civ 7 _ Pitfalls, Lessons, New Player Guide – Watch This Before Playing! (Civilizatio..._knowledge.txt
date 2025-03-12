@@ -1,0 +1,102 @@
+# Civilization 7 Tips and Knowledge Guide
+
+## Starting Your First Game
+- Play as Augustus with Rome in your first game - they're a neutral pairing that doesn't change fundamental game understanding
+- Start in the Antiquity age
+- Set difficulty to Governor, as the AI is much more powerful compared to previous editions
+- Keep tutorials on
+- Turn on all three lens options: Hex grid, resources, and yields
+- Settle next to water
+
+## Initial Setup and Units
+- Your first settler is called a founder and creates your capital city
+- First unit only costs one production - choose a Scout over a Warrior for exploration
+- Build a second Scout after your first one
+- Use the "search" button with Scouts (costs 1 movement) to reveal more of the map and locations of significance
+- Scouts cannot attack but can safely move past hostile units
+
+## Movement and Terrain
+- Rough terrain (rainforests, rivers) ends your turn when entered but only costs 1 movement
+- Movement system is similar to Civ 5
+
+## Technology and Civics
+- Research sailing, pottery, animal husbandry, and masonry early to boost regular tile improvements
+- Rush writing to unlock libraries
+- After writing, go for currency to unlock Specialists
+- Focus on culture at the beginning of the game
+- Research mysticism, discipline, and code of laws early as they unlock essential game aspects
+- Research everything in your nation-specific Civic tree by the end of Antiquity age or lose it
+- Bronze working is essential before going to war
+
+## City Growth and Districts
+- Every tile has only one improvement associated with it
+- Only improved tiles give you yields
+- When a city gains population, you can grow by making a rural district
+- Urban districts must be placed next to other urban districts
+- Don't replace rural districts with urban districts as you'll lose the improvement
+- The city center starts with a palace which counts as a building
+- Every urban district can have up to two buildings
+
+## Resources and Improvements
+- Gold and silver are the most powerful resources - prioritize settling near them
+- Improved resources can be found in the resource allocation tab
+- Resources can only be reallocated when you improve a resource
+- Warehouse buildings (like Granary) improve tiles around them
+- Ageless buildings should be built during the Antiquity age
+
+## Settlements and Towns
+- You start with a settlement limit of 3 - always max this out without exceeding it
+- Settlers don't cost population to build
+- Towns are different from cities - they remain "growing towns" until they hit 7 population
+- Towns focus on food and have no production queue (production converts to gold)
+- You can buy warehouse buildings in towns with gold
+- At population 7, towns can be converted to cities
+- Don't settle more than about 10 tiles away from existing settlements
+
+## Military and Commanders
+- Always maintain a standing army - villages/barbarians are very dangerous
+- Commanders act like great generals with a range of one tile
+- Military units don't gain experience - commanders do
+- Keep commanders stacked with military units to protect them
+- Use the "reinforce army" button to teleport commanders to troops
+- Denounce civilizations before declaring war to avoid penalties
+- Defending is easier than attacking - fortify when under attack
+- Have about 2 troops for every settlement you own
+- Garrison coastal cities with galleys to prevent pillaging
+
+## Merchants and Trade
+- Merchants must physically walk across the map to create trading posts
+- Trading posts give you copies of all resources the target has improved
+- Trading posts also create roads between settlements
+- Make a merchant every 15-20 turns
+
+## Social Policies and Government
+- When unsure which government to pick, choose oligarchy
+- Focus on policies that give food bonuses
+- "Clan networks" social policy gives 2 food in all settlements - vital to have
+- After unlocking currency, change policies to ones that benefit all settlements
+
+## Specialists and Buildings
+- Specialists are unlocked with currency tech
+- Specialists consume happiness and food but provide significant bonuses
+- Look for buildings with adjacency bonuses for specialists
+- Libraries are essential for science victory
+
+## Legacy Paths and Victory
+- Four legacy paths: culture, military, science, and economic
+- Science is easiest for beginners - requires 10 codices on display
+- Economic victory requires 20 resources in settlements
+
+## Crisis and Late Game
+- Crisis begins about 70% through the age
+- Choose the least bad option during crisis events
+- Always build your civilization's favored wonder
+- Try to have coastal settlements before entering the Exploration age
+
+## General Tips
+- Food is always valuable - focus on food-generating improvements and policies
+- Keep settlements connected by roads
+- When the AI offers a deal, the middle option usually costs nothing and gives benefits
+- Watch for narrative events that give free codices or other bonuses
+- Natural wonders have impressive yields - prioritize settling near them
+- Campfires (goodie huts) provide benefits when discovered

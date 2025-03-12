@@ -1,0 +1,393 @@
+civilization 7 has just released and
+there's quite a bit under the hood that
+is still left to be explored in this
+video I'm going to give you eight tips
+for civilization 7 that other people
+will not tell you in Civ 7 when a world
+wonder is completed you'll receive a
+notification on the right hand side of
+your screen the problem is that there's
+no way to track this so unless you've
+been writing them down it's going to be
+difficult to remember throughout the
+course of a game which world wonders
+have been built and which ones haven't
+here's our first tip if you open up the
+city screen hit view hidden and scroll
+all the way down to where the Wonders
+are you'll see that there are a whole
+bunch of Wonders that are available to
+build every single one of these wonders
+is available to build right now in this
+city with these specific tiles we could
+fit monx Mound we could fit Oracle
+somewhere in this city and the
+interesting thing about this tab is it
+only shows you what you can build right
+now all of these Technologies even
+though we don't have them we would still
+be able to fit these somewhere in this
+city I'll show you an example we don't
+see the pyramid in here right now
+between pyramid of the Sun and San sta
+there is nothing however when we acquire
+the tile that we need for the pyramids
+which is this one here a desert tile
+adjacent to a navigable river you'll
+take a look inside the Wonder listing
+and all the way at the bottom the
+pyramids is now available so not only
+does this show which world wonders are
+available to build but whether or not
+you've got somewhere to place them in
+Civ 7 there is no roll button that means
+that when you spawn in as Isabella and
+there's no natural wonder you got to do
+it the hard way you have to go back to
+the main menu you have to quit and you
+have to put all of those details back in
+that you started the game with however
+here's a little tip for you let's just
+do this once we'll grab our momentos
+we'll grab all the things that we like
+we'll pick our Antiquity age we'll pick
+our civilization our difficulty our
+speed our Map size and then what we're
+going to do is hit the save config
+button now what this is going to do is
+save this configuration so that even if
+I was to come back in and not even pick
+a leader just leave this as a random
+leader as long as I load that
+configuration it's always going to bring
+me back in as Isabella with those
+momentos and give me the exact same
+thing that I've saved now there's one
+problem with this and that problem is
+that it will always give you the same
+map so here's a little way around it now
+it's a different map this time because
+we saved the map seed from the previous
+one and we've got a beautiful world one
+or natural wonder right here but let me
+just show you the way that you get
+around it so the problem is when you
+load uh a configuration it's going to
+load the um the map seed so you can see
+this is our new map seed right here so
+what I'm going to do is I'm going to
+copy this map seed I'm going to load the
+configuration I'm going to hit that
+button it's reverted back to our
+previous map seed and then I'm just
+going to drop the map seed in right
+there and now we'll have Isabella with
+all of our momentos with the new map and
+we've got it's essentially a roll
+function with a couple of extra clicks
+I've seen a couple of high-profile
+reviews of civ7 that have said that
+there's no next action button that's a
+button that you can just simply press to
+go to your next action whether that be
+perhaps opening up your technology or
+opening your next production or perhaps
+even going to your next unit but the
+truth is there is actually this button
+they've just mislabeled it it's not
+actually listed as a next action button
+so if you go into the options come to
+keyboard and mouse go to configure and
+the next turn button what I've got it
+sitting on at the moment is mouse 6 the
+same button that I use to go back and
+forward on web pages and I'd recommend
+you do the same that way you can put
+your feet up and just slowly go to your
+next action wherever it may be all with
+one hand the next tip is about influence
+and not spending it I know it seems
+counterintuitive because you've got
+these research collaborations or
+cultural agreements that you want to get
+out there and you want to start bringing
+in those resources but influence is a
+much more important resource because you
+use it to nurture relationships and if
+you don't have it when somebody offers
+you something there is a risk that
+things can get bad one of the key
+components to any agreement is going to
+be supporting it and when you do that
+there's going to be a more powerful Bond
+that's built between you and the other
+leader it means that your relationship
+will grow more quickly than if you were
+to Simply accept their agreement rather
+than support it by doing this by
+supporting the agreement your
+relationship improves faster and it
+reduces the risk that they go to war
+with you if you want to go to war that's
+absolutely fine but ideally I'd like to
+be the one calling the shots so it
+doesn't mean not spending your influence
+at all it just means holding off on
+spending that influence very early
+waiting until you've met all of the
+leaders introduced yourself to to them
+kindly and at that point you can start
+to send out your agreements you're not
+actually limited by how many agreements
+you can accept from the other leaders
+but you are limited with how many you
+can send out so the suggestion that I
+put forward is that you avoid sending
+out your own agreements until your
+confident you've got enough influence in
+the bank so that if you're offered
+anything you're going to be able to
+support it a huge component of civ7 is
+being able to unlock the unique momentos
+and upgrades that are available to each
+leader and one of the best ways that you
+can level Your Leader is by completing
+Legacy paths So the faster you can
+complete Legacy paths and the more often
+you can complete all of them then the
+sooner you'll be able to level up your
+leader in this game we're at turn 75
+with 100% Legacy completion or age
+progress we've done every single Legacy
+path all four of them and we finished
+the game at turn 75 we've done this
+because the speed is listed as online
+now in the games that you play it
+doesn't really matter what speed you
+play on the main thing that you need to
+change is in the settings there is a
+very specific setting that changes the
+length of the age every time you
+progress towards a legacy path it is
+going to push that percentage up and by
+putting long rather than standard it's
+going to mean that as you get closer to
+that Legacy path being completed that
+the percentage won't be kicked over as
+high each time you get closer this
+allows you to more frequently pick up
+these unlocks so if we take here a look
+at uh we'll have a look at aler we'll go
+Harriet Tubman you can see that she's
+got a whole bunch of challenges that
+need to be completed and if you can
+complete these all at the same time it's
+going to save you time and at the same
+time it's going to be very efficient for
+you gaining experience towards her
+unlocks just to take a look at some of
+them we go have a look at Harriet you
+can see that she's got a guiding line at
+level two or at level five she's got
+Satchel or at level 9 she's got sidearm
+this is an incredibly powerful momento
+and the sooner that you can unlock it
+the sooner you can take it into battle
+of course this applies to absolutely any
+leader and it's exactly how I've got
+Isabella to level 5 we still need to get
+her to level 9 though because there is
+something very very special we want to
+get with this tip we'll be looking to
+maximize the efficiency that we can get
+out of a specialized town when you
+specialize a town There's a number of
+different bonus that you can choose from
+and making sure you've got as many
+citizens that are doing the relevant job
+can give you a much larger bonus than if
+you've got citizens that aren't doing a
+job that is conducive to that bonus so
+we'll use migrants to simulate the
+growth of a town that you would
+experience normally you wouldn't have
+these migrants to help your town grow
+but we're very fortunate in that we're
+playing the Kamai and they like to grow
+very big uh so we've grown from to the K
+the cin the kin uh and then out to the
+cotton and I think we might grow down
+towards these pearls as well cuz they
+give a nice little happiness bonus and
+we might take the dies as well so if we
+were to do some maths right here we can
+take a look at the two options we've got
+farming town and mining town camps wood
+cutters clay pits mines and quaries
+versus Farms pastures plantations and
+fishing boats and we'll see there's one
+2 three that we've currently got for the
+food for the food bonus and one two
+three for the production bonus so what
+we can do is utilize the buildings
+available inside the town itself and
+push these citizens out of tiles that we
+had to work previously to get access to
+the resources so we wouldn't have been
+able to get this cotton without this
+connector tile but what we can now do is
+we can kick that V or that that citizen
+out so we're going to just go drop down
+a brick works right here now keep in
+mind we are playing as the Kamai they
+get bonuses to the river so you'll see
+some crazy good yields in here that
+we're not going to take and that's very
+specific so uh look don't worry about
+that that that's just purely because of
+the civilization that we're playing here
+the the point is specifically about
+kicking the citizen out that citizen now
+has to relocate and because of that
+that's one less citizen that is being
+wasted on this tile and one more citizen
+that could be working a farm like this
+farm that we've just got right now but
+on top of that we've also got another
+citizen that's working this wood cutter
+we're not going to get this one out of
+the Quarry because it's a resource and
+you're never going to be able to kick
+them out there you can't settle on it
+you can't kick them out but what you can
+do is then grow a couple more uh a
+couple more buildings down to here and
+as long as they're connected like this
+that will then kick this citizen out and
+then you can go grab another resour
+source and with that you'll be able to
+take 1 2 3 4 five citizens compared to
+the three that you had before and that's
+going to give you a bonus of five food
+compared to the three food that you
+would have had before so the next tip is
+to be building more settlements always
+be building more settlements every time
+you add a settlement it's going to be
+increasing everything that you're doing
+in the game it is only a net positive as
+long as there's a couple of things you
+got to watch out for number one you
+don't go above the settlement limit
+within reason now you can go above it as
+long as it's for a short time or as long
+as you've got a happiness base enough to
+support it the other thing to note is
+that it might anger some people so you
+can see he's already settled a little
+bit too close to somebody uh but when we
+put this down that's just going to make
+that even worse it's now up to 40 and
+then with each subsequent settle that is
+going to make that even worse so do keep
+that in mind when you're forward
+settling but just remember that each one
+of these settles is going to be
+contributing resources to our kitty
+there's genuinely no down side to having
+these from a resource perspective look
+just it goes up by three each one of
+these has got a citizen inside we can
+get that citizen to to go to work so we
+might take this tile right here and
+that's given us two gold we' we can take
+this tile right here which is going to
+give us another three gold and we can
+take this tile right here which will
+give us another one gold we've gotten a
+huge amount of gold income each one of
+these cities is going to continue to
+grow in addition to that they're also
+going to be eventually supporting out
+connected cities with additional food it
+is there is no downside to this
+whatsoever now there's a couple of texts
+that you'll need to look out for in the
+early game that are going to be
+instrumental to how many settlements
+that you can have you start off with
+three that goes up to four after you've
+got irrigation once you've got the
+irrigation technology though you'll need
+to look towards the Civic tree because
+the Civic Tre is actually got two it's
+got one in entertainment it's also got
+one in organized military in addition to
+that that will take you up to six a a
+settlement limit of six but in addition
+to that there is also sometimes in the
+specific uh Civics so that is for us
+we're playing as the Mayans here uh
+we've got one down here plus one
+settlement limit so that will take us up
+to 7 now there are other ways that you
+can increase the settlement limit uh I
+think there might even be more increases
+to the settlement limit further on here
+like quite down and advance in these
+Tech trees but those are the primary
+ways that you're going to be looking to
+lift it and that's early on in the game
+you can have up to seven settlements and
+you want to make sure that at every
+single opportunity that you are building
+those one of the things I like to do is
+I like to BU of them so that if I've got
+irrigation Tech that's about to complete
+I make sure I've got that fourth settler
+that is about to come out ready to go
+that way the moment I hit that fourth
+settlement limit I'm able to get that
+fourth settlement down our final tip is
+with regard to movement when you move on
+to specific terrain or goody Huts your
+turn will end that means it doesn't
+matter if you've got one point of
+movement or two points of movement your
+turn will end now this can work in
+circumstances like this where we are
+going to hit this goody Hut without last
+point of movement and that's absolutely
+fine or over here as an example we'll be
+moving out over towards this goody Hut
+and you can see that it'll be one point
+of movement in and then a second one
+through the water and then onto this
+goody Hut however in this turn right
+here with this scout we're going to be
+at a bit of an odd point because we'll
+have our movement in onto this tile and
+then we'll have one point left and we'll
+be wasting that point so what we can do
+is actually get free searches in so
+we'll take our Scout instead of going
+all the way through we'll just come in
+on one tile leave a two tile Gap in
+between us and then hit the search
+button that way we get a free search in
+and next turn we still get to get the
+goody Hut on the exact same turn that
+way we've got a free search and we know
+exactly where we need to go for next
+turn this has been our eight tips for
+civilization 7 if you think that we
+missed any obvious ones then we've done
+our job if you've got any feedback
+negative or positive then make sure you
+Chuck it down in the comments if you've
+enjoyed the video then please feel free
+to leave a like and of course if you're
+looking forward to more civ7 content
+then make sure you hit that subscribe
+button because there is always time for
+one more turn

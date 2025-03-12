@@ -1,0 +1,305 @@
+Civ 7's default UI is
+unfortunately underbaked.
+Fraxis said it'll take the months to
+completely overhaul it,
+but you can make it 10 times
+better today without waiting.
+And it's all thanks to the power of mods.
+Steam Workshop is a
+simple way to manage mods.
+Unfortunately, Civ 7 won't support it
+until sometime after April.
+That means for now, we have to manually
+install mods, which can
+be scary for some people.
+Don't be intimidated though, it's not as
+hard as you might think.
+In this video, I'll walk you through the
+process step by step,
+as well as recommend
+a few mods to check out.
+Let's get started.
+The first thing we need to do is
+find a mod to install.
+The best place to get them
+are the CivFanatics forms.
+Alternatively, Nexus Mods has some
+available, and even has a mod manager
+program, but there's
+a tiny selection and
+it requires an account.
+I'm going to stick with CivFanatics for
+this video, but if you
+download a manual install
+from Nexus Mods, the process to install
+them after will be the same.
+Go to CivFanatics.com, click on
+"Downloads", then
+click on Civ 7 Downloads.
+I'll also include a direct link in the
+description below the like
+button if you prefer that.
+There are categories on the left here, in
+case you want to narrow it down.
+There's also a rotating list of featured
+mods at the top,
+which include some of the
+most popular ones.
+You can use the filter button here to
+filter and sort the list.
+I like to sort by "Downloads" so that the
+most popular and established ones
+show at the top.
+As an example for this video, I think it
+makes sense to use the
+most downloaded mod from
+Sukritact, who was just hired
+by Firaxis thanks to his mods.
+When you click on a mod, you're greeted
+with an overview of what it does.
+Some mods give more info and images, while
+others like this one give less.
+In either case, it's always a good idea
+to read the overview,
+as it often includes
+important info such as
+compatibility with other mods.
+Not all mods can be used together, so
+avoid installing multiple
+mods that affect one aspect
+of the game, such as tooltips or the
+production window, unless
+they explicitly say they are
+compatible with each other.
+It's a good idea to read reviews and
+check the discussion tab
+as well, as they'll often
+point out compatibility issues
+or other bugs.
+I've noticed multiple mods that provide
+numbers that aren't always accurate.
+These mods can still be useful, but it's
+a good idea to keep those flaws in mind.
+You have a higher risk of bugs when using
+mods, especially when
+you use a ton of them.
+It's best to be picky and add them over
+time, rather than
+adding 10 or 20 all at once.
+Avoid mods that are new and untested,
+especially if anything
+sounds unusual or sketchy, to
+avoid installing anything malicious.
+Patches can break mods or
+cause them to be inaccurate too.
+Between that and how new the game is,
+it's a good idea to
+regularly check them for updates.
+I recommend creating a bookmarks folder
+and save every mod you
+use into that folder.
+Occasionally open them all at once and
+quickly check the last
+update info on the right to
+see if it's been updated
+since you last checked.
+If it has, check the update notes section
+to see what's changed, then download and
+install it.
+Once you've downloaded a mod, you need to
+extract it to a folder.
+You can use whatever unzipping method you
+prefer, but for the
+purposes of demonstration,
+I'm just going to right-click on it,
+click Extract All, then click Extract.
+You might end up with an extra duplicate
+folder level, which you
+don't want since it can
+prevent the mod from loading.
+To check, open the new folder and see if
+there's another folder
+named after the mod like you
+see here, or if there are
+other files and folders in it.
+If you see the mod name again,
+then just copy that folder.
+If you see other folders and files like
+I'm showing now, click
+the up button to go up
+one level and copy that folder.
+Regardless of how you got to this folder,
+go to the path bar at the
+top, then type %localappdata%
+and press enter.
+This should take you to your local
+appdata folder, which
+should have a Firaxis Games
+folder inside of it.
+If you get an error, you can get there
+the long way by clicking
+on this PC, double-click
+your C drive, then go to Users, your
+username, then open Appdata.
+If you don't see Appdata, click on View
+at the top, click on
+Show, then click Hidden
+Items.
+Finally, open the local folder to reach
+your local Appdata folder.
+Now open the Firaxis Games folder,
+then Sid Meier's
+Civilization VII, and finally, the
+Mods folder.
+Paste the mod you copied earlier into
+this folder to install it.
+To get here faster in the future, for
+other mods or to install
+updates, you might want
+to pin it to Quick Access.
+Just click the up arrow once, right click
+on the Mods folder,
+then click Pin to Quick
+Access so it always shows on the left
+side here, or pin it to
+the start menu if you prefer.
+Now you can just click on it to go to
+that folder quickly.
+Next, we need to verify the mod is
+detected and working.
+Launch Civ 7.
+Then from the main menu,
+click on additional content.
+Then click on mods.
+Find the mod you just installed, and make
+sure that it shows as enabled.
+From there, you'll want to make sure the
+mod is working by
+testing it, which will vary
+depending on the mod you installed.
+In this example, I see that Sukritact's
+Simple UI Adjustments
+is modifying these plot
+tooltips.
+So that part of the mod is working.
+Now I'm going to suggest some mods,
+starting with two that I
+think are essential for all
+Civ players.
+I'll have links to all of these mods in
+the description below the like button.
+The first I've already touched on is
+Sukritact's Simple UI Adjustments.
+It's focused on UI
+quality of life changes.
+The first two features are simple.
+You can click on a settlement owned by
+somebody else to start
+diplomacy, and plot yield icons
+are smaller on tiles that
+aren't improved or worked yet.
+It also makes many
+improvements to tooltips.
+It'll show the default
+rural improvement.
+All constructables show their icon.
+Wonders get a special icon with a
+description, and buildings
+will show if they are damaged,
+in progress, or ageless.
+It has some other changes that aren't
+shown in the overview,
+but are in the update notes,
+like an improved building placement panel
+to help you make better build decisions.
+The second mod is TCS
+Improved Plot Tooltip.
+TCS is short for The Crazy Scot,
+the modder who makes it.
+This mod is compatible with Sukritact's and
+adds a ton of stuff
+like showing current and
+max specialist counts, district types,
+and better natural wonder descriptions.
+It does way too much stuff to
+cover in just a short blurb.
+Suffice to say, it's an essential Civ 7
+mod that I recommend for everybody.
+Those are the only mods that I've
+extensively played with,
+but there are other mods that
+I've used a little bit or I'm about to
+start using that I wanted to highlight.
+First up is City Hall.
+The main reason why I like it is for the
+improvements to the construction panel.
+It's much more compact
+and readable than vanilla.
+It also highlights repair items in the
+list, so they stand out
+and are less likely to get
+ignored.
+When in settlement view, it uses more
+distinct colors to
+differentiate between urban and
+rural, and changes colors when placing a
+unique district to make it easier to find
+the other unique district to
+complete the unique quarter.
+It makes a number of other changes too.
+I was tempted to put this in the
+essentials section, but I
+haven't played with it enough
+yet to recommend it that strongly.
+Enhanced Town Focus Info will tell you
+how much of a bonus a Town
+Specialization will give you,
+making it easier to decide which one to
+pick and when to pick it.
+It's worth noting this is one
+of the mods where the calculations aren't
+always perfect,
+specifically for urban centers.
+Leonardfactory's policy yield previews
+is similar to the last
+one, except for policies
+instead of towns.
+It'll show bonuses on the policy cards
+when you go to pick them,
+so you have some numbers
+to go off of.
+The overview clearly states it's an
+estimate though, and is
+meant to help you better evaluate
+the options available, rather
+than making the choice for you.
+Discovery Lens adds a map lens that
+highlights discoveries
+that haven't been collected.
+These can be easy to miss or forget
+about, but it
+automatically activates whenever you
+go to move your scout, making it easy.
+Yet (not) Another Map Pack, or YnAMP for
+short, adds larger map
+sizes and new map generation
+options.
+The Continents++ map type aims to have
+less blocky continents,
+and it scales better with
+the larger map sizes that the mod adds.
+Some features are experimental and known
+to be buggy, so read the overview to know
+which options are considered
+playable and stick with those.
+There are tons of great mods out there!
+Let everybody know which are your
+favorites in the comments down below.
+If you got value out of this video,
+please consider liking and subscribing.
+It's a huge help for the channel, and I
+greatly appreciate it.
+If you're looking for more to watch,
+check out this video!
+Until next time, this is Podosniper...
+logging out.

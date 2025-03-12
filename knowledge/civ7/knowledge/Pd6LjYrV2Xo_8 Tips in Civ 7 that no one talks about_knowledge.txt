@@ -1,0 +1,55 @@
+# Civilization 7 Tips & Tricks
+
+## World Wonders
+- Track available wonders by opening the city screen, clicking "View Hidden," and scrolling to the Wonders section
+- This only shows wonders you can currently build in that specific city with available tiles
+- Wonders will appear/disappear from this list based on whether you have appropriate tiles for placement
+
+## Game Setup
+- Save your game configuration using the "Save Config" button to avoid re-entering settings
+- To "reroll" maps while keeping your leader/settings:
+  1. Save your configuration
+  2. Copy the current map seed
+  3. Load your saved configuration
+  4. Replace the map seed with your copied one
+
+## Controls
+- There is a "Next Action" button, but it's mislabeled
+- Configure it in Options > Keyboard and Mouse > Configure
+- Setting it to Mouse 6 (browser back/forward button) allows one-handed play
+
+## Influence Management
+- Don't spend influence too early
+- Save influence to support agreements offered by other leaders
+- Supporting agreements (rather than just accepting) builds stronger bonds
+- Wait until you've met all leaders before sending out your own agreements
+- You're limited in how many agreements you can send, but not how many you can accept
+
+## Leader Progression
+- Complete Legacy paths to level up your leader faster
+- In game settings, change the age length to "Long" instead of "Standard"
+- This allows you to complete more Legacy paths before advancing to the next age
+- Try to complete multiple challenges simultaneously for efficiency
+- Higher leader levels unlock powerful momentos (special abilities)
+
+## Specialized Towns
+- Maximize specialized town bonuses by ensuring citizens work relevant jobs
+- Kick citizens off connector tiles by building structures on them
+- This frees citizens to work more productive tiles that match your specialization
+- Example: For a farming town, move citizens from non-farm tiles to farm tiles
+
+## Settlement Expansion
+- Always build more settlements (within reason)
+- Each new settlement increases your overall resources
+- Watch out for the settlement limit and happiness
+- Forward settling may anger nearby civilizations
+- Technologies that increase settlement limit:
+  - Irrigation (increases to 4)
+  - Entertainment civic (increases further)
+  - Organized Military civic (increases further)
+  - Some civilization-specific civics provide additional limits
+
+## Movement Optimization
+- Moving onto goody huts or certain terrain ends your turn regardless of remaining movement
+- If you have extra movement points before reaching a goody hut, use them to search tiles
+- Example: Move to within 2 tiles of a goody hut, use "search" action, then reach the hut next turn

@@ -1,0 +1,77 @@
+# Civilization 7: Complete Knowledge & Tips Guide
+
+## Empire Planning
+- Identify 5-6 good expansion locations early in the game.
+- Prioritize settling near natural wonders immediately when you reach 5 population.
+- When you discover neighbors, consider placing "blocker cities" to secure territory.
+- Settle at least 4-5 tiles away from enemy borders to avoid diplomatic penalties.
+- Avoid having your borders touch enemy borders as this creates negative diplomatic modifiers.
+- Use scouts to block enemy settlers from reaching prime settlement locations.
+
+## Defining Borders
+- Use natural terrain as defensive borders (mountains, navigable rivers, volcanoes).
+- Navigable rivers are excellent defensive barriers as units must embark to cross them.
+- Don't spread yourself too thin - avoid settling far from your core territory.
+- Consider the defensibility of potential settlements when expanding.
+- Visualize your empire's natural borders before expanding.
+
+## City Planning
+- Maintain approximately a 1:1 town-to-city ratio.
+- Cities should have high production potential.
+- Towns should feed into nearby cities - they can't send food to distant cities.
+- Farming towns are generally the best specialization for most situations.
+- Coastal towns with fishing resources make excellent specialized food producers.
+- Towns must be directly connected to cities to feed them (via roads or water).
+
+## City Building
+- Buildings fall into four main categories with different adjacency bonuses:
+  1. Normal buildings (granary, fishing key, etc.) - no adjacency bonuses
+  2. Food/Gold buildings - benefit from water adjacency (rivers, lakes, coast)
+  3. Production/Science buildings - benefit from resource adjacency
+  4. Happiness/Culture buildings - benefit from mountains and natural wonders
+
+- Cluster buildings together to maximize adjacency bonuses.
+- Your Palace (capital only) provides adjacency bonuses to all quarters around it.
+- Two buildings on the same tile form a quarter.
+- World wonders provide adjacency bonuses to everything placed next to them.
+- Never split up unique quarter buildings - always keep them together.
+- Warehouse buildings (granary, brickyard, etc.) cannot be replaced later.
+- Consider limiting warehouse buildings to 1-2 per city since they can't be overbuilt.
+
+## Specialists
+- Specialists can only be placed on urban districts (not rural districts).
+- Base specialist yields are 2 science and 2 culture.
+- Specialists amplify adjacency bonuses by 0.5x.
+- Specialists cause -2 happiness.
+- Increase specialist limits through:
+  - Researching Currency (first specialist)
+  - Building Angkor Wat (+1 specialist limit)
+  - Expansionist tree (+1 specialist limit but -1 settlement limit)
+- Place specialists on tiles with high adjacency bonuses to maximize their value.
+
+## Roads
+- Roads form automatically between settlements within 11 tiles of each other.
+- Roads connect to the closest settlement, which can sometimes cause issues.
+- Use merchants to manually create road connections when needed.
+- Food sent from towns follows roads to connected cities.
+- Food can be intercepted by cities along the road network.
+- Water connections can send food without roads.
+- Check town details to see where food is being sent.
+
+## Overbuilding
+- When entering a new age, yields from previous age buildings are capped at 2 per yield.
+- You can build new age buildings on top of old ones (overbuilding).
+- You cannot overbuild on warehouse buildings (granary, saw pit, etc.) or unique districts.
+- Avoid overbuilding on buildings that provide influence (a rare resource).
+- Buildings with multiple yields can be more valuable to keep.
+- Prioritize keeping production and science buildings over happiness buildings.
+- Each building has maintenance costs (gold and/or happiness), so replacing inefficient buildings is beneficial.
+- Different resources become available or unavailable in different ages, affecting adjacency bonuses.
+
+## General Tips
+- Managing relationships with AI is crucial in Civ 7 - they won't randomly declare war.
+- To exceed settlement limits at age transitions, position multiple settlers to found towns on the last turn before the age changes.
+- Specialists are lost when transitioning to a new age and must be reassigned.
+- The Mayan civilization is particularly strong in the Antiquity age.
+- Use trade ships to connect coastal settlements.
+- Pantheons are lost when entering the Exploration age.

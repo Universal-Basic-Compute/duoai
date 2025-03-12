@@ -1,0 +1,57 @@
+# Civilization 7 Beginner Tips
+
+## Exploration
+1. Don't send Scouts wandering aimlessly into fog at the start
+2. Scouts have a new ability that temporarily grants extra vision and reveals Discovery Tiles at double distance
+3. Discovery Tiles trigger narrative events with two reward choices
+4. Find rival civilizations early to plan your strategy
+
+## Settlements
+5. Start claiming territory once your Capital reaches 5 population
+6. Watch your settlement cap to avoid happiness penalties that restrict growth and cause revolts
+7. Increase settlement cap via Civic and Tech Tree unlocks and Leader attributes
+8. Found settlements near multiple resources (settlements can expand up to 3 tiles away)
+9. Resource bonuses stack, so duplicates are beneficial
+10. Secure access to oceans on both east and west coasts when possible for exploration
+
+## Independent Peoples (Villages)
+11. Hover over enemy units to see which village they belong to
+12. Use influence to befriend independent peoples for bonuses
+13. Eventually incorporate friendly independent peoples into your empire
+14. Alternatively, disperse them with military for one-time rewards
+
+## Military
+15. Always have commanders nearby during combat to gain XP and promotions
+16. Train extra commanders to keep armies strong between ages
+17. Use the "reinforce" option to send units to distant commanders
+18. Expand unit action bars (arrow on left) for upgrade and heal options
+19. Land units have severe strength penalties when embarked on ships or rivers
+20. Ships can now travel further inland via navigable rivers
+
+## Maintenance & Repairs
+21. Repair damaged districts using gold (faster and more efficient than production)
+22. Purchase units or buildings with gold to expand quickly
+23. Towns can only add buildings through purchasing
+
+## Districts & Buildings
+24. Be careful with building placement, especially for unique district types
+25. Placing unique buildings in wrong spots can lock you out of unique districts
+26. No warning appears if you're about to lock yourself out of unique districts
+
+## Influence & Diplomacy
+27. Keep some influence saved for blocking denouncements or converting independents
+28. Monitor rivals' progress by hovering over your portrait in top right
+29. Establish trade routes with friendly settlements in range
+30. You can have one trade route per civilization by default, spend influence for more
+
+## Ages & Crises
+31. Track age progress via the trophy in top left corner
+32. Crisis events trigger when an age reaches 70% completion
+33. Ages progress faster as civilizations complete Legacy path milestones
+34. Golden Age rewards at the end of Legacy tracks are most valuable
+
+## General Strategy
+35. Don't neglect your military even if pursuing non-military victory paths
+36. Consider taking cities from or eliminating rivals who get too far ahead
+37. Economic Legacy path requires settlements on distant lands for special resources
+38. Claim resources to prevent other civilizations from accessing them

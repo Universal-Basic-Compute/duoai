@@ -1,0 +1,62 @@
+# Civilization 7 Modding Guide: Knowledge and Tips
+
+## Installing Mods
+- Steam Workshop support won't be available until after April; manual installation is required for now
+- Best sources for mods: CivFanatics forums and Nexus Mods (though Nexus has fewer options)
+- Installation path: `%localappdata%\Firaxis Games\Sid Meier's Civilization VII\Mods`
+- For faster future access, pin the Mods folder to Quick Access or Start menu
+- After installation, verify mods are working by checking "Additional Content" → "Mods" in the main menu
+
+## Mod Management Tips
+- Create a bookmarks folder for all your installed mods to easily check for updates
+- Avoid installing multiple mods that affect the same aspect of the game unless explicitly compatible
+- Add mods gradually rather than many at once to reduce risk of conflicts
+- Read reviews and discussion tabs to identify potential issues or inaccuracies
+- Game patches can break mods or cause them to become inaccurate
+- Be cautious with new/untested mods to avoid potential malicious content
+
+## Recommended Essential Mods
+1. **Sukritact's Simple UI Adjustments**:
+   - Click on settlements to start diplomacy
+   - Smaller yield icons on unimproved/unworked tiles
+   - Enhanced tooltips showing default rural improvements
+   - Constructables display their icons
+   - Wonders get special icons with descriptions
+   - Buildings show damage/progress status
+   - Improved building placement panel
+
+2. **TCS Improved Plot Tooltip**:
+   - Compatible with Sukritact's mod
+   - Shows current and max specialist counts
+   - Displays district types
+   - Better natural wonder descriptions
+   - Many other tooltip improvements
+
+## Other Recommended Mods
+1. **City Hall**:
+   - More compact and readable construction panel
+   - Highlights repair items in lists
+   - Uses distinct colors for urban/rural in settlement view
+   - Changes colors when placing unique districts
+
+2. **Enhanced Town Focus Info**:
+   - Shows bonus values for Town Specializations
+   - Note: calculations aren't always perfect for urban centers
+
+3. **Leonardfactory's Policy Yield Previews**:
+   - Shows estimated bonuses on policy cards
+   - Helps evaluate options but doesn't make choices for you
+
+4. **Discovery Lens**:
+   - Highlights undiscovered items on the map
+   - Automatically activates when moving scouts
+
+5. **Yet (not) Another Map Pack (YnAMP)**:
+   - Adds larger map sizes
+   - Includes Continents++ map type with less blocky continents
+   - Some features are experimental/buggy
+
+## General Civ 7 UI Information
+- The default UI is considered underbaked by many players
+- Firaxis has stated it will take months to completely overhaul it
+- Mods can significantly improve the UI experience while waiting for official updates

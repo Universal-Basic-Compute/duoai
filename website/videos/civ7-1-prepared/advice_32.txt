@@ -1,0 +1,1 @@
+You're currently in the resource allocation screen, but no resources are available to assign yet. Wait until you acquire resources through improvements or trade routes before attempting to allocate them. For now, continue exploring and developing your settlements to generate new resource opportunities.

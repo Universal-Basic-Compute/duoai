@@ -1,0 +1,2922 @@
+[
+  {
+    "text": "hello everybody and welcome my name is",
+    "start": 0.04,
+    "duration": 4.239
+  },
+  {
+    "text": "USA Ryan today we're going to be jumping",
+    "start": 2.159,
+    "duration": 5.12
+  },
+  {
+    "text": "into Civ 7's exploration age my aim",
+    "start": 4.279,
+    "duration": 4.761
+  },
+  {
+    "text": "today is to give you an understanding of",
+    "start": 7.279,
+    "duration": 4.001
+  },
+  {
+    "text": "the gaml you should expect when you play",
+    "start": 9.04,
+    "duration": 4.2
+  },
+  {
+    "text": "this age the first time we're going to",
+    "start": 11.28,
+    "duration": 3.439
+  },
+  {
+    "text": "go through all of the most important",
+    "start": 13.24,
+    "duration": 3.24
+  },
+  {
+    "text": "bits of the age and I'm going to be",
+    "start": 14.719,
+    "duration": 4.281
+  },
+  {
+    "text": "updating you with a whole list of things",
+    "start": 16.48,
+    "duration": 4.92
+  },
+  {
+    "text": "to watch out for errors and pitfalls",
+    "start": 19.0,
+    "duration": 4.32
+  },
+  {
+    "text": "that you can avoid I've made these",
+    "start": 21.4,
+    "duration": 4.08
+  },
+  {
+    "text": "mistakes you don't have to watch this",
+    "start": 23.32,
+    "duration": 4.799
+  },
+  {
+    "text": "video absorb all of my brain juice and",
+    "start": 25.48,
+    "duration": 4.279
+  },
+  {
+    "text": "you'll be playing the exploration age",
+    "start": 28.119,
+    "duration": 3.841
+  },
+  {
+    "text": "like an absolute champ before you know",
+    "start": 29.759,
+    "duration": 5.601
+  },
+  {
+    "text": "it let's just get started one of the",
+    "start": 31.96,
+    "duration": 4.759
+  },
+  {
+    "text": "first things you're going to see when",
+    "start": 35.36,
+    "duration": 3.519
+  },
+  {
+    "text": "you boot up the exploration age is a",
+    "start": 36.719,
+    "duration": 4.401
+  },
+  {
+    "text": "choice of legacies available to you",
+    "start": 38.879,
+    "duration": 4.881
+  },
+  {
+    "text": "depending on how well or badly you did",
+    "start": 41.12,
+    "duration": 4.4
+  },
+  {
+    "text": "in the previous age if this is your",
+    "start": 43.76,
+    "duration": 4.0
+  },
+  {
+    "text": "first game don't get bogged down by all",
+    "start": 45.52,
+    "duration": 4.28
+  },
+  {
+    "text": "of the decisions just yet there's time",
+    "start": 47.76,
+    "duration": 4.0
+  },
+  {
+    "text": "to optimize there are ones that are",
+    "start": 49.8,
+    "duration": 4.2
+  },
+  {
+    "text": "easier to do than others exploration is",
+    "start": 51.76,
+    "duration": 4.84
+  },
+  {
+    "text": "all about you guessed it exploration so",
+    "start": 54.0,
+    "duration": 4.48
+  },
+  {
+    "text": "anything giving you settlement limit",
+    "start": 56.6,
+    "duration": 4.279
+  },
+  {
+    "text": "should definitely be taken otherwise if",
+    "start": 58.48,
+    "duration": 4.84
+  },
+  {
+    "text": "in doubt take attribute points these",
+    "start": 60.879,
+    "duration": 4.761
+  },
+  {
+    "text": "things are incredibly versatile and will",
+    "start": 63.32,
+    "duration": 4.159
+  },
+  {
+    "text": "help you no matter what play style",
+    "start": 65.64,
+    "duration": 3.64
+  },
+  {
+    "text": "you're doing at this stage you will have",
+    "start": 67.479,
+    "duration": 4.361
+  },
+  {
+    "text": "the option to change your Capital if",
+    "start": 69.28,
+    "duration": 4.96
+  },
+  {
+    "text": "your capital is already on the coast you",
+    "start": 71.84,
+    "duration": 4.52
+  },
+  {
+    "text": "don't need to do anything if it isn't I",
+    "start": 74.24,
+    "duration": 4.12
+  },
+  {
+    "text": "would advise putting it on the coast for",
+    "start": 76.36,
+    "duration": 4.759
+  },
+  {
+    "text": "me Roma is by far my best city and it's",
+    "start": 78.36,
+    "duration": 4.52
+  },
+  {
+    "text": "on the coast so I'm not going to bother",
+    "start": 81.119,
+    "duration": 3.441
+  },
+  {
+    "text": "changing it there is a whole new Tech",
+    "start": 82.88,
+    "duration": 3.72
+  },
+  {
+    "text": "Tree in the exploration age we won't get",
+    "start": 84.56,
+    "duration": 4.04
+  },
+  {
+    "text": "bogged down by Victory and Legacy",
+    "start": 86.6,
+    "duration": 3.64
+  },
+  {
+    "text": "Pathways just yet instead instead in",
+    "start": 88.6,
+    "duration": 3.28
+  },
+  {
+    "text": "this age we are going to be again",
+    "start": 90.24,
+    "duration": 3.96
+  },
+  {
+    "text": "focusing on the science Legacy pathway",
+    "start": 91.88,
+    "duration": 4.12
+  },
+  {
+    "text": "it's the easiest to get your head around",
+    "start": 94.2,
+    "duration": 3.36
+  },
+  {
+    "text": "and it generally leaves you with a very",
+    "start": 96.0,
+    "duration": 3.759
+  },
+  {
+    "text": "powerful Empire in order to undertake",
+    "start": 97.56,
+    "duration": 4.559
+  },
+  {
+    "text": "this we need to be researching education",
+    "start": 99.759,
+    "duration": 3.961
+  },
+  {
+    "text": "which can be found at the bottom of the",
+    "start": 102.119,
+    "duration": 3.561
+  },
+  {
+    "text": "tech tree other major techs to keep an",
+    "start": 103.72,
+    "duration": 4.2
+  },
+  {
+    "text": "eye out for are astronomy which unlocks",
+    "start": 105.68,
+    "duration": 4.52
+  },
+  {
+    "text": "the first science building cartography",
+    "start": 107.92,
+    "duration": 3.92
+  },
+  {
+    "text": "which will let your civilian and support",
+    "start": 110.2,
+    "duration": 3.559
+  },
+  {
+    "text": "units enter ocean terrain the",
+    "start": 111.84,
+    "duration": 3.84
+  },
+  {
+    "text": "forementioned education which is what we",
+    "start": 113.759,
+    "duration": 4.561
+  },
+  {
+    "text": "need to unlock to get the Victory and",
+    "start": 115.68,
+    "duration": 5.2
+  },
+  {
+    "text": "ship building an essential piece of tech",
+    "start": 118.32,
+    "duration": 5.0
+  },
+  {
+    "text": "that will allow you to safely Traverse",
+    "start": 120.88,
+    "duration": 4.279
+  },
+  {
+    "text": "open ocean I'm not going to talk about",
+    "start": 123.32,
+    "duration": 3.6
+  },
+  {
+    "text": "this too much but my plan is to go",
+    "start": 125.159,
+    "duration": 3.96
+  },
+  {
+    "text": "astronomy cartography and then make my",
+    "start": 126.92,
+    "duration": 3.88
+  },
+  {
+    "text": "way to these two texts when thinking",
+    "start": 129.119,
+    "duration": 3.921
+  },
+  {
+    "text": "about Civics just like in Antiquity by",
+    "start": 130.8,
+    "duration": 4.439
+  },
+  {
+    "text": "the end of this age you want to unlock",
+    "start": 133.04,
+    "duration": 4.0
+  },
+  {
+    "text": "everything in here it'll let you take it",
+    "start": 135.239,
+    "duration": 3.401
+  },
+  {
+    "text": "through to the Modern Edge anything you",
+    "start": 137.04,
+    "duration": 3.8
+  },
+  {
+    "text": "don't unlock will be lost otherwise",
+    "start": 138.64,
+    "duration": 4.319
+  },
+  {
+    "text": "focus on getting piety this will unlock",
+    "start": 140.84,
+    "duration": 4.0
+  },
+  {
+    "text": "your religion which is an essential",
+    "start": 142.959,
+    "duration": 4.441
+  },
+  {
+    "text": "piece of Kit in this age economics this",
+    "start": 144.84,
+    "duration": 4.32
+  },
+  {
+    "text": "will let you unlock trade routes and",
+    "start": 147.4,
+    "duration": 3.119
+  },
+  {
+    "text": "after that point I'm going to be",
+    "start": 149.16,
+    "duration": 3.32
+  },
+  {
+    "text": "focusing on anything that gives me",
+    "start": 150.519,
+    "duration": 4.241
+  },
+  {
+    "text": "settlement limit the Mastery of society",
+    "start": 152.48,
+    "duration": 4.399
+  },
+  {
+    "text": "the Mastery of colonialism and all of",
+    "start": 154.76,
+    "duration": 4.119
+  },
+  {
+    "text": "these social class sovereignty and",
+    "start": 156.879,
+    "duration": 4.801
+  },
+  {
+    "text": "imperialism Civics exploration is all",
+    "start": 158.879,
+    "duration": 5.401
+  },
+  {
+    "text": "about settlement cap keep pushing it up",
+    "start": 161.68,
+    "duration": 4.639
+  },
+  {
+    "text": "you'll notice that a lot of your units",
+    "start": 164.28,
+    "duration": 3.72
+  },
+  {
+    "text": "will have made it through to the next",
+    "start": 166.319,
+    "duration": 3.801
+  },
+  {
+    "text": "age broadly speaking these can be left",
+    "start": 168.0,
+    "duration": 3.959
+  },
+  {
+    "text": "at home you need to keep your home",
+    "start": 170.12,
+    "duration": 4.44
+  },
+  {
+    "text": "continent City safe from you know the",
+    "start": 171.959,
+    "duration": 5.0
+  },
+  {
+    "text": "neighbors but any commanders combined",
+    "start": 174.56,
+    "duration": 4.08
+  },
+  {
+    "text": "with any troops they have that have",
+    "start": 176.959,
+    "duration": 3.92
+  },
+  {
+    "text": "survived till this age I advise bringing",
+    "start": 178.64,
+    "duration": 4.64
+  },
+  {
+    "text": "them across to your Capital any cogs",
+    "start": 180.879,
+    "duration": 4.561
+  },
+  {
+    "text": "which is the starting boat you get given",
+    "start": 183.28,
+    "duration": 3.84
+  },
+  {
+    "text": "these should start making their way to",
+    "start": 185.44,
+    "duration": 3.4
+  },
+  {
+    "text": "the edge of the continent just be",
+    "start": 187.12,
+    "duration": 4.56
+  },
+  {
+    "text": "careful not to enter deep open ocean if",
+    "start": 188.84,
+    "duration": 4.8
+  },
+  {
+    "text": "you move onto one of these tiles it will",
+    "start": 191.68,
+    "duration": 4.16
+  },
+  {
+    "text": "end your turn and you will take damage",
+    "start": 193.64,
+    "duration": 3.959
+  },
+  {
+    "text": "so stick to the coast whilst you can",
+    "start": 195.84,
+    "duration": 3.759
+  },
+  {
+    "text": "your Capital should then focus on",
+    "start": 197.599,
+    "duration": 4.601
+  },
+  {
+    "text": "building a few more of these cogs the",
+    "start": 199.599,
+    "duration": 4.64
+  },
+  {
+    "text": "more of the world you explore the faster",
+    "start": 202.2,
+    "duration": 4.36
+  },
+  {
+    "text": "you will find everything you need look",
+    "start": 204.239,
+    "duration": 4.841
+  },
+  {
+    "text": "every single one of my Roman Traditions",
+    "start": 206.56,
+    "duration": 4.879
+  },
+  {
+    "text": "has made its way over fantastic this is",
+    "start": 209.08,
+    "duration": 4.2
+  },
+  {
+    "text": "why it's so important to make sure that",
+    "start": 211.439,
+    "duration": 4.321
+  },
+  {
+    "text": "your Civ specific Civic tree is finished",
+    "start": 213.28,
+    "duration": 4.879
+  },
+  {
+    "text": "you will notice there is a new mechanic",
+    "start": 215.76,
+    "duration": 4.6
+  },
+  {
+    "text": "exploration called overbuilding every",
+    "start": 218.159,
+    "duration": 3.681
+  },
+  {
+    "text": "single one of the buildings in your",
+    "start": 220.36,
+    "duration": 3.56
+  },
+  {
+    "text": "nation from the last Age Now doesn't do",
+    "start": 221.84,
+    "duration": 4.679
+  },
+  {
+    "text": "anything apart from a few anything with",
+    "start": 223.92,
+    "duration": 5.039
+  },
+  {
+    "text": "the Ageless quality still works",
+    "start": 226.519,
+    "duration": 5.08
+  },
+  {
+    "text": "specifically these are my Roman unique",
+    "start": 228.959,
+    "duration": 4.521
+  },
+  {
+    "text": "buildings the Temple of Jupiter and the",
+    "start": 231.599,
+    "duration": 4.48
+  },
+  {
+    "text": "Basilica and any warehouse building such",
+    "start": 233.48,
+    "duration": 4.8
+  },
+  {
+    "text": "as The Granary in your first game don't",
+    "start": 236.079,
+    "duration": 4.401
+  },
+  {
+    "text": "worry about this too much just remember",
+    "start": 238.28,
+    "duration": 4.48
+  },
+  {
+    "text": "bigger numbers equal bigger yields you",
+    "start": 240.48,
+    "duration": 4.319
+  },
+  {
+    "text": "won't go too far wrong after that you",
+    "start": 242.76,
+    "duration": 3.88
+  },
+  {
+    "text": "will also notice that every single one",
+    "start": 244.799,
+    "duration": 4.401
+  },
+  {
+    "text": "of your Town's focuses have now reset",
+    "start": 246.64,
+    "duration": 5.0
+  },
+  {
+    "text": "they will all be on growing Town AKA",
+    "start": 249.2,
+    "duration": 3.84
+  },
+  {
+    "text": "they will be growing and gaining",
+    "start": 251.64,
+    "duration": 3.64
+  },
+  {
+    "text": "population nice and quickly until you",
+    "start": 253.04,
+    "duration": 4.08
+  },
+  {
+    "text": "know what you're doing I would recommend",
+    "start": 255.28,
+    "duration": 3.4
+  },
+  {
+    "text": "keeping them on growing town if you're",
+    "start": 257.12,
+    "duration": 3.639
+  },
+  {
+    "text": "unsure which ones to pick just like the",
+    "start": 258.68,
+    "duration": 4.04
+  },
+  {
+    "text": "last stage you can't go wrong with",
+    "start": 260.759,
+    "duration": 3.72
+  },
+  {
+    "text": "farming town this will increase the",
+    "start": 262.72,
+    "duration": 3.919
+  },
+  {
+    "text": "amount of food your town is making and",
+    "start": 264.479,
+    "duration": 3.801
+  },
+  {
+    "text": "it will start sending all of its food",
+    "start": 266.639,
+    "duration": 4.0
+  },
+  {
+    "text": "supply back to your cities I can see",
+    "start": 268.28,
+    "duration": 4.72
+  },
+  {
+    "text": "that my settlements have a couple of",
+    "start": 270.639,
+    "duration": 4.721
+  },
+  {
+    "text": "unimproved resources here and there",
+    "start": 273.0,
+    "duration": 4.36
+  },
+  {
+    "text": "stuff that I would quite like to get I'm",
+    "start": 275.36,
+    "duration": 4.64
+  },
+  {
+    "text": "going to give it 15 20 terms and then",
+    "start": 277.36,
+    "duration": 4.8
+  },
+  {
+    "text": "I'm going to set them to farming Focus",
+    "start": 280.0,
+    "duration": 3.68
+  },
+  {
+    "text": "generally that works pretty well when",
+    "start": 282.16,
+    "duration": 3.12
+  },
+  {
+    "text": "you are given a choice of government if",
+    "start": 283.68,
+    "duration": 3.32
+  },
+  {
+    "text": "one calls to you more than the others",
+    "start": 285.28,
+    "duration": 3.4
+  },
+  {
+    "text": "then pick it if you're unsure which one",
+    "start": 287.0,
+    "duration": 4.479
+  },
+  {
+    "text": "to go for as usual I would go for feudal",
+    "start": 288.68,
+    "duration": 5.48
+  },
+  {
+    "text": "monarchy because this 20% food it is",
+    "start": 291.479,
+    "duration": 4.921
+  },
+  {
+    "text": "reliably useful and you will never go",
+    "start": 294.16,
+    "duration": 4.28
+  },
+  {
+    "text": "wrong with it once your cogs are lined",
+    "start": 296.4,
+    "duration": 4.12
+  },
+  {
+    "text": "up on the side of your your continent",
+    "start": 298.44,
+    "duration": 4.039
+  },
+  {
+    "text": "you're going to be drifting into the sea",
+    "start": 300.52,
+    "duration": 4.76
+  },
+  {
+    "text": "to find distant lands in a normal game",
+    "start": 302.479,
+    "duration": 5.401
+  },
+  {
+    "text": "simply pick the furthest point of land",
+    "start": 305.28,
+    "duration": 5.52
+  },
+  {
+    "text": "and then start sailing away your Cog can",
+    "start": 307.88,
+    "duration": 5.84
+  },
+  {
+    "text": "survive probably between five and six",
+    "start": 310.8,
+    "duration": 5.119
+  },
+  {
+    "text": "tiles of open ocean before they take",
+    "start": 313.72,
+    "duration": 4.12
+  },
+  {
+    "text": "enough damage to sink you don't want",
+    "start": 315.919,
+    "duration": 3.521
+  },
+  {
+    "text": "this however it's likely that some of",
+    "start": 317.84,
+    "duration": 3.359
+  },
+  {
+    "text": "your cogs will die that's why we're",
+    "start": 319.44,
+    "duration": 3.36
+  },
+  {
+    "text": "making a few if you get a little bit",
+    "start": 321.199,
+    "duration": 4.161
+  },
+  {
+    "text": "lucky you'll see land I can see some",
+    "start": 322.8,
+    "duration": 4.16
+  },
+  {
+    "text": "here so I'm going to be cheeky and I'm",
+    "start": 325.36,
+    "duration": 3.76
+  },
+  {
+    "text": "going to be line directly for it I'd",
+    "start": 326.96,
+    "duration": 4.44
+  },
+  {
+    "text": "advise that you do the same it's also",
+    "start": 329.12,
+    "duration": 4.48
+  },
+  {
+    "text": "now worth pointing out that unless there",
+    "start": 331.4,
+    "duration": 4.48
+  },
+  {
+    "text": "are some settlement spots with resources",
+    "start": 333.6,
+    "duration": 4.92
+  },
+  {
+    "text": "you really really need on your Homeland",
+    "start": 335.88,
+    "duration": 4.96
+  },
+  {
+    "text": "don't bother settling here anymore it's",
+    "start": 338.52,
+    "duration": 4.44
+  },
+  {
+    "text": "better to just leave this land open the",
+    "start": 340.84,
+    "duration": 4.199
+  },
+  {
+    "text": "new world or distant lands as we're",
+    "start": 342.96,
+    "duration": 4.28
+  },
+  {
+    "text": "calling them are far more important to",
+    "start": 345.039,
+    "duration": 4.521
+  },
+  {
+    "text": "get to as you explore you will find new",
+    "start": 347.24,
+    "duration": 4.92
+  },
+  {
+    "text": "land complete with resources this is all",
+    "start": 349.56,
+    "duration": 4.52
+  },
+  {
+    "text": "very well and good but what specifically",
+    "start": 352.16,
+    "duration": 3.56
+  },
+  {
+    "text": "are you looking for well when you",
+    "start": 354.08,
+    "duration": 4.239
+  },
+  {
+    "text": "highlight over a resource if you find",
+    "start": 355.72,
+    "duration": 4.72
+  },
+  {
+    "text": "one that says create creates treasure",
+    "start": 358.319,
+    "duration": 4.72
+  },
+  {
+    "text": "fleets this is a treasure resource I",
+    "start": 360.44,
+    "duration": 5.319
+  },
+  {
+    "text": "found two spices and chocolate it is",
+    "start": 363.039,
+    "duration": 5.241
+  },
+  {
+    "text": "imperative that you gather as many",
+    "start": 365.759,
+    "duration": 4.921
+  },
+  {
+    "text": "treasure resources as you can they will",
+    "start": 368.28,
+    "duration": 4.96
+  },
+  {
+    "text": "win you this age so this island has now",
+    "start": 370.68,
+    "duration": 5.0
+  },
+  {
+    "text": "become priority number one remember I",
+    "start": 373.24,
+    "duration": 3.959
+  },
+  {
+    "text": "said it wasn't worth settling on your",
+    "start": 375.68,
+    "duration": 4.12
+  },
+  {
+    "text": "home continent well now we found land",
+    "start": 377.199,
+    "duration": 5.4
+  },
+  {
+    "text": "overseas so settlers are a priority just",
+    "start": 379.8,
+    "duration": 5.56
+  },
+  {
+    "text": "be aware that settlers cannot cross open",
+    "start": 382.599,
+    "duration": 5.88
+  },
+  {
+    "text": "ocean unless you have cartography so if",
+    "start": 385.36,
+    "duration": 4.92
+  },
+  {
+    "text": "you find land as quickly as I have you",
+    "start": 388.479,
+    "duration": 3.481
+  },
+  {
+    "text": "might need to switch this round once",
+    "start": 390.28,
+    "duration": 4.039
+  },
+  {
+    "text": "your cogs have made landfall in the new",
+    "start": 391.96,
+    "duration": 4.32
+  },
+  {
+    "text": "world even if it is just a small little",
+    "start": 394.319,
+    "duration": 4.201
+  },
+  {
+    "text": "island it's tempting to keep exploring",
+    "start": 396.28,
+    "duration": 4.24
+  },
+  {
+    "text": "but they will have taken damage crossing",
+    "start": 398.52,
+    "duration": 4.239
+  },
+  {
+    "text": "the ocean there are many many dangers",
+    "start": 400.52,
+    "duration": 4.079
+  },
+  {
+    "text": "here so I would take the time to make",
+    "start": 402.759,
+    "duration": 3.641
+  },
+  {
+    "text": "sure your units are fully healed and",
+    "start": 404.599,
+    "duration": 4.201
+  },
+  {
+    "text": "rested so the boats don't fall apart",
+    "start": 406.4,
+    "duration": 4.079
+  },
+  {
+    "text": "it'll slow down your exploration by a",
+    "start": 408.8,
+    "duration": 3.76
+  },
+  {
+    "text": "couple of turns but you know they won't",
+    "start": 410.479,
+    "duration": 3.881
+  },
+  {
+    "text": "die so there are positives once you've",
+    "start": 412.56,
+    "duration": 4.319
+  },
+  {
+    "text": "unlocked party you're almost ready to",
+    "start": 414.36,
+    "duration": 4.36
+  },
+  {
+    "text": "have a religion in order to get a",
+    "start": 416.879,
+    "duration": 4.481
+  },
+  {
+    "text": "religion you have to make a temple just",
+    "start": 418.72,
+    "duration": 4.919
+  },
+  {
+    "text": "one will do but trust me you want to",
+    "start": 421.36,
+    "duration": 4.679
+  },
+  {
+    "text": "make this as quickly as you can as you",
+    "start": 423.639,
+    "duration": 4.96
+  },
+  {
+    "text": "explore go down to the lens toggle and",
+    "start": 426.039,
+    "duration": 5.0
+  },
+  {
+    "text": "turn the lens to continent once you find",
+    "start": 428.599,
+    "duration": 4.361
+  },
+  {
+    "text": "a continent with this little purple",
+    "start": 431.039,
+    "duration": 4.241
+  },
+  {
+    "text": "Arrow this means that it counts as",
+    "start": 432.96,
+    "duration": 4.48
+  },
+  {
+    "text": "distant lands this is the bit of the map",
+    "start": 435.28,
+    "duration": 4.479
+  },
+  {
+    "text": "that is spawned in it's worth settling",
+    "start": 437.44,
+    "duration": 4.479
+  },
+  {
+    "text": "any treasure resources on your home",
+    "start": 439.759,
+    "duration": 4.081
+  },
+  {
+    "text": "continent like this island that's just",
+    "start": 441.919,
+    "duration": 4.4
+  },
+  {
+    "text": "by Rome but distant lands are your",
+    "start": 443.84,
+    "duration": 4.84
+  },
+  {
+    "text": "priority you need to claim as many of",
+    "start": 446.319,
+    "duration": 4.761
+  },
+  {
+    "text": "these distant lands before the AI as",
+    "start": 448.68,
+    "duration": 4.48
+  },
+  {
+    "text": "quickly as you can especially if you're",
+    "start": 451.08,
+    "duration": 4.44
+  },
+  {
+    "text": "playing somebody like Spain who all",
+    "start": 453.16,
+    "duration": 4.4
+  },
+  {
+    "text": "about distant lands my temple is",
+    "start": 455.52,
+    "duration": 3.64
+  },
+  {
+    "text": "finished which means I can create a",
+    "start": 457.56,
+    "duration": 4.079
+  },
+  {
+    "text": "religion you know me by now I am a one",
+    "start": 459.16,
+    "duration": 5.039
+  },
+  {
+    "text": "true faithful believer of the giant crab",
+    "start": 461.639,
+    "duration": 3.96
+  },
+  {
+    "text": "although it's a nice handy piece of",
+    "start": 464.199,
+    "duration": 3.761
+  },
+  {
+    "text": "advice if your eyesight isn't so good I",
+    "start": 465.599,
+    "duration": 4.761
+  },
+  {
+    "text": "would pick a nice bold red color much",
+    "start": 467.96,
+    "duration": 4.88
+  },
+  {
+    "text": "easier to spot now we can add a reliy",
+    "start": 470.36,
+    "duration": 4.76
+  },
+  {
+    "text": "and a Founder belief founder beliefs",
+    "start": 472.84,
+    "duration": 4.88
+  },
+  {
+    "text": "effectively give you yields typically",
+    "start": 475.12,
+    "duration": 5.039
+  },
+  {
+    "text": "these yields apply to foreign",
+    "start": 477.72,
+    "duration": 4.84
+  },
+  {
+    "text": "civilizations that follow your religion",
+    "start": 480.159,
+    "duration": 4.921
+  },
+  {
+    "text": "the religion mechanic in this age is all",
+    "start": 482.56,
+    "duration": 4.72
+  },
+  {
+    "text": "about spreading your religion to other",
+    "start": 485.08,
+    "duration": 4.48
+  },
+  {
+    "text": "people you will get very little benefit",
+    "start": 487.28,
+    "duration": 4.24
+  },
+  {
+    "text": "having your religion in your own land",
+    "start": 489.56,
+    "duration": 3.44
+  },
+  {
+    "text": "I'm going to take this one because it",
+    "start": 491.52,
+    "duration": 3.239
+  },
+  {
+    "text": "gives me culture gold and science for",
+    "start": 493.0,
+    "duration": 3.72
+  },
+  {
+    "text": "every Wonder in other civilization",
+    "start": 494.759,
+    "duration": 3.921
+  },
+  {
+    "text": "settlements following my religion I know",
+    "start": 496.72,
+    "duration": 3.599
+  },
+  {
+    "text": "that there are some big settlements near",
+    "start": 498.68,
+    "duration": 4.479
+  },
+  {
+    "text": "me that I could convert easily melli has",
+    "start": 500.319,
+    "duration": 4.641
+  },
+  {
+    "text": "made a lot of Wonders I'm going to",
+    "start": 503.159,
+    "duration": 4.72
+  },
+  {
+    "text": "utilize that all Relic beliefs are there",
+    "start": 504.96,
+    "duration": 5.359
+  },
+  {
+    "text": "to make relics for you pick one that you",
+    "start": 507.879,
+    "duration": 4.361
+  },
+  {
+    "text": "think is going to make you the most this",
+    "start": 510.319,
+    "duration": 3.84
+  },
+  {
+    "text": "one gives two relics for the first time",
+    "start": 512.24,
+    "duration": 3.479
+  },
+  {
+    "text": "conversion of another civilization",
+    "start": 514.159,
+    "duration": 3.081
+  },
+  {
+    "text": "settlement with a Wonder well that",
+    "start": 515.719,
+    "duration": 3.44
+  },
+  {
+    "text": "Stacks nicely with the one I've picked",
+    "start": 517.24,
+    "duration": 3.44
+  },
+  {
+    "text": "so we're going to pick that once you",
+    "start": 519.159,
+    "duration": 3.88
+  },
+  {
+    "text": "unlock your religion it is worth rushing",
+    "start": 520.68,
+    "duration": 5.32
+  },
+  {
+    "text": "it really quickly missionaries are the",
+    "start": 523.039,
+    "duration": 4.601
+  },
+  {
+    "text": "units that you can use to spread your",
+    "start": 526.0,
+    "duration": 3.24
+  },
+  {
+    "text": "religion the AI will take a little bit",
+    "start": 527.64,
+    "duration": 3.8
+  },
+  {
+    "text": "of time to make theirs so this is the",
+    "start": 529.24,
+    "duration": 3.88
+  },
+  {
+    "text": "time to act I'm going to go and spread",
+    "start": 531.44,
+    "duration": 3.8
+  },
+  {
+    "text": "it as quickly as I can to all of the",
+    "start": 533.12,
+    "duration": 4.48
+  },
+  {
+    "text": "major AI cities to make as many relics",
+    "start": 535.24,
+    "duration": 4.48
+  },
+  {
+    "text": "as I can my Satler has made it across",
+    "start": 537.6,
+    "duration": 4.239
+  },
+  {
+    "text": "the open ocean and has now managed to",
+    "start": 539.72,
+    "duration": 6.119
+  },
+  {
+    "text": "find a spot within three tiles of 1 2 3",
+    "start": 541.839,
+    "duration": 6.881
+  },
+  {
+    "text": "four treasure resources normally just",
+    "start": 545.839,
+    "duration": 4.961
+  },
+  {
+    "text": "one or two would be enough four is an",
+    "start": 548.72,
+    "duration": 4.76
+  },
+  {
+    "text": "amazing spot I like this so we'll found",
+    "start": 550.8,
+    "duration": 4.599
+  },
+  {
+    "text": "the little town and we'll start to",
+    "start": 553.48,
+    "duration": 4.88
+  },
+  {
+    "text": "assemble these resources next up all you",
+    "start": 555.399,
+    "duration": 5.281
+  },
+  {
+    "text": "need to do is build a fishing Key I'm",
+    "start": 558.36,
+    "duration": 3.8
+  },
+  {
+    "text": "going to build it in this direction to",
+    "start": 560.68,
+    "duration": 2.96
+  },
+  {
+    "text": "make sure that I get closer to this",
+    "start": 562.16,
+    "duration": 4.32
+  },
+  {
+    "text": "Resource as fast as I can now over time",
+    "start": 563.64,
+    "duration": 4.68
+  },
+  {
+    "text": "these resources will start to spawn",
+    "start": 566.48,
+    "duration": 3.44
+  },
+  {
+    "text": "treasure fleets which are then need to",
+    "start": 568.32,
+    "duration": 4.04
+  },
+  {
+    "text": "escort back to my capital for now though",
+    "start": 569.92,
+    "duration": 4.44
+  },
+  {
+    "text": "nothing we need to do just let the city",
+    "start": 572.36,
+    "duration": 4.28
+  },
+  {
+    "text": "grow and wait my missionary has now",
+    "start": 574.36,
+    "duration": 5.44
+  },
+  {
+    "text": "arrived at the enemy City religion is",
+    "start": 576.64,
+    "duration": 5.36
+  },
+  {
+    "text": "fairly simple in civ7 if I look at my",
+    "start": 579.8,
+    "duration": 4.76
+  },
+  {
+    "text": "own City I have two icons the first one",
+    "start": 582.0,
+    "duration": 4.839
+  },
+  {
+    "text": "stands for the urban population this is",
+    "start": 584.56,
+    "duration": 4.0
+  },
+  {
+    "text": "any tile with the city center or",
+    "start": 586.839,
+    "duration": 4.201
+  },
+  {
+    "text": "buildings on the second is the rural",
+    "start": 588.56,
+    "duration": 4.56
+  },
+  {
+    "text": "population the improvements I put around",
+    "start": 591.04,
+    "duration": 4.08
+  },
+  {
+    "text": "a missionary is required to use a charge",
+    "start": 593.12,
+    "duration": 4.48
+  },
+  {
+    "text": "on each separately to convert both parts",
+    "start": 595.12,
+    "duration": 4.399
+  },
+  {
+    "text": "of the population to your religion and a",
+    "start": 597.6,
+    "duration": 4.56
+  },
+  {
+    "text": "missionary has three charges so about a",
+    "start": 599.519,
+    "duration": 4.601
+  },
+  {
+    "text": "city and a half per missionary can be",
+    "start": 602.16,
+    "duration": 4.0
+  },
+  {
+    "text": "converted however if there is no",
+    "start": 604.12,
+    "duration": 4.2
+  },
+  {
+    "text": "religion in a city well it's your lucky",
+    "start": 606.16,
+    "duration": 4.799
+  },
+  {
+    "text": "day the whole thing is converted because",
+    "start": 608.32,
+    "duration": 5.84
+  },
+  {
+    "text": "aen has a Wonder I've just generated two",
+    "start": 610.959,
+    "duration": 4.721
+  },
+  {
+    "text": "relics which give me culture and",
+    "start": 614.16,
+    "duration": 3.48
+  },
+  {
+    "text": "happiness incidentally this is the",
+    "start": 615.68,
+    "duration": 4.68
+  },
+  {
+    "text": "culture pathway all you need is 12 how",
+    "start": 617.64,
+    "duration": 4.16
+  },
+  {
+    "text": "difficult could it be quite difficult",
+    "start": 620.36,
+    "duration": 3.08
+  },
+  {
+    "text": "you need to put a lot of temples down in",
+    "start": 621.8,
+    "duration": 3.159
+  },
+  {
+    "text": "order to display them as you explore",
+    "start": 623.44,
+    "duration": 3.28
+  },
+  {
+    "text": "distant lands you'll notice that there",
+    "start": 624.959,
+    "duration": 4.0
+  },
+  {
+    "text": "are people on them more Nations have",
+    "start": 626.72,
+    "duration": 4.04
+  },
+  {
+    "text": "spawned into the game you have a bit of",
+    "start": 628.959,
+    "duration": 3.32
+  },
+  {
+    "text": "a choice you can either treat them",
+    "start": 630.76,
+    "duration": 3.6
+  },
+  {
+    "text": "nicely or not if you want to win the",
+    "start": 632.279,
+    "duration": 4.441
+  },
+  {
+    "text": "domination Legacy of exploration you",
+    "start": 634.36,
+    "duration": 3.88
+  },
+  {
+    "text": "will have to go to war with them at some",
+    "start": 636.72,
+    "duration": 3.76
+  },
+  {
+    "text": "point I think there no harm in being",
+    "start": 638.24,
+    "duration": 4.36
+  },
+  {
+    "text": "friendly on first greeting it's very",
+    "start": 640.48,
+    "duration": 3.799
+  },
+  {
+    "text": "cheap and it just stops them from",
+    "start": 642.6,
+    "duration": 3.28
+  },
+  {
+    "text": "declaring war on you once you have your",
+    "start": 644.279,
+    "duration": 3.841
+  },
+  {
+    "text": "religion don't forget the third Civic",
+    "start": 645.88,
+    "duration": 4.44
+  },
+  {
+    "text": "tree the theology tree it's very quick",
+    "start": 648.12,
+    "duration": 3.6
+  },
+  {
+    "text": "but it boosts your religion",
+    "start": 650.32,
+    "duration": 3.639
+  },
+  {
+    "text": "significantly gives you some very very",
+    "start": 651.72,
+    "duration": 3.84
+  },
+  {
+    "text": "powerful policies I would always",
+    "start": 653.959,
+    "duration": 2.801
+  },
+  {
+    "text": "recommend putting these in your",
+    "start": 655.56,
+    "duration": 2.88
+  },
+  {
+    "text": "government if you can once your town",
+    "start": 656.76,
+    "duration": 4.0
+  },
+  {
+    "text": "reaches 5 population remember you can",
+    "start": 658.44,
+    "duration": 5.199
+  },
+  {
+    "text": "use your gold to buy settlers it doesn't",
+    "start": 660.76,
+    "duration": 4.92
+  },
+  {
+    "text": "take population and it means you have a",
+    "start": 663.639,
+    "duration": 4.2
+  },
+  {
+    "text": "lot less distance to walk with your",
+    "start": 665.68,
+    "duration": 4.08
+  },
+  {
+    "text": "Satler to then go and settle something",
+    "start": 667.839,
+    "duration": 3.881
+  },
+  {
+    "text": "useful just a little trick for you my",
+    "start": 669.76,
+    "duration": 3.6
+  },
+  {
+    "text": "next town is ready to go on the other",
+    "start": 671.72,
+    "duration": 3.799
+  },
+  {
+    "text": "side of the continent this time claiming",
+    "start": 673.36,
+    "duration": 5.039
+  },
+  {
+    "text": "all of the treasure we can speed it's",
+    "start": 675.519,
+    "duration": 6.041
+  },
+  {
+    "text": "all about speed if you get there first",
+    "start": 678.399,
+    "duration": 5.68
+  },
+  {
+    "text": "everyone else has to shunt you off it's",
+    "start": 681.56,
+    "duration": 4.88
+  },
+  {
+    "text": "much easier to defend than it is to",
+    "start": 684.079,
+    "duration": 4.921
+  },
+  {
+    "text": "attack when you're using cogs to explore",
+    "start": 686.44,
+    "duration": 4.48
+  },
+  {
+    "text": "around World remember they can Coastal",
+    "start": 689.0,
+    "duration": 3.8
+  },
+  {
+    "text": "raid this lets you take things like",
+    "start": 690.92,
+    "duration": 4.24
+  },
+  {
+    "text": "encampments and camps the beautiful",
+    "start": 692.8,
+    "duration": 4.52
+  },
+  {
+    "text": "bonuses I always forget they can do that",
+    "start": 695.16,
+    "duration": 3.96
+  },
+  {
+    "text": "it's a very handy thing keep an eye out",
+    "start": 697.32,
+    "duration": 3.959
+  },
+  {
+    "text": "for some resources being different in",
+    "start": 699.12,
+    "duration": 4.2
+  },
+  {
+    "text": "your home continent or abroad for",
+    "start": 701.279,
+    "duration": 4.24
+  },
+  {
+    "text": "instance gold one of the best resources",
+    "start": 703.32,
+    "duration": 4.519
+  },
+  {
+    "text": "gives you a better purchasing power when",
+    "start": 705.519,
+    "duration": 4.161
+  },
+  {
+    "text": "buying buildings however in distant",
+    "start": 707.839,
+    "duration": 3.8
+  },
+  {
+    "text": "lands as you can see over to the right",
+    "start": 709.68,
+    "duration": 4.08
+  },
+  {
+    "text": "on the main continent of distant lands",
+    "start": 711.639,
+    "duration": 4.32
+  },
+  {
+    "text": "but I found gold instead creates a",
+    "start": 713.76,
+    "duration": 4.44
+  },
+  {
+    "text": "treasure Fleet you know what to do found",
+    "start": 715.959,
+    "duration": 4.281
+  },
+  {
+    "text": "this lovely little navigable river we",
+    "start": 718.2,
+    "duration": 4.4
+  },
+  {
+    "text": "have a wonderful settlement Inland and",
+    "start": 720.24,
+    "duration": 4.2
+  },
+  {
+    "text": "there's actually more treasure here than",
+    "start": 722.6,
+    "duration": 5.039
+  },
+  {
+    "text": "I expected even better don't complain",
+    "start": 724.44,
+    "duration": 5.72
+  },
+  {
+    "text": "just take these gifts with open arms in",
+    "start": 727.639,
+    "duration": 4.76
+  },
+  {
+    "text": "fact this location is so good on distant",
+    "start": 730.16,
+    "duration": 4.239
+  },
+  {
+    "text": "lands I'm going to make this into my",
+    "start": 732.399,
+    "duration": 4.361
+  },
+  {
+    "text": "third city as a rule I would never",
+    "start": 734.399,
+    "duration": 4.841
+  },
+  {
+    "text": "recommend going above three cities three",
+    "start": 736.76,
+    "duration": 4.759
+  },
+  {
+    "text": "is about the max you want one on distant",
+    "start": 739.24,
+    "duration": 4.959
+  },
+  {
+    "text": "lands it's incredibly effective to have",
+    "start": 741.519,
+    "duration": 4.841
+  },
+  {
+    "text": "something to keep an eye out for I took",
+    "start": 744.199,
+    "duration": 4.401
+  },
+  {
+    "text": "an alliance out with mlli because he's",
+    "start": 746.36,
+    "duration": 4.279
+  },
+  {
+    "text": "just sneak and I don't trust him however",
+    "start": 748.6,
+    "duration": 3.72
+  },
+  {
+    "text": "he's now at war with Spain and if I",
+    "start": 750.639,
+    "duration": 3.64
+  },
+  {
+    "text": "refuse to join this war my alliance with",
+    "start": 752.32,
+    "duration": 4.12
+  },
+  {
+    "text": "Brim breaks and he really doesn't like",
+    "start": 754.279,
+    "duration": 4.841
+  },
+  {
+    "text": "me so I'm going to have to declare war",
+    "start": 756.44,
+    "duration": 4.519
+  },
+  {
+    "text": "on Spain Spain doesn't really have",
+    "start": 759.12,
+    "duration": 3.48
+  },
+  {
+    "text": "anything near me we shouldn't have too",
+    "start": 760.959,
+    "duration": 3.801
+  },
+  {
+    "text": "much of an issue apart from this tiny",
+    "start": 762.6,
+    "duration": 4.64
+  },
+  {
+    "text": "City below luckily for me I have a",
+    "start": 764.76,
+    "duration": 4.639
+  },
+  {
+    "text": "massive land Army all I need to do is",
+    "start": 767.24,
+    "duration": 4.0
+  },
+  {
+    "text": "just gather them together and head down",
+    "start": 769.399,
+    "duration": 3.88
+  },
+  {
+    "text": "in that direction remember I don't need",
+    "start": 771.24,
+    "duration": 4.44
+  },
+  {
+    "text": "to do anything in this war defending is",
+    "start": 773.279,
+    "duration": 5.0
+  },
+  {
+    "text": "always easier than attacking saying that",
+    "start": 775.68,
+    "duration": 4.159
+  },
+  {
+    "text": "there are a couple of random units",
+    "start": 778.279,
+    "duration": 3.601
+  },
+  {
+    "text": "around we don't like that let's buy in a",
+    "start": 779.839,
+    "duration": 3.921
+  },
+  {
+    "text": "few defensive units to make sure that we",
+    "start": 781.88,
+    "duration": 4.079
+  },
+  {
+    "text": "can deal with them in combat watch out",
+    "start": 783.76,
+    "duration": 4.8
+  },
+  {
+    "text": "for these one-way Cliffs my Archer has",
+    "start": 785.959,
+    "duration": 4.761
+  },
+  {
+    "text": "currently stood above my opponent which",
+    "start": 788.56,
+    "duration": 4.399
+  },
+  {
+    "text": "means I can attack them but they can't",
+    "start": 790.72,
+    "duration": 4.32
+  },
+  {
+    "text": "attack me what a shame for them now",
+    "start": 792.959,
+    "duration": 3.921
+  },
+  {
+    "text": "whilst this looks incredibly bad in",
+    "start": 795.04,
+    "duration": 3.88
+  },
+  {
+    "text": "Valencia everyone is seems to be in a",
+    "start": 796.88,
+    "duration": 4.44
+  },
+  {
+    "text": "hurricane whirlpool and the notification",
+    "start": 798.92,
+    "duration": 4.76
+  },
+  {
+    "text": "says that one population was lost in",
+    "start": 801.32,
+    "duration": 5.48
+  },
+  {
+    "text": "civ7 Don't Fear if a tile is damaged",
+    "start": 803.68,
+    "duration": 5.2
+  },
+  {
+    "text": "like this one the population working it",
+    "start": 806.8,
+    "duration": 3.8
+  },
+  {
+    "text": "count counts is lost so you'll see the",
+    "start": 808.88,
+    "duration": 4.399
+  },
+  {
+    "text": "population drop however if I then repair",
+    "start": 810.6,
+    "duration": 4.64
+  },
+  {
+    "text": "it which I can do with gold you'll",
+    "start": 813.279,
+    "duration": 4.24
+  },
+  {
+    "text": "notice the population comes back that's",
+    "start": 815.24,
+    "duration": 4.64
+  },
+  {
+    "text": "right population loss is now not a",
+    "start": 817.519,
+    "duration": 4.601
+  },
+  {
+    "text": "permanent thing you can reverse it as",
+    "start": 819.88,
+    "duration": 4.079
+  },
+  {
+    "text": "mentioned before remember that",
+    "start": 822.12,
+    "duration": 4.48
+  },
+  {
+    "text": "commanders can be targeted and killed in",
+    "start": 823.959,
+    "duration": 4.601
+  },
+  {
+    "text": "combat killing the enemy commanders is",
+    "start": 826.6,
+    "duration": 4.599
+  },
+  {
+    "text": "an incredibly valuable thing to do don't",
+    "start": 828.56,
+    "duration": 5.079
+  },
+  {
+    "text": "leave yours exposed this is kind of the",
+    "start": 831.199,
+    "duration": 4.56
+  },
+  {
+    "text": "point you need to get to when your town",
+    "start": 833.639,
+    "duration": 3.88
+  },
+  {
+    "text": "is ready to become a city all of the",
+    "start": 835.759,
+    "duration": 3.721
+  },
+  {
+    "text": "resources are improved and your borders",
+    "start": 837.519,
+    "duration": 3.641
+  },
+  {
+    "text": "are about as expanded as you want them",
+    "start": 839.48,
+    "duration": 5.56
+  },
+  {
+    "text": "to get convert to City for 230 gold a",
+    "start": 841.16,
+    "duration": 6.119
+  },
+  {
+    "text": "bargain if you ask me keep an eye on",
+    "start": 845.04,
+    "duration": 4.56
+  },
+  {
+    "text": "some of these City resources a lot of",
+    "start": 847.279,
+    "duration": 5.36
+  },
+  {
+    "text": "them say extra if they are in distant",
+    "start": 849.6,
+    "duration": 5.239
+  },
+  {
+    "text": "land cities luckily for me that's",
+    "start": 852.639,
+    "duration": 4.361
+  },
+  {
+    "text": "exactly now what I've got now that is a",
+    "start": 854.839,
+    "duration": 4.56
+  },
+  {
+    "text": "healthy amount of resources in one city",
+    "start": 857.0,
+    "duration": 4.48
+  },
+  {
+    "text": "lovely ship building lets you cross",
+    "start": 859.399,
+    "duration": 3.921
+  },
+  {
+    "text": "depostion without taking any further",
+    "start": 861.48,
+    "duration": 3.919
+  },
+  {
+    "text": "damage and unlocks a very powerful",
+    "start": 863.32,
+    "duration": 4.72
+  },
+  {
+    "text": "ranged ship it also unlocks treasure",
+    "start": 865.399,
+    "duration": 5.0
+  },
+  {
+    "text": "fleets which hope we should start to see",
+    "start": 868.04,
+    "duration": 4.96
+  },
+  {
+    "text": "spawning anytime soon once you have ship",
+    "start": 870.399,
+    "duration": 3.921
+  },
+  {
+    "text": "building unlocked if you come to the",
+    "start": 873.0,
+    "duration": 3.759
+  },
+  {
+    "text": "resource menu you'll see how many turns",
+    "start": 874.32,
+    "duration": 5.0
+  },
+  {
+    "text": "each town has left for a treasure Fleet",
+    "start": 876.759,
+    "duration": 4.241
+  },
+  {
+    "text": "this one will have four treasures on it",
+    "start": 879.32,
+    "duration": 3.519
+  },
+  {
+    "text": "two on this one five on this one three",
+    "start": 881.0,
+    "duration": 3.56
+  },
+  {
+    "text": "on this one ultimately we have to get to",
+    "start": 882.839,
+    "duration": 3.641
+  },
+  {
+    "text": "30 points given how much treasure we",
+    "start": 884.56,
+    "duration": 3.8
+  },
+  {
+    "text": "have that's not looking like it's going",
+    "start": 886.48,
+    "duration": 4.2
+  },
+  {
+    "text": "to be very long don't complain don't",
+    "start": 888.36,
+    "duration": 4.32
+  },
+  {
+    "text": "complain we can't help the fact that",
+    "start": 890.68,
+    "duration": 4.0
+  },
+  {
+    "text": "we're just really good at this game it's",
+    "start": 892.68,
+    "duration": 3.76
+  },
+  {
+    "text": "a burden really you'll find in the",
+    "start": 894.68,
+    "duration": 4.48
+  },
+  {
+    "text": "exploration age that your economy is so",
+    "start": 896.44,
+    "duration": 4.6
+  },
+  {
+    "text": "big you'll have the gold to do whatever",
+    "start": 899.16,
+    "duration": 3.72
+  },
+  {
+    "text": "you want so you might as well use your",
+    "start": 901.04,
+    "duration": 3.96
+  },
+  {
+    "text": "cities to build wonders they're quite",
+    "start": 902.88,
+    "duration": 4.16
+  },
+  {
+    "text": "good and their benefits really do start",
+    "start": 905.0,
+    "duration": 4.199
+  },
+  {
+    "text": "to stack after a while you may notice as",
+    "start": 907.04,
+    "duration": 3.76
+  },
+  {
+    "text": "you go through this age that the AI",
+    "start": 909.199,
+    "duration": 3.801
+  },
+  {
+    "text": "start to compete with you by putting",
+    "start": 910.8,
+    "duration": 4.0
+  },
+  {
+    "text": "other little island settlements down",
+    "start": 913.0,
+    "duration": 3.6
+  },
+  {
+    "text": "don't worry if they're particularly good",
+    "start": 914.8,
+    "duration": 3.32
+  },
+  {
+    "text": "you can always take them by force we",
+    "start": 916.6,
+    "duration": 2.88
+  },
+  {
+    "text": "haven't really gone into this mechanic",
+    "start": 918.12,
+    "duration": 3.56
+  },
+  {
+    "text": "in these videos so far but if you Su are",
+    "start": 919.48,
+    "duration": 4.279
+  },
+  {
+    "text": "in a city state you can now choose the",
+    "start": 921.68,
+    "duration": 4.399
+  },
+  {
+    "text": "bonus you want owning relics is a",
+    "start": 923.759,
+    "duration": 3.681
+  },
+  {
+    "text": "victory type so I'm going to go with",
+    "start": 926.079,
+    "duration": 2.961
+  },
+  {
+    "text": "this today but normally if you're not",
+    "start": 927.44,
+    "duration": 3.68
+  },
+  {
+    "text": "sure what to do a social policy slot is",
+    "start": 929.04,
+    "duration": 4.32
+  },
+  {
+    "text": "never a Bad Thing treasure fleets these",
+    "start": 931.12,
+    "duration": 4.8
+  },
+  {
+    "text": "will now overtime spawn with all of my",
+    "start": 933.36,
+    "duration": 5.039
+  },
+  {
+    "text": "resources all I need to do is move them",
+    "start": 935.92,
+    "duration": 4.56
+  },
+  {
+    "text": "back to the territory of the Homeland",
+    "start": 938.399,
+    "duration": 4.44
+  },
+  {
+    "text": "anywhere we'll do deposit my goods they",
+    "start": 940.48,
+    "duration": 5.039
+  },
+  {
+    "text": "have a lot of gold in them a lot would",
+    "start": 942.839,
+    "duration": 5.161
+  },
+  {
+    "text": "actually be a very good idea to escort",
+    "start": 945.519,
+    "duration": 4.521
+  },
+  {
+    "text": "these things with my boats a very good",
+    "start": 948.0,
+    "duration": 4.199
+  },
+  {
+    "text": "idea in fact I really should do that",
+    "start": 950.04,
+    "duration": 4.32
+  },
+  {
+    "text": "this is a fleet commander this is",
+    "start": 952.199,
+    "duration": 4.841
+  },
+  {
+    "text": "exactly the same as a regular land",
+    "start": 954.36,
+    "duration": 5.24
+  },
+  {
+    "text": "commander except you know there the sea",
+    "start": 957.04,
+    "duration": 4.359
+  },
+  {
+    "text": "relatively simple just make sure your",
+    "start": 959.6,
+    "duration": 4.08
+  },
+  {
+    "text": "boats are next to it within its range",
+    "start": 961.399,
+    "duration": 4.321
+  },
+  {
+    "text": "and whenever you attack it will gain",
+    "start": 963.68,
+    "duration": 4.12
+  },
+  {
+    "text": "experience Fleet commanders have",
+    "start": 965.72,
+    "duration": 4.599
+  },
+  {
+    "text": "incredibly powerful promotions again if",
+    "start": 967.8,
+    "duration": 4.399
+  },
+  {
+    "text": "you're not sure which one to use I would",
+    "start": 970.319,
+    "duration": 4.08
+  },
+  {
+    "text": "pick order this Commendation just gives",
+    "start": 972.199,
+    "duration": 3.921
+  },
+  {
+    "text": "plus five combat strength to everybody",
+    "start": 974.399,
+    "duration": 3.8
+  },
+  {
+    "text": "within range that's a big bonus and if",
+    "start": 976.12,
+    "duration": 4.32
+  },
+  {
+    "text": "in doubt stick to the leftand tree this",
+    "start": 978.199,
+    "duration": 4.041
+  },
+  {
+    "text": "is the tree that gives extra combat",
+    "start": 980.44,
+    "duration": 4.399
+  },
+  {
+    "text": "damage and also gives you Splash damage",
+    "start": 982.24,
+    "duration": 4.92
+  },
+  {
+    "text": "yep boats now can damage the tiles next",
+    "start": 984.839,
+    "duration": 4.321
+  },
+  {
+    "text": "to the ones they're firing on they very",
+    "start": 987.16,
+    "duration": 3.96
+  },
+  {
+    "text": "handy my treasure Fleet is home just",
+    "start": 989.16,
+    "duration": 4.84
+  },
+  {
+    "text": "press this button unload cargo and look",
+    "start": 991.12,
+    "duration": 7.04
+  },
+  {
+    "text": "at the yields Four Points 400 gold M now",
+    "start": 994.0,
+    "duration": 6.759
+  },
+  {
+    "text": "that's tasty conveniently it's over 10%",
+    "start": 998.16,
+    "duration": 4.28
+  },
+  {
+    "text": "of the way to achieving the treasure",
+    "start": 1000.759,
+    "duration": 3.88
+  },
+  {
+    "text": "Fleet I feel like we may be doing this",
+    "start": 1002.44,
+    "duration": 4.319
+  },
+  {
+    "text": "very quickly education is the big",
+    "start": 1004.639,
+    "duration": 4.041
+  },
+  {
+    "text": "scientific Milestone Tech because it",
+    "start": 1006.759,
+    "duration": 3.921
+  },
+  {
+    "text": "increases the specialist limit in your",
+    "start": 1008.68,
+    "duration": 3.959
+  },
+  {
+    "text": "cities this allows you to put a second",
+    "start": 1010.68,
+    "duration": 4.079
+  },
+  {
+    "text": "specialist down on the same tile as the",
+    "start": 1012.639,
+    "duration": 4.12
+  },
+  {
+    "text": "first which makes the yields on the tile",
+    "start": 1014.759,
+    "duration": 3.481
+  },
+  {
+    "text": "which are already getting rather silly",
+    "start": 1016.759,
+    "duration": 3.481
+  },
+  {
+    "text": "even bigger yeah this is how you do",
+    "start": 1018.24,
+    "duration": 5.159
+  },
+  {
+    "text": "silly things like making a 40 yield tile",
+    "start": 1020.24,
+    "duration": 5.24
+  },
+  {
+    "text": "or five of them it's all about",
+    "start": 1023.399,
+    "duration": 4.601
+  },
+  {
+    "text": "Specialists just keep on putting the",
+    "start": 1025.48,
+    "duration": 4.68
+  },
+  {
+    "text": "Specialists on the next one to unlock is",
+    "start": 1028.0,
+    "duration": 4.039
+  },
+  {
+    "text": "urban planning and now you can start to",
+    "start": 1030.16,
+    "duration": 3.679
+  },
+  {
+    "text": "see the stacking of Specialists we",
+    "start": 1032.039,
+    "duration": 3.201
+  },
+  {
+    "text": "already have one on This Ti but we're",
+    "start": 1033.839,
+    "duration": 3.12
+  },
+  {
+    "text": "going to put another one down to get all",
+    "start": 1035.24,
+    "duration": 3.719
+  },
+  {
+    "text": "of these yields and now this tile is",
+    "start": 1036.959,
+    "duration": 5.281
+  },
+  {
+    "text": "looking rather Mighty M delicious if",
+    "start": 1038.959,
+    "duration": 5.48
+  },
+  {
+    "text": "you're not sure just find the tile with",
+    "start": 1042.24,
+    "duration": 4.36
+  },
+  {
+    "text": "the most stuff on it and put it on that",
+    "start": 1044.439,
+    "duration": 4.0
+  },
+  {
+    "text": "one bonus points if you can get two",
+    "start": 1046.6,
+    "duration": 3.72
+  },
+  {
+    "text": "special this on the same towel because",
+    "start": 1048.439,
+    "duration": 4.081
+  },
+  {
+    "text": "that tends to do really well for your",
+    "start": 1050.32,
+    "duration": 4.599
+  },
+  {
+    "text": "legacy path one thing you shouldn't do",
+    "start": 1052.52,
+    "duration": 4.76
+  },
+  {
+    "text": "is build one of your unique buildings on",
+    "start": 1054.919,
+    "duration": 4.081
+  },
+  {
+    "text": "a tile and then put something else on it",
+    "start": 1057.28,
+    "duration": 3.08
+  },
+  {
+    "text": "because then you can't put the second",
+    "start": 1059.0,
+    "duration": 3.4
+  },
+  {
+    "text": "building on the tile it won't form the",
+    "start": 1060.36,
+    "duration": 3.84
+  },
+  {
+    "text": "plaza and you won't get the plaza for",
+    "start": 1062.4,
+    "duration": 3.48
+  },
+  {
+    "text": "the rest of the game don't do it make",
+    "start": 1064.2,
+    "duration": 3.2
+  },
+  {
+    "text": "sure you put both of them down at the",
+    "start": 1065.88,
+    "duration": 4.159
+  },
+  {
+    "text": "same time don't do what I do normally",
+    "start": 1067.4,
+    "duration": 4.76
+  },
+  {
+    "text": "Ursa is up to no good the other thing",
+    "start": 1070.039,
+    "duration": 3.961
+  },
+  {
+    "text": "that is worth mentioning if you put a",
+    "start": 1072.16,
+    "duration": 4.16
+  },
+  {
+    "text": "building down to make an urban tile over",
+    "start": 1074.0,
+    "duration": 4.559
+  },
+  {
+    "text": "the top of a rural tile you don't lose",
+    "start": 1076.32,
+    "duration": 4.68
+  },
+  {
+    "text": "that population it removes the farm then",
+    "start": 1078.559,
+    "duration": 4.641
+  },
+  {
+    "text": "I immediately get to put it back down",
+    "start": 1081.0,
+    "duration": 4.6
+  },
+  {
+    "text": "this is a way of quickly urbanizing your",
+    "start": 1083.2,
+    "duration": 4.56
+  },
+  {
+    "text": "cities if you really want to make sure",
+    "start": 1085.6,
+    "duration": 3.92
+  },
+  {
+    "text": "that you're getting Specialists not",
+    "start": 1087.76,
+    "duration": 3.159
+  },
+  {
+    "text": "tiles and when you've got a bunch of",
+    "start": 1089.52,
+    "duration": 2.88
+  },
+  {
+    "text": "towns that's exactly what you should be",
+    "start": 1090.919,
+    "duration": 3.561
+  },
+  {
+    "text": "doing remember as you go through the age",
+    "start": 1092.4,
+    "duration": 3.92
+  },
+  {
+    "text": "Your settlement limit will continue",
+    "start": 1094.48,
+    "duration": 5.0
+  },
+  {
+    "text": "increasing mine is currently now 12 keep",
+    "start": 1096.32,
+    "duration": 5.44
+  },
+  {
+    "text": "the settlements appearing any settlement",
+    "start": 1099.48,
+    "duration": 4.559
+  },
+  {
+    "text": "you don't use in your limit is Economic",
+    "start": 1101.76,
+    "duration": 4.96
+  },
+  {
+    "text": "Opportunity wasted just a little hint",
+    "start": 1104.039,
+    "duration": 4.441
+  },
+  {
+    "text": "for you if you find yourself building a",
+    "start": 1106.72,
+    "duration": 3.839
+  },
+  {
+    "text": "lot of wonders you're probably doing",
+    "start": 1108.48,
+    "duration": 4.439
+  },
+  {
+    "text": "quite well use your gold to instantly",
+    "start": 1110.559,
+    "duration": 4.24
+  },
+  {
+    "text": "purchase buildings in your cities and",
+    "start": 1112.919,
+    "duration": 4.081
+  },
+  {
+    "text": "use the production to build wonders",
+    "start": 1114.799,
+    "duration": 3.841
+  },
+  {
+    "text": "they'll stick around into the next age",
+    "start": 1117.0,
+    "duration": 4.679
+  },
+  {
+    "text": "you may as well if in doubt just keep",
+    "start": 1118.64,
+    "duration": 5.68
+  },
+  {
+    "text": "settling it's always worth it it's",
+    "start": 1121.679,
+    "duration": 5.12
+  },
+  {
+    "text": "always worth it and so as you continue",
+    "start": 1124.32,
+    "duration": 4.839
+  },
+  {
+    "text": "to do well and EAS the exploration age",
+    "start": 1126.799,
+    "duration": 5.081
+  },
+  {
+    "text": "eventually the crisis begins asking you",
+    "start": 1129.159,
+    "duration": 4.361
+  },
+  {
+    "text": "such wonderful questions that really",
+    "start": 1131.88,
+    "duration": 4.24
+  },
+  {
+    "text": "search your soul such as is a plague a",
+    "start": 1133.52,
+    "duration": 5.6
+  },
+  {
+    "text": "Divine punishment or a Divine Mercy um I",
+    "start": 1136.12,
+    "duration": 4.799
+  },
+  {
+    "text": "don't think there's a right option here",
+    "start": 1139.12,
+    "duration": 3.799
+  },
+  {
+    "text": "I'm going to say punishment yeah this",
+    "start": 1140.919,
+    "duration": 4.681
+  },
+  {
+    "text": "one's all about plague this is not fun",
+    "start": 1142.919,
+    "duration": 5.921
+  },
+  {
+    "text": "uh-oh that's not very good my major city",
+    "start": 1145.6,
+    "duration": 5.8
+  },
+  {
+    "text": "has a major outbreak that's a lot of",
+    "start": 1148.84,
+    "duration": 5.16
+  },
+  {
+    "text": "disease it spawned some migrant for me",
+    "start": 1151.4,
+    "duration": 5.2
+  },
+  {
+    "text": "which in itself is pretty nice but if I",
+    "start": 1154.0,
+    "duration": 4.919
+  },
+  {
+    "text": "don't cure this plague then it's going",
+    "start": 1156.6,
+    "duration": 5.04
+  },
+  {
+    "text": "to get very bad very quickly the plague",
+    "start": 1158.919,
+    "duration": 5.24
+  },
+  {
+    "text": "is getting worse but don't worry I'm now",
+    "start": 1161.64,
+    "duration": 4.399
+  },
+  {
+    "text": "actually getting science every time that",
+    "start": 1164.159,
+    "duration": 4.241
+  },
+  {
+    "text": "I cure it so that's a good thing right",
+    "start": 1166.039,
+    "duration": 3.721
+  },
+  {
+    "text": "I'm pretty pretty sure that's a good",
+    "start": 1168.4,
+    "duration": 4.24
+  },
+  {
+    "text": "thing ignore the death we'll we'll be",
+    "start": 1169.76,
+    "duration": 5.76
+  },
+  {
+    "text": "fine oh yeah the plague is sort of",
+    "start": 1172.64,
+    "duration": 4.84
+  },
+  {
+    "text": "everywhere now it makes everyone really",
+    "start": 1175.52,
+    "duration": 4.2
+  },
+  {
+    "text": "unhappy and breaks all of your tiles and",
+    "start": 1177.48,
+    "duration": 4.04
+  },
+  {
+    "text": "if you don't treat it really quickly the",
+    "start": 1179.72,
+    "duration": 3.64
+  },
+  {
+    "text": "whole thing will flip away from you",
+    "start": 1181.52,
+    "duration": 3.639
+  },
+  {
+    "text": "which isn't good oh thereare keep",
+    "start": 1183.36,
+    "duration": 4.48
+  },
+  {
+    "text": "spending all of my gold on Physicians",
+    "start": 1185.159,
+    "duration": 4.841
+  },
+  {
+    "text": "yeah that's all we get to do now just",
+    "start": 1187.84,
+    "duration": 4.92
+  },
+  {
+    "text": "feel everyone oh no my Army Commander",
+    "start": 1190.0,
+    "duration": 5.679
+  },
+  {
+    "text": "died from plague damage that's really",
+    "start": 1192.76,
+    "duration": 5.56
+  },
+  {
+    "text": "bad he was very very good don't let that",
+    "start": 1195.679,
+    "duration": 4.561
+  },
+  {
+    "text": "happen people keep an eye on where the",
+    "start": 1198.32,
+    "duration": 4.32
+  },
+  {
+    "text": "plague is and don't stand your important",
+    "start": 1200.24,
+    "duration": 4.559
+  },
+  {
+    "text": "units in it oh the plague does leave",
+    "start": 1202.64,
+    "duration": 5.0
+  },
+  {
+    "text": "eventually thank goodness it's generated",
+    "start": 1204.799,
+    "duration": 5.161
+  },
+  {
+    "text": "a huge amount of Migrant population",
+    "start": 1207.64,
+    "duration": 4.44
+  },
+  {
+    "text": "though I'm boosting my cities to",
+    "start": 1209.96,
+    "duration": 4.36
+  },
+  {
+    "text": "ridiculous levels what do you mean the",
+    "start": 1212.08,
+    "duration": 4.92
+  },
+  {
+    "text": "plagues grow stronger that's not good",
+    "start": 1214.32,
+    "duration": 4.8
+  },
+  {
+    "text": "and eventually no matter how much the",
+    "start": 1217.0,
+    "duration": 4.44
+  },
+  {
+    "text": "game attempts to ruin you you will",
+    "start": 1219.12,
+    "duration": 4.52
+  },
+  {
+    "text": "finish the age and come out the other",
+    "start": 1221.44,
+    "duration": 5.0
+  },
+  {
+    "text": "end and there we go exploration age is",
+    "start": 1223.64,
+    "duration": 5.88
+  },
+  {
+    "text": "at an end and we move forward time waits",
+    "start": 1226.44,
+    "duration": 5.56
+  },
+  {
+    "text": "the no man no matter how much plague we",
+    "start": 1229.52,
+    "duration": 4.8
+  },
+  {
+    "text": "throw at it you know some ages seem to",
+    "start": 1232.0,
+    "duration": 4.2
+  },
+  {
+    "text": "go better than others I think we did",
+    "start": 1234.32,
+    "duration": 3.88
+  },
+  {
+    "text": "pretty well there oh yeah very well",
+    "start": 1236.2,
+    "duration": 4.44
+  },
+  {
+    "text": "indeed so follow my little steps when",
+    "start": 1238.2,
+    "duration": 4.32
+  },
+  {
+    "text": "you take on your first game and you",
+    "start": 1240.64,
+    "duration": 3.64
+  },
+  {
+    "text": "should have no problem at all the",
+    "start": 1242.52,
+    "duration": 3.96
+  },
+  {
+    "text": "expiration age is when you really get to",
+    "start": 1244.28,
+    "duration": 4.24
+  },
+  {
+    "text": "thrive and expand across the map and",
+    "start": 1246.48,
+    "duration": 4.439
+  },
+  {
+    "text": "exploit it as best you can and I can't",
+    "start": 1248.52,
+    "duration": 4.92
+  },
+  {
+    "text": "wait to show you the Modern Age soon",
+    "start": 1250.919,
+    "duration": 4.361
+  },
+  {
+    "text": "soon I hope you've enjoyed this little",
+    "start": 1253.44,
+    "duration": 4.16
+  },
+  {
+    "text": "ride through civ7 so far I'd appreciate",
+    "start": 1255.28,
+    "duration": 4.2
+  },
+  {
+    "text": "a like and a subscribe if you could",
+    "start": 1257.6,
+    "duration": 3.559
+  },
+  {
+    "text": "potentially ship one onto a treasure",
+    "start": 1259.48,
+    "duration": 3.36
+  },
+  {
+    "text": "Fleet and float it my way that would be",
+    "start": 1261.159,
+    "duration": 3.561
+  },
+  {
+    "text": "amazing and until next time I'll see you",
+    "start": 1262.84,
+    "duration": 5.24
+  },
+  {
+    "text": "later goodbye",
+    "start": 1264.72,
+    "duration": 3.36
+  }
+]

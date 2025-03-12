@@ -1,0 +1,584 @@
+hello everybody and welcome my name is
+USA Ryan today we're going to be jumping
+into Civ 7's exploration age my aim
+today is to give you an understanding of
+the gaml you should expect when you play
+this age the first time we're going to
+go through all of the most important
+bits of the age and I'm going to be
+updating you with a whole list of things
+to watch out for errors and pitfalls
+that you can avoid I've made these
+mistakes you don't have to watch this
+video absorb all of my brain juice and
+you'll be playing the exploration age
+like an absolute champ before you know
+it let's just get started one of the
+first things you're going to see when
+you boot up the exploration age is a
+choice of legacies available to you
+depending on how well or badly you did
+in the previous age if this is your
+first game don't get bogged down by all
+of the decisions just yet there's time
+to optimize there are ones that are
+easier to do than others exploration is
+all about you guessed it exploration so
+anything giving you settlement limit
+should definitely be taken otherwise if
+in doubt take attribute points these
+things are incredibly versatile and will
+help you no matter what play style
+you're doing at this stage you will have
+the option to change your Capital if
+your capital is already on the coast you
+don't need to do anything if it isn't I
+would advise putting it on the coast for
+me Roma is by far my best city and it's
+on the coast so I'm not going to bother
+changing it there is a whole new Tech
+Tree in the exploration age we won't get
+bogged down by Victory and Legacy
+Pathways just yet instead instead in
+this age we are going to be again
+focusing on the science Legacy pathway
+it's the easiest to get your head around
+and it generally leaves you with a very
+powerful Empire in order to undertake
+this we need to be researching education
+which can be found at the bottom of the
+tech tree other major techs to keep an
+eye out for are astronomy which unlocks
+the first science building cartography
+which will let your civilian and support
+units enter ocean terrain the
+forementioned education which is what we
+need to unlock to get the Victory and
+ship building an essential piece of tech
+that will allow you to safely Traverse
+open ocean I'm not going to talk about
+this too much but my plan is to go
+astronomy cartography and then make my
+way to these two texts when thinking
+about Civics just like in Antiquity by
+the end of this age you want to unlock
+everything in here it'll let you take it
+through to the Modern Edge anything you
+don't unlock will be lost otherwise
+focus on getting piety this will unlock
+your religion which is an essential
+piece of Kit in this age economics this
+will let you unlock trade routes and
+after that point I'm going to be
+focusing on anything that gives me
+settlement limit the Mastery of society
+the Mastery of colonialism and all of
+these social class sovereignty and
+imperialism Civics exploration is all
+about settlement cap keep pushing it up
+you'll notice that a lot of your units
+will have made it through to the next
+age broadly speaking these can be left
+at home you need to keep your home
+continent City safe from you know the
+neighbors but any commanders combined
+with any troops they have that have
+survived till this age I advise bringing
+them across to your Capital any cogs
+which is the starting boat you get given
+these should start making their way to
+the edge of the continent just be
+careful not to enter deep open ocean if
+you move onto one of these tiles it will
+end your turn and you will take damage
+so stick to the coast whilst you can
+your Capital should then focus on
+building a few more of these cogs the
+more of the world you explore the faster
+you will find everything you need look
+every single one of my Roman Traditions
+has made its way over fantastic this is
+why it's so important to make sure that
+your Civ specific Civic tree is finished
+you will notice there is a new mechanic
+exploration called overbuilding every
+single one of the buildings in your
+nation from the last Age Now doesn't do
+anything apart from a few anything with
+the Ageless quality still works
+specifically these are my Roman unique
+buildings the Temple of Jupiter and the
+Basilica and any warehouse building such
+as The Granary in your first game don't
+worry about this too much just remember
+bigger numbers equal bigger yields you
+won't go too far wrong after that you
+will also notice that every single one
+of your Town's focuses have now reset
+they will all be on growing Town AKA
+they will be growing and gaining
+population nice and quickly until you
+know what you're doing I would recommend
+keeping them on growing town if you're
+unsure which ones to pick just like the
+last stage you can't go wrong with
+farming town this will increase the
+amount of food your town is making and
+it will start sending all of its food
+supply back to your cities I can see
+that my settlements have a couple of
+unimproved resources here and there
+stuff that I would quite like to get I'm
+going to give it 15 20 terms and then
+I'm going to set them to farming Focus
+generally that works pretty well when
+you are given a choice of government if
+one calls to you more than the others
+then pick it if you're unsure which one
+to go for as usual I would go for feudal
+monarchy because this 20% food it is
+reliably useful and you will never go
+wrong with it once your cogs are lined
+up on the side of your your continent
+you're going to be drifting into the sea
+to find distant lands in a normal game
+simply pick the furthest point of land
+and then start sailing away your Cog can
+survive probably between five and six
+tiles of open ocean before they take
+enough damage to sink you don't want
+this however it's likely that some of
+your cogs will die that's why we're
+making a few if you get a little bit
+lucky you'll see land I can see some
+here so I'm going to be cheeky and I'm
+going to be line directly for it I'd
+advise that you do the same it's also
+now worth pointing out that unless there
+are some settlement spots with resources
+you really really need on your Homeland
+don't bother settling here anymore it's
+better to just leave this land open the
+new world or distant lands as we're
+calling them are far more important to
+get to as you explore you will find new
+land complete with resources this is all
+very well and good but what specifically
+are you looking for well when you
+highlight over a resource if you find
+one that says create creates treasure
+fleets this is a treasure resource I
+found two spices and chocolate it is
+imperative that you gather as many
+treasure resources as you can they will
+win you this age so this island has now
+become priority number one remember I
+said it wasn't worth settling on your
+home continent well now we found land
+overseas so settlers are a priority just
+be aware that settlers cannot cross open
+ocean unless you have cartography so if
+you find land as quickly as I have you
+might need to switch this round once
+your cogs have made landfall in the new
+world even if it is just a small little
+island it's tempting to keep exploring
+but they will have taken damage crossing
+the ocean there are many many dangers
+here so I would take the time to make
+sure your units are fully healed and
+rested so the boats don't fall apart
+it'll slow down your exploration by a
+couple of turns but you know they won't
+die so there are positives once you've
+unlocked party you're almost ready to
+have a religion in order to get a
+religion you have to make a temple just
+one will do but trust me you want to
+make this as quickly as you can as you
+explore go down to the lens toggle and
+turn the lens to continent once you find
+a continent with this little purple
+Arrow this means that it counts as
+distant lands this is the bit of the map
+that is spawned in it's worth settling
+any treasure resources on your home
+continent like this island that's just
+by Rome but distant lands are your
+priority you need to claim as many of
+these distant lands before the AI as
+quickly as you can especially if you're
+playing somebody like Spain who all
+about distant lands my temple is
+finished which means I can create a
+religion you know me by now I am a one
+true faithful believer of the giant crab
+although it's a nice handy piece of
+advice if your eyesight isn't so good I
+would pick a nice bold red color much
+easier to spot now we can add a reliy
+and a Founder belief founder beliefs
+effectively give you yields typically
+these yields apply to foreign
+civilizations that follow your religion
+the religion mechanic in this age is all
+about spreading your religion to other
+people you will get very little benefit
+having your religion in your own land
+I'm going to take this one because it
+gives me culture gold and science for
+every Wonder in other civilization
+settlements following my religion I know
+that there are some big settlements near
+me that I could convert easily melli has
+made a lot of Wonders I'm going to
+utilize that all Relic beliefs are there
+to make relics for you pick one that you
+think is going to make you the most this
+one gives two relics for the first time
+conversion of another civilization
+settlement with a Wonder well that
+Stacks nicely with the one I've picked
+so we're going to pick that once you
+unlock your religion it is worth rushing
+it really quickly missionaries are the
+units that you can use to spread your
+religion the AI will take a little bit
+of time to make theirs so this is the
+time to act I'm going to go and spread
+it as quickly as I can to all of the
+major AI cities to make as many relics
+as I can my Satler has made it across
+the open ocean and has now managed to
+find a spot within three tiles of 1 2 3
+four treasure resources normally just
+one or two would be enough four is an
+amazing spot I like this so we'll found
+the little town and we'll start to
+assemble these resources next up all you
+need to do is build a fishing Key I'm
+going to build it in this direction to
+make sure that I get closer to this
+Resource as fast as I can now over time
+these resources will start to spawn
+treasure fleets which are then need to
+escort back to my capital for now though
+nothing we need to do just let the city
+grow and wait my missionary has now
+arrived at the enemy City religion is
+fairly simple in civ7 if I look at my
+own City I have two icons the first one
+stands for the urban population this is
+any tile with the city center or
+buildings on the second is the rural
+population the improvements I put around
+a missionary is required to use a charge
+on each separately to convert both parts
+of the population to your religion and a
+missionary has three charges so about a
+city and a half per missionary can be
+converted however if there is no
+religion in a city well it's your lucky
+day the whole thing is converted because
+aen has a Wonder I've just generated two
+relics which give me culture and
+happiness incidentally this is the
+culture pathway all you need is 12 how
+difficult could it be quite difficult
+you need to put a lot of temples down in
+order to display them as you explore
+distant lands you'll notice that there
+are people on them more Nations have
+spawned into the game you have a bit of
+a choice you can either treat them
+nicely or not if you want to win the
+domination Legacy of exploration you
+will have to go to war with them at some
+point I think there no harm in being
+friendly on first greeting it's very
+cheap and it just stops them from
+declaring war on you once you have your
+religion don't forget the third Civic
+tree the theology tree it's very quick
+but it boosts your religion
+significantly gives you some very very
+powerful policies I would always
+recommend putting these in your
+government if you can once your town
+reaches 5 population remember you can
+use your gold to buy settlers it doesn't
+take population and it means you have a
+lot less distance to walk with your
+Satler to then go and settle something
+useful just a little trick for you my
+next town is ready to go on the other
+side of the continent this time claiming
+all of the treasure we can speed it's
+all about speed if you get there first
+everyone else has to shunt you off it's
+much easier to defend than it is to
+attack when you're using cogs to explore
+around World remember they can Coastal
+raid this lets you take things like
+encampments and camps the beautiful
+bonuses I always forget they can do that
+it's a very handy thing keep an eye out
+for some resources being different in
+your home continent or abroad for
+instance gold one of the best resources
+gives you a better purchasing power when
+buying buildings however in distant
+lands as you can see over to the right
+on the main continent of distant lands
+but I found gold instead creates a
+treasure Fleet you know what to do found
+this lovely little navigable river we
+have a wonderful settlement Inland and
+there's actually more treasure here than
+I expected even better don't complain
+just take these gifts with open arms in
+fact this location is so good on distant
+lands I'm going to make this into my
+third city as a rule I would never
+recommend going above three cities three
+is about the max you want one on distant
+lands it's incredibly effective to have
+something to keep an eye out for I took
+an alliance out with mlli because he's
+just sneak and I don't trust him however
+he's now at war with Spain and if I
+refuse to join this war my alliance with
+Brim breaks and he really doesn't like
+me so I'm going to have to declare war
+on Spain Spain doesn't really have
+anything near me we shouldn't have too
+much of an issue apart from this tiny
+City below luckily for me I have a
+massive land Army all I need to do is
+just gather them together and head down
+in that direction remember I don't need
+to do anything in this war defending is
+always easier than attacking saying that
+there are a couple of random units
+around we don't like that let's buy in a
+few defensive units to make sure that we
+can deal with them in combat watch out
+for these one-way Cliffs my Archer has
+currently stood above my opponent which
+means I can attack them but they can't
+attack me what a shame for them now
+whilst this looks incredibly bad in
+Valencia everyone is seems to be in a
+hurricane whirlpool and the notification
+says that one population was lost in
+civ7 Don't Fear if a tile is damaged
+like this one the population working it
+count counts is lost so you'll see the
+population drop however if I then repair
+it which I can do with gold you'll
+notice the population comes back that's
+right population loss is now not a
+permanent thing you can reverse it as
+mentioned before remember that
+commanders can be targeted and killed in
+combat killing the enemy commanders is
+an incredibly valuable thing to do don't
+leave yours exposed this is kind of the
+point you need to get to when your town
+is ready to become a city all of the
+resources are improved and your borders
+are about as expanded as you want them
+to get convert to City for 230 gold a
+bargain if you ask me keep an eye on
+some of these City resources a lot of
+them say extra if they are in distant
+land cities luckily for me that's
+exactly now what I've got now that is a
+healthy amount of resources in one city
+lovely ship building lets you cross
+depostion without taking any further
+damage and unlocks a very powerful
+ranged ship it also unlocks treasure
+fleets which hope we should start to see
+spawning anytime soon once you have ship
+building unlocked if you come to the
+resource menu you'll see how many turns
+each town has left for a treasure Fleet
+this one will have four treasures on it
+two on this one five on this one three
+on this one ultimately we have to get to
+30 points given how much treasure we
+have that's not looking like it's going
+to be very long don't complain don't
+complain we can't help the fact that
+we're just really good at this game it's
+a burden really you'll find in the
+exploration age that your economy is so
+big you'll have the gold to do whatever
+you want so you might as well use your
+cities to build wonders they're quite
+good and their benefits really do start
+to stack after a while you may notice as
+you go through this age that the AI
+start to compete with you by putting
+other little island settlements down
+don't worry if they're particularly good
+you can always take them by force we
+haven't really gone into this mechanic
+in these videos so far but if you Su are
+in a city state you can now choose the
+bonus you want owning relics is a
+victory type so I'm going to go with
+this today but normally if you're not
+sure what to do a social policy slot is
+never a Bad Thing treasure fleets these
+will now overtime spawn with all of my
+resources all I need to do is move them
+back to the territory of the Homeland
+anywhere we'll do deposit my goods they
+have a lot of gold in them a lot would
+actually be a very good idea to escort
+these things with my boats a very good
+idea in fact I really should do that
+this is a fleet commander this is
+exactly the same as a regular land
+commander except you know there the sea
+relatively simple just make sure your
+boats are next to it within its range
+and whenever you attack it will gain
+experience Fleet commanders have
+incredibly powerful promotions again if
+you're not sure which one to use I would
+pick order this Commendation just gives
+plus five combat strength to everybody
+within range that's a big bonus and if
+in doubt stick to the leftand tree this
+is the tree that gives extra combat
+damage and also gives you Splash damage
+yep boats now can damage the tiles next
+to the ones they're firing on they very
+handy my treasure Fleet is home just
+press this button unload cargo and look
+at the yields Four Points 400 gold M now
+that's tasty conveniently it's over 10%
+of the way to achieving the treasure
+Fleet I feel like we may be doing this
+very quickly education is the big
+scientific Milestone Tech because it
+increases the specialist limit in your
+cities this allows you to put a second
+specialist down on the same tile as the
+first which makes the yields on the tile
+which are already getting rather silly
+even bigger yeah this is how you do
+silly things like making a 40 yield tile
+or five of them it's all about
+Specialists just keep on putting the
+Specialists on the next one to unlock is
+urban planning and now you can start to
+see the stacking of Specialists we
+already have one on This Ti but we're
+going to put another one down to get all
+of these yields and now this tile is
+looking rather Mighty M delicious if
+you're not sure just find the tile with
+the most stuff on it and put it on that
+one bonus points if you can get two
+special this on the same towel because
+that tends to do really well for your
+legacy path one thing you shouldn't do
+is build one of your unique buildings on
+a tile and then put something else on it
+because then you can't put the second
+building on the tile it won't form the
+plaza and you won't get the plaza for
+the rest of the game don't do it make
+sure you put both of them down at the
+same time don't do what I do normally
+Ursa is up to no good the other thing
+that is worth mentioning if you put a
+building down to make an urban tile over
+the top of a rural tile you don't lose
+that population it removes the farm then
+I immediately get to put it back down
+this is a way of quickly urbanizing your
+cities if you really want to make sure
+that you're getting Specialists not
+tiles and when you've got a bunch of
+towns that's exactly what you should be
+doing remember as you go through the age
+Your settlement limit will continue
+increasing mine is currently now 12 keep
+the settlements appearing any settlement
+you don't use in your limit is Economic
+Opportunity wasted just a little hint
+for you if you find yourself building a
+lot of wonders you're probably doing
+quite well use your gold to instantly
+purchase buildings in your cities and
+use the production to build wonders
+they'll stick around into the next age
+you may as well if in doubt just keep
+settling it's always worth it it's
+always worth it and so as you continue
+to do well and EAS the exploration age
+eventually the crisis begins asking you
+such wonderful questions that really
+search your soul such as is a plague a
+Divine punishment or a Divine Mercy um I
+don't think there's a right option here
+I'm going to say punishment yeah this
+one's all about plague this is not fun
+uh-oh that's not very good my major city
+has a major outbreak that's a lot of
+disease it spawned some migrant for me
+which in itself is pretty nice but if I
+don't cure this plague then it's going
+to get very bad very quickly the plague
+is getting worse but don't worry I'm now
+actually getting science every time that
+I cure it so that's a good thing right
+I'm pretty pretty sure that's a good
+thing ignore the death we'll we'll be
+fine oh yeah the plague is sort of
+everywhere now it makes everyone really
+unhappy and breaks all of your tiles and
+if you don't treat it really quickly the
+whole thing will flip away from you
+which isn't good oh thereare keep
+spending all of my gold on Physicians
+yeah that's all we get to do now just
+feel everyone oh no my Army Commander
+died from plague damage that's really
+bad he was very very good don't let that
+happen people keep an eye on where the
+plague is and don't stand your important
+units in it oh the plague does leave
+eventually thank goodness it's generated
+a huge amount of Migrant population
+though I'm boosting my cities to
+ridiculous levels what do you mean the
+plagues grow stronger that's not good
+and eventually no matter how much the
+game attempts to ruin you you will
+finish the age and come out the other
+end and there we go exploration age is
+at an end and we move forward time waits
+the no man no matter how much plague we
+throw at it you know some ages seem to
+go better than others I think we did
+pretty well there oh yeah very well
+indeed so follow my little steps when
+you take on your first game and you
+should have no problem at all the
+expiration age is when you really get to
+thrive and expand across the map and
+exploit it as best you can and I can't
+wait to show you the Modern Age soon
+soon I hope you've enjoyed this little
+ride through civ7 so far I'd appreciate
+a like and a subscribe if you could
+potentially ship one onto a treasure
+Fleet and float it my way that would be
+amazing and until next time I'll see you
+later goodbye

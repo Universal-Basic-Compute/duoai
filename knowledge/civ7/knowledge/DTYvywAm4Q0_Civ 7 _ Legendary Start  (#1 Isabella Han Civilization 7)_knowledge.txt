@@ -1,0 +1,63 @@
+# Civilization VI: Isabella (Spain) Gameplay Tips
+
+## Leader Abilities and Strategy
+- Isabella (Spain) has a natural wonder start bias, earning 300 gold per discovered natural wonder
+- Natural wonders provide double yields for Isabella
+- The Han civilization gets a second population with their first growth event, allowing you to work more tiles sooner
+
+## Natural Wonders
+- Redwood Forest provides 2 food, 2 production, and 2 happiness, plus culture and science on vegetation
+- Double yields from natural wonders makes them extremely valuable for Isabella
+- Prioritize settling near natural wonders for maximum benefit
+
+## City Planning
+- When settling, prioritize access to multiple resources (like gold, jade, silver, wool, etc.)
+- Settle 1 tile away from natural wonders to maximize workable tiles
+- Claim resource tiles early to prevent other civilizations from settling nearby
+- Consider the loyalty implications when expanding - claim tiles strategically to prevent others from settling too close
+
+## Exploration
+- Build multiple scouts early (4+ is recommended) to discover natural wonders and tribal villages
+- Send scouts in different directions to maximize map coverage
+- Finding tribal villages (goody huts) provides valuable early game bonuses
+- Discovering natural wonders as Isabella provides 300 gold each time
+
+## City States
+- Prioritize becoming Suzerain of city states for their bonuses
+- Save diplomatic influence to compete for city states that others are investing in
+- Use the diplomatic attribute point to reduce the cost of suzerainty
+- City states can provide a buffer zone between you and aggressive civilizations
+
+## Economy
+- Use gold from natural wonder discoveries to buy important buildings like Altars
+- Prioritize working tiles that provide production and happiness early
+- Consider the trade-off between gold per turn and production when converting outposts to cities
+- Buying settlers with gold can accelerate expansion
+
+## Technology and Civics
+- Prioritize Writing to build the Great Stele wonder
+- Consider getting free technologies from tribal villages and city states
+- The Han civilization has a limited civic tree, so plan accordingly
+- Mysticism and Discipline are important early civics for wonder building
+
+## Military
+- Build archers for defense when neighbors show signs of aggression
+- Position units strategically to defend vulnerable cities
+- Use water tiles to your advantage when defending coastal cities
+- Consider building a small defensive force even when focusing on a cultural/scientific approach
+
+## Legacy Paths
+- Ancient Wonders of the World and Science are critical Legacy paths to complete
+- You need to build specific wonders and collect 10 codexes for these paths
+- Free civics from rewards don't unlock unique civic tree options
+
+## Wonders
+- The Great Stele, Oracle, and Gate of All Nations are valuable early wonders
+- Use celebration bonuses to boost wonder production
+- Position wonders according to their terrain requirements (like Oracle needing to be on woods)
+
+## General Tips
+- Exceeding the settlement cap causes happiness penalties - consider if new cities are worth it
+- Celebrations provide valuable bonuses - consider taking happiness to trigger them sooner
+- Maintain good relations with neighbors when possible to avoid unnecessary conflicts
+- Befriend city states that provide bonuses aligned with your victory strategy

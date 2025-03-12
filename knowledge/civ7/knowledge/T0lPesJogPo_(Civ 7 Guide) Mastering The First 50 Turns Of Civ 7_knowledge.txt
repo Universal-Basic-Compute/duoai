@@ -1,0 +1,77 @@
+# Civilization 7: Knowledge, Advice, and Tips
+
+## Starting Decisions
+- Choose a leader that synergizes with your intended strategy (e.g., Benjamin Franklin for science and production buildings)
+- Consider your Momentos carefully - they provide permanent bonuses (like extra social policy slots)
+- Allocate Diplomat attribute points early to maximize their benefit throughout the game
+- Scout first - always build scouts as your first units (3 Scout opening is recommended)
+
+## Early Game Priorities
+- Settle near fresh water (rivers, lakes, oases) to avoid happiness penalties
+- Prioritize growth in early game - look for tiles with good food yields
+- Research Mysticism first in most games to unlock Pantheons quickly
+- Choose Oligarchy as your first government in most cases for production and food bonuses
+- Grab culture from goody huts when possible to speed up civic development
+- Aim to unlock your Pantheon as soon as possible
+
+## Expansion Strategy
+- If you have space for cities/towns, use it - every settlement under your limit is essentially free value
+- Stay within your settlement limit when possible (shown at top of screen)
+- Plan city locations based on fresh water, resources, and defensive positions
+- Use settlers to create buffer cities between you and potentially aggressive neighbors
+- Volcanoes are dangerous for urban districts - avoid building near them if possible
+- Settle natural wonders when possible (like Redwood Forest)
+
+## Resource Management
+- Cotton provides production in your capital but converts to gold in other cities
+- Move luxury resources to your capital for maximum benefit when possible
+- Prioritize working high-yield tiles over low-yield ones
+- Use urban districts to evict citizens from less valuable tiles
+- Avoid purchasing buildings in your capital - save gold for satellite towns
+- Purchase buildings in satellite towns to accelerate their development
+
+## Diplomacy
+- Don't immediately offer research collaborations when meeting new leaders
+- Wait to see if they offer agreements first so you can support them for better relations
+- Accept cultural exchanges and research collaborations when possible
+- Maintain enough influence to accept diplomatic offers (14+ per turn is good)
+- Be cautious about alliances - if you forcibly end turns, the game may auto-accept alliances
+- Alliances can automatically pull you into wars
+
+## Technology and Civics
+- Prioritize technologies that unlock production buildings
+- Masonry is important for monuments and production bonuses
+- Mathematics should be belined for the Academy building (huge science boost)
+- Irrigation provides a settlement limit increase
+- Code of Laws gives access to merchants and oratory
+- Entertainment and Organized Military both provide settlement limit increases
+
+## Military and Independent People
+- Scouts can't attack each other in Civ 7
+- The Assault promotion tree is generally the best choice for military units
+- Independent people (barbarians) can be befriended or conquered
+- First leader to befriend an independent people gets control - it's hard to "snipe" them
+- Independent people can flip allegiance unexpectedly
+- Use military units to block potential enemy settler paths
+
+## Buildings and Wonders
+- Granaries provide bonuses to farms, pastures, plantations, and fishing boats
+- Brickyards provide production and science
+- The Altar provides influence which is hard to get in Civ 7
+- Petra is powerful for desert cities
+- Use the "View Hidden" button to see what wonders are available to build
+- Trading for resources like Ivory can give production bonuses to wonders (20% for desert wonders)
+
+## City Specialization
+- Cities can specialize (like Farming Town) to send resources to your capital
+- Specialization requires a road connection to work properly
+- Farming towns send food to your capital
+- Consider specialization once a city has secured its essential resources
+
+## Miscellaneous Tips
+- Use the search function with scouts to find goody huts and important features
+- Turn on "longer eras" in game setup for a more balanced experience
+- Codexes provide science and progress toward Science Victory
+- Traders in Civ 7 must physically travel to their destination
+- Happiness is generally less important than culture, science, and production
+- God of the Sun is a strong Pantheon choice for immediate benefits

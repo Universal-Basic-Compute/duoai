@@ -1,0 +1,72 @@
+# Civilization 7 Knowledge and Tips
+
+## Game Structure
+- The game is divided into three distinct ages: Antiquity, Exploration, and Modern Age.
+- Each age has exclusive sets of historic civilizations to choose from.
+- In each age, you can work toward "legacies" (culture, military, science/codex, economy) that provide bonuses.
+- Completing legacies can trigger Golden Ages with additional perks.
+
+## Leaders and Civilizations
+- You can mix and match leaders and civilizations, though there are recommended pairings.
+- Augustus (leader) abilities:
+  - +2 production in capital for every town
+  - Can purchase culture buildings in towns
+  - +50% gold towards purchasing buildings in towns
+- Roman Empire (civilization) abilities:
+  - 12 Tables: +1 culture on districts in capital and city centers in towns
+  - +30% production bonus towards constructing the Coliseum
+  - Unique units: Legion and Legatus (unique Army Commander)
+  - Unique quarter: The Forum
+  - Unique buildings: Temple of Jupiter and Basilica
+
+## Settlements and Districts
+- Settlements start as towns and can be upgraded to cities.
+- Your capital starts as a city with a palace (5 food, 5 production, 5 happiness).
+- Cities don't work their base tile like in previous Civ games.
+- City borders don't expand automatically with culture - they expand when you place rural districts.
+- Two types of districts:
+  - Urban districts: Hold buildings (max 2 per district)
+  - Rural districts: Created when population works a tile
+
+## Population and Resources
+- Each population unit works a tile by creating a rural district.
+- Rural districts are self-sustaining (don't cost food to maintain).
+- When you place a rural district, it creates an improvement based on the terrain.
+- Placing a rural district on a resource tile claims that resource.
+- You can build urban districts over rural districts - the population returns to your city.
+- Specialists (unlocked later) cost 2 food and 2 happiness to maintain.
+
+## Military
+- Army Commanders (like the Legatus) are centerpieces of your army.
+- Commanders gain experience and level up, unlocking abilities.
+- The Roman Legatus can spawn a new settlement for every 3 levels.
+- Scouts have special abilities:
+  - Lookout: Increases sight range and stays in place
+  - Search: Temporarily increases sight range and reveals discoveries at twice the range
+
+## Technology and Civics
+- Technology and Civic trees include optional "Mastery" techs.
+- Masteries aren't required for progression but provide special bonuses.
+- Masteries often provide Codexes, which give +2 science per turn.
+- Each civilization has unique civic options (Romans have Exercitus Romanus and Civis Romanus).
+
+## Governments and Policies
+- Governments provide options during celebrations (triggered by excess happiness).
+- Each government offers two celebration bonuses to choose from.
+- Social policies provide passive bonuses to your empire.
+
+## Other Mechanics
+- Happiness contributes to a celebration meter, triggering bonuses when full.
+- Independent villages (like Husa) can be befriended with influence or conquered.
+- Ruins (goody huts) provide bonuses when discovered.
+- Leader attributes (like Militaristic) provide permanent bonuses throughout the game.
+- Momentos are game setup options that provide special bonuses (like Imago Mundi for scout vision).
+- War support is a resource used during conflicts.
+
+## Strategic Tips
+- As Rome, focus on building towns to maximize Augustus's production bonus.
+- The ability to purchase culture buildings in towns is extremely valuable.
+- Scout early to find ruins and independent villages.
+- Consider building a town on the southern coast to access fish and dye resources.
+- Infantry units are particularly strong for Rome with the Legion unique unit.
+- Aim to complete the quest for a commander with three promotions.
