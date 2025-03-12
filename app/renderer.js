@@ -80,20 +80,40 @@ document.addEventListener('DOMContentLoaded', () => {
       // Clear input field
       messageInput.value = '';
       
-      // Simulate bot response after a short delay
-      setTimeout(async () => {
-        const botResponse = getBotResponse(message);
-        addMessage(botResponse, 'bot');
-        
-        // Optional: Convert bot response to speech
-        try {
-          const audioUrl = await textToSpeech(botResponse);
+      // Show loading indicator
+      const loadingElement = document.createElement('div');
+      loadingElement.classList.add('message', 'bot-message', 'loading');
+      loadingElement.textContent = 'Thinking...';
+      chatMessages.appendChild(loadingElement);
+      
+      // Scroll to the bottom of the chat
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      
+      // Call the LLM API
+      callLLMApi(message)
+        .then(botResponse => {
+          // Remove loading indicator
+          chatMessages.removeChild(loadingElement);
+          
+          // Add bot response to chat
+          addMessage(botResponse, 'bot');
+          
+          // Convert bot response to speech
+          return textToSpeech(botResponse);
+        })
+        .then(audioUrl => {
           const audio = new Audio(audioUrl);
           audio.play();
-        } catch (error) {
-          console.error('Failed to play audio:', error);
-        }
-      }, 1000);
+        })
+        .catch(error => {
+          // Remove loading indicator
+          if (loadingElement.parentNode) {
+            chatMessages.removeChild(loadingElement);
+          }
+          
+          console.error('Error:', error);
+          addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+        });
     }
   }
 
@@ -109,22 +129,39 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  function getBotResponse(message) {
-    // Simple response logic - you can expand this
-    const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes('hello') || lowerMessage.includes('hi')) {
-      return 'Hello there! How can I help you?';
-    } else if (lowerMessage.includes('how are you')) {
-      return 'I\'m just a computer program, but I\'m functioning well. Thanks for asking!';
-    } else if (lowerMessage.includes('bye')) {
-      return 'Goodbye! Have a great day!';
-    } else if (lowerMessage.includes('name')) {
-      return 'I\'m your friendly chat assistant.';
-    } else if (lowerMessage.includes('help')) {
-      return 'I can chat with you about various topics. Just type a message and I\'ll respond!';
-    } else {
-      return 'That\'s interesting! Tell me more or ask me something else.';
+  // Add this new function to call the LLM API
+  async function callLLMApi(message) {
+    try {
+      const apiBaseUrl = 'https://duogaming.ai';
+      
+      const response = await fetch(`${apiBaseUrl}/api/llm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a helpful, friendly AI assistant. Provide concise and helpful responses.'
+            },
+            {
+              role: 'user',
+              content: message
+            }
+          ]
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      return data.content[0].text;
+    } catch (error) {
+      console.error('Error calling LLM API:', error);
+      throw error;
     }
   }
 });
