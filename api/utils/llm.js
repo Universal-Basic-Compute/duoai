@@ -43,14 +43,23 @@ module.exports = async function handler(req, res) {
 
     // Handle different input formats
     if (messages && Array.isArray(messages) && messages.length > 0) {
-      // Use conversation messages format
-      payload.messages = messages;
+      // Filter out any system messages and use the first one as the system parameter
+      const systemMessages = messages.filter(msg => msg.role === 'system');
+      const nonSystemMessages = messages.filter(msg => msg.role !== 'system');
+      
+      // If there's a system message, use it as the system parameter
+      if (systemMessages.length > 0 && !payload.system) {
+        payload.system = systemMessages[0].content;
+      }
+      
+      // Use only non-system messages in the messages array
+      payload.messages = nonSystemMessages;
       
       // Add images to the last user message if provided
       if (images && Array.isArray(images) && images.length > 0 && 
-          messages.length > 0 && messages[messages.length - 1].role === 'user') {
+          nonSystemMessages.length > 0 && nonSystemMessages[nonSystemMessages.length - 1].role === 'user') {
         
-        const lastMessage = messages[messages.length - 1];
+        const lastMessage = nonSystemMessages[nonSystemMessages.length - 1];
         
         // Convert the content to array format if it's a string
         if (typeof lastMessage.content === 'string') {
