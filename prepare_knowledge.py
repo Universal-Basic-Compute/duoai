@@ -113,9 +113,8 @@ def get_video_transcript(video_id):
         else:
             print(f"  Transcript content: {transcript_list}")
         
-        # Format transcript as plain text
-        formatter = TextFormatter()
-        plain_text = formatter.format_transcript(transcript_list)
+        # Convert the dictionary list to a simple text format manually
+        plain_text = "\n".join([segment.get('text', '') for segment in transcript_list])
         
         # Return both formats
         return {
