@@ -21,8 +21,21 @@ module.exports = async function handler(req, res) {
     let systemPrompt = system;
     if (!systemPrompt) {
       try {
+        // Load base prompt
         const basePromptPath = path.join(process.cwd(), 'api', 'prompts', 'base_prompt.txt');
-        systemPrompt = fs.readFileSync(basePromptPath, 'utf8');
+        const basePrompt = fs.readFileSync(basePromptPath, 'utf8');
+        
+        // Load character prompt (Zephyr)
+        const characterPromptPath = path.join(process.cwd(), 'api', 'prompts', 'characters', 'zephyr.txt');
+        let characterPrompt = '';
+        try {
+          characterPrompt = fs.readFileSync(characterPromptPath, 'utf8');
+        } catch (charErr) {
+          console.warn('Could not load character prompt:', charErr.message);
+        }
+        
+        // Combine prompts
+        systemPrompt = basePrompt + '\n\n' + characterPrompt;
       } catch (err) {
         console.warn('Could not load base prompt:', err.message);
       }
