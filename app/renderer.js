@@ -1,3 +1,20 @@
+// Function to detect if running in Electron environment
+function isElectron() {
+  // Renderer process
+  if (typeof window !== 'undefined' && typeof window.process === 'object' && window.process.type === 'renderer') {
+    return true;
+  }
+  // Main process
+  if (typeof process !== 'undefined' && typeof process.versions === 'object' && !!process.versions.electron) {
+    return true;
+  }
+  // Detect the user agent when the `nodeIntegration` option is set to false
+  if (typeof navigator === 'object' && typeof navigator.userAgent === 'string' && navigator.userAgent.indexOf('Electron') >= 0) {
+    return true;
+  }
+  return false;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
@@ -9,8 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Use relative URL to avoid domain issues
-      const response = await fetch(`/api/utils/tts`, {
+      // Use the appropriate base URL depending on the environment
+      const apiUrl = isElectron() 
+        ? 'https://duogaming.ai/api/utils/tts' 
+        : '/api/utils/tts';
+        
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,8 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Use relative URL to avoid domain issues
-      const response = await fetch(`/api/utils/stt`, {
+      // Use the appropriate base URL depending on the environment
+      const apiUrl = isElectron() 
+        ? 'https://duogaming.ai/api/utils/stt' 
+        : '/api/utils/stt';
+        
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,8 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this new function to call the LLM API
   async function callLLMApi(message) {
     try {
-      // Use relative URL to avoid domain issues
-      const response = await fetch(`/api/utils/llm`, {
+      // Use the appropriate base URL depending on the environment
+      const apiUrl = isElectron() 
+        ? 'https://duogaming.ai/api/utils/llm' 
+        : '/api/utils/llm';
+        
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
