@@ -1,4 +1,6 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const { handleCors, validateMethod } = require('./common');
 
 module.exports = async function handler(req, res) {
@@ -15,6 +17,17 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'Anthropic API key not configured' });
     }
 
+    // Load the base system prompt if not overridden
+    let systemPrompt = system;
+    if (!systemPrompt) {
+      try {
+        const basePromptPath = path.join(process.cwd(), 'api', 'prompts', 'base_prompt.txt');
+        systemPrompt = fs.readFileSync(basePromptPath, 'utf8');
+      } catch (err) {
+        console.warn('Could not load base prompt:', err.message);
+      }
+    }
+
     // Prepare the request payload
     const payload = {
       model: "claude-3-5-haiku-20240307",
@@ -22,9 +35,9 @@ module.exports = async function handler(req, res) {
       temperature: 0.7,
     };
 
-    // Add system prompt if provided
-    if (system) {
-      payload.system = system;
+    // Add system prompt if available
+    if (systemPrompt) {
+      payload.system = systemPrompt;
     }
 
     // Handle different input formats
