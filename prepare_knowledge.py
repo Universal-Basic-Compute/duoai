@@ -208,6 +208,81 @@ def extract_knowledge_with_claude(transcript, api_key):
     
     return None
 
+def process_existing_transcripts(folder_path, api_key=None):
+    """Process existing transcripts in a folder with Claude to extract knowledge."""
+    if not api_key:
+        api_key = os.getenv("ANTHROPIC_API_KEY")
+        if not api_key:
+            print("Error: ANTHROPIC_API_KEY not found in environment variables.")
+            return False
+    
+    # Check if the folder exists
+    transcripts_dir = os.path.join(folder_path, 'transcripts')
+    if not os.path.exists(transcripts_dir):
+        print(f"Error: Transcripts directory not found at {transcripts_dir}")
+        return False
+    
+    # Create knowledge directory if it doesn't exist
+    knowledge_dir = os.path.join(folder_path, 'knowledge')
+    os.makedirs(knowledge_dir, exist_ok=True)
+    
+    # Get all transcript text files
+    transcript_files = [f for f in os.listdir(transcripts_dir) if f.endswith('.txt')]
+    
+    if not transcript_files:
+        print(f"No transcript files found in {transcripts_dir}")
+        return False
+    
+    print(f"Found {len(transcript_files)} transcript files to process")
+    
+    # Process each transcript
+    successful_extractions = 0
+    
+    for i, transcript_file in enumerate(transcript_files):
+        print(f"Processing transcript {i+1}/{len(transcript_files)}: {transcript_file}")
+        
+        # Check if knowledge file already exists
+        knowledge_filename = transcript_file.replace('.txt', '_knowledge.txt')
+        knowledge_path = os.path.join(knowledge_dir, knowledge_filename)
+        
+        if os.path.exists(knowledge_path):
+            print(f"  ✓ Knowledge file already exists at {knowledge_path}, skipping...")
+            successful_extractions += 1
+            continue
+        
+        # Read transcript
+        transcript_path = os.path.join(transcripts_dir, transcript_file)
+        try:
+            with open(transcript_path, 'r', encoding='utf-8') as f:
+                transcript_text = f.read()
+            
+            # Extract knowledge using Claude
+            print(f"  Extracting knowledge with Claude...")
+            knowledge = extract_knowledge_with_claude(transcript_text, api_key)
+            
+            if knowledge:
+                # Save extracted knowledge
+                with open(knowledge_path, 'w', encoding='utf-8') as f:
+                    f.write(knowledge)
+                
+                successful_extractions += 1
+                print(f"  ✓ Saved extracted knowledge to {knowledge_path}")
+            else:
+                print(f"  ✗ Failed to extract knowledge")
+        
+        except Exception as e:
+            print(f"  ✗ Error processing transcript {transcript_file}: {str(e)}")
+        
+        # Avoid rate limiting
+        if i < len(transcript_files) - 1:
+            print("  Waiting before processing next transcript...")
+            time.sleep(2)
+    
+    print(f"\nKnowledge extraction complete!")
+    print(f"Successfully extracted knowledge from {successful_extractions}/{len(transcript_files)} transcripts")
+    print(f"All data saved to {knowledge_dir}")
+    return True
+
 def prepare_knowledge(output_folder, queries, max_results_per_query=10):
     """Main function to prepare knowledge from YouTube videos."""
     # Set up YouTube API
@@ -322,15 +397,35 @@ def prepare_knowledge(output_folder, queries, max_results_per_query=10):
     print(f"All data saved to {output_folder}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Prepare knowledge base from YouTube videos.")
-    parser.add_argument("output_folder", help="Folder to save the knowledge base")
-    parser.add_argument("queries", nargs='+', help="Search queries to find videos")
-    parser.add_argument("--max-results", type=int, default=10, help="Maximum results per query (default: 10)")
+    parser = argparse.ArgumentParser(description="Prepare knowledge base from YouTube videos or process existing transcripts.")
+    
+    # Create subparsers for different modes
+    subparsers = parser.add_subparsers(dest='mode', help='Operation mode')
+    
+    # Parser for YouTube search mode
+    youtube_parser = subparsers.add_parser('youtube', help='Search YouTube and download transcripts')
+    youtube_parser.add_argument("output_folder", help="Folder to save the knowledge base")
+    youtube_parser.add_argument("queries", nargs='+', help="Search queries to find videos")
+    youtube_parser.add_argument("--max-results", type=int, default=10, help="Maximum results per query (default: 10)")
+    
+    # Parser for processing existing transcripts
+    process_parser = subparsers.add_parser('process', help='Process existing transcripts with Claude')
+    process_parser.add_argument("folder_path", help="Path to the folder containing transcripts")
     
     args = parser.parse_args()
     
-    # Ensure the output folder exists
-    os.makedirs(args.output_folder, exist_ok=True)
+    # Handle different modes
+    if args.mode == 'youtube':
+        # Ensure the output folder exists
+        os.makedirs(args.output_folder, exist_ok=True)
+        
+        # Run the knowledge preparation
+        prepare_knowledge(args.output_folder, args.queries, args.max_results)
     
-    # Run the knowledge preparation
-    prepare_knowledge(args.output_folder, args.queries, args.max_results)
+    elif args.mode == 'process':
+        # Process existing transcripts
+        process_existing_transcripts(args.folder_path)
+    
+    else:
+        # If no mode specified, show help
+        parser.print_help()
