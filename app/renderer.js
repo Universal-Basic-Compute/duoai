@@ -29,6 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // Always use the full URL to the production API
       const apiUrl = 'https://duogaming.ai/api/utils/tts';
       
+      // Log the URL being used
+      console.log('Calling TTS API at:', apiUrl);
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -57,6 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Always use the full URL to the production API
       const apiUrl = 'https://duogaming.ai/api/utils/stt';
+      
+      // Log the URL being used
+      console.log('Calling STT API at:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -151,6 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       // Always use the full URL to the production API
       const apiUrl = 'https://duogaming.ai/api/utils/llm';
+      
+      // Log the URL being used
+      console.log('Calling LLM API at:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'POST',
