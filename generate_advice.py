@@ -78,7 +78,7 @@ Your advice must:
 2. Be specific to what's visible in the screenshot and mentioned in the transcript
 3. Be actionable - tell the player exactly what they should do
 4. Be strategic - explain why this is the best course of action
-5. Be concise - focus on the most important 2-3 pieces of advice
+5. Be concise - focus on the most important piece of advice
 
 Format your response in bullet points for readability.
 
