@@ -9,10 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Use window.location.origin when testing locally, or your Vercel URL in production
-      const apiBaseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://your-vercel-deployment-url.vercel.app' 
-        : window.location.origin;
+      // Use the new domain for API endpoints
+      const apiBaseUrl = 'https://duogaming.ai';
         
       const response = await fetch(`${apiBaseUrl}/api/tts`, {
         method: 'POST',
@@ -40,10 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Use window.location.origin when testing locally, or your Vercel URL in production
-      const apiBaseUrl = process.env.NODE_ENV === 'production' 
-        ? 'https://your-vercel-deployment-url.vercel.app' 
-        : window.location.origin;
+      // Use the new domain for API endpoints
+      const apiBaseUrl = 'https://duogaming.ai';
         
       const response = await fetch(`${apiBaseUrl}/api/stt`, {
         method: 'POST',
