@@ -14,5 +14,8 @@
     { "src": "/api/utils/(.*)", "dest": "/api/utils/$1" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/website/$1" }
+  ],
+  "redirects": [
+    { "source": "https://www.duogaming.ai/:path*", "destination": "https://duogaming.ai/:path*", "permanent": true }
   ]
 }

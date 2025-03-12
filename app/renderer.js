@@ -9,10 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Use the new domain and path for API endpoints
-      const apiBaseUrl = 'https://duogaming.ai';
-        
-      const response = await fetch(`${apiBaseUrl}/api/utils/tts`, {
+      // Use relative URL to avoid domain issues
+      const response = await fetch(`/api/utils/tts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,10 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Use the new domain and path for API endpoints
-      const apiBaseUrl = 'https://duogaming.ai';
-        
-      const response = await fetch(`${apiBaseUrl}/api/utils/stt`, {
+      // Use relative URL to avoid domain issues
+      const response = await fetch(`/api/utils/stt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,9 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this new function to call the LLM API
   async function callLLMApi(message) {
     try {
-      const apiBaseUrl = 'https://duogaming.ai';
-      
-      const response = await fetch(`${apiBaseUrl}/api/utils/llm`, {
+      // Use relative URL to avoid domain issues
+      const response = await fetch(`/api/utils/llm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
