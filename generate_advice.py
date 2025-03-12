@@ -27,7 +27,7 @@ def generate_speech_from_advice(advice_text, output_path, api_key, voice_id="pNI
     # Prepare the payload
     payload = {
         "text": advice_text,
-        "model_id": "eleven_multilingual_v2",
+        "model_id": "eleven_turbo_v2_5",
         "voice_settings": {
             "stability": 0.5,
             "similarity_boost": 0.5
