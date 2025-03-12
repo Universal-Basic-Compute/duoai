@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Use the new domain for API endpoints
-      const apiBaseUrl = 'https://duogaming.ai';
+      // Use the correct domain for API endpoints
+      const apiBaseUrl = window.location.origin || 'https://duoai.vercel.app';
         
       const response = await fetch(`${apiBaseUrl}/api/tts`, {
         method: 'POST',
@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Use the new domain for API endpoints
-      const apiBaseUrl = 'https://duogaming.ai';
+      // Use the correct domain for API endpoints
+      const apiBaseUrl = window.location.origin || 'https://duoai.vercel.app';
         
       const response = await fetch(`${apiBaseUrl}/api/stt`, {
         method: 'POST',
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this new function to call the LLM API
   async function callLLMApi(message) {
     try {
-      const apiBaseUrl = 'https://duogaming.ai';
+      const apiBaseUrl = window.location.origin || 'https://duoai.vercel.app';
       
       const response = await fetch(`${apiBaseUrl}/api/llm`, {
         method: 'POST',
@@ -158,7 +158,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       const data = await response.json();
-      return data.content[0].text;
+      
+      // Handle the Anthropic API response format
+      if (data.content && Array.isArray(data.content) && data.content.length > 0) {
+        return data.content[0].text;
+      } else if (data.error) {
+        throw new Error(data.error);
+      } else {
+        return "I'm sorry, I couldn't generate a response at this time.";
+      }
     } catch (error) {
       console.error('Error calling LLM API:', error);
       throw error;
