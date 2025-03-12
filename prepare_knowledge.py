@@ -162,7 +162,7 @@ def extract_knowledge_with_claude(transcript, api_key):
     user_message = "Make a complete list of specific knowledge/advice/tips about the game based on the transcript."
     
     payload = {
-        "model": "claude-3-7-sonnet-20240229",  # Using the model you specified
+        "model": "claude-3-7-sonnet-latest",  # Using the latest model version
         "max_tokens": 4000,
         "temperature": 0.2,  # Lower temperature for more focused extraction
         "system": system_prompt,
