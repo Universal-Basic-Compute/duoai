@@ -26,11 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Use the appropriate base URL depending on the environment
-      const apiUrl = isElectron() 
-        ? '/api/utils/tts' 
-        : '/api/utils/tts';
-        
+      // Always use the full URL to the production API
+      const apiUrl = 'https://duogaming.ai/api/utils/tts';
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -57,11 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Use the appropriate base URL depending on the environment
-      const apiUrl = isElectron() 
-        ? '/api/utils/stt' 
-        : '/api/utils/stt';
-        
+      // Always use the full URL to the production API
+      const apiUrl = 'https://duogaming.ai/api/utils/stt';
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -153,11 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this new function to call the LLM API
   async function callLLMApi(message) {
     try {
-      // Use the appropriate base URL depending on the environment
-      const apiUrl = isElectron() 
-        ? '/api/utils/llm' 
-        : '/api/utils/llm';
-        
+      // Always use the full URL to the production API
+      const apiUrl = 'https://duogaming.ai/api/utils/llm';
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
