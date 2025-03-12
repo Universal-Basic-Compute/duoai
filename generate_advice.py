@@ -46,8 +46,8 @@ def load_knowledge_files(knowledge_dir):
     print(f"Loaded {len(combined_knowledge)} characters of knowledge")
     return combined_knowledge
 
-def generate_advice_with_claude(image_path, transcript_text, knowledge_text, api_key):
-    """Generate advice using Claude based on image, transcript, and knowledge."""
+def generate_advice_with_claude_and_context(image_path, transcript_text, knowledge_text, previous_advices, api_key):
+    """Generate advice using Claude based on image, transcript, knowledge, and previous advices."""
     if not api_key:
         print("Error: ANTHROPIC_API_KEY not found in environment variables.")
         return None
@@ -64,6 +64,11 @@ def generate_advice_with_claude(image_path, transcript_text, knowledge_text, api
         "x-api-key": api_key,
         "anthropic-version": "2023-06-01"
     }
+    
+    # Format previous advices as a string
+    previous_advices_text = ""
+    if previous_advices:
+        previous_advices_text = "Previous advices:\n" + "\n".join(previous_advices)
     
     # Create system prompt with knowledge
     system_prompt = f"""You are an expert gaming advisor who provides specific, actionable advice to players based on their current game situation.
@@ -85,51 +90,50 @@ Format your response as a short paragraph or a few sentences. Do not use bullet 
 
 IMPORTANT: Respond ONLY with the advice itself. Do not include any introductions, explanations about what you're doing, or conclusions. Start directly with your advice in sentence form."""
     
-    # Create user message with transcript
-    user_message = f"Here's a screenshot from my game and the transcript of what's happening. Give me specific advice for what I should do in this situation:\n\nTRANSCRIPT:\n{transcript_text}"
+    # Create messages array with previous advices and current request
+    messages = []
     
-    # Prepare the payload
+    # Add previous advices as a single assistant message if available
+    if previous_advices:
+        messages.append({
+            "role": "assistant",
+            "content": previous_advices_text
+        })
+    
+    # Add the current user message with transcript and image
     if image_base64:
         # Include image in the message
-        payload = {
-            "model": "claude-3-5-haiku-latest",
-            "max_tokens": 1000,
-            "temperature": 0.2,
-            "system": system_prompt,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": user_message
-                        },
-                        {
-                            "type": "image",
-                            "source": {
-                                "type": "base64",
-                                "media_type": "image/jpeg",
-                                "data": image_base64
-                            }
-                        }
-                    ]
+        user_content = [
+            {
+                "type": "text",
+                "text": f"Here's a screenshot from my game and the transcript of what's happening. Give me specific advice for what I should do in this situation:\n\nTRANSCRIPT:\n{transcript_text}"
+            },
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": "image/jpeg",
+                    "data": image_base64
                 }
-            ]
-        }
+            }
+        ]
     else:
         # Text-only message
-        payload = {
-            "model": "claude-3-5-haiku-latest",
-            "max_tokens": 1000,
-            "temperature": 0.2,
-            "system": system_prompt,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": user_message
-                }
-            ]
-        }
+        user_content = f"Here's a screenshot from my game and the transcript of what's happening. Give me specific advice for what I should do in this situation:\n\nTRANSCRIPT:\n{transcript_text}"
+    
+    messages.append({
+        "role": "user",
+        "content": user_content
+    })
+    
+    # Prepare the payload
+    payload = {
+        "model": "claude-3-5-haiku-latest",
+        "max_tokens": 1000,
+        "temperature": 0.2,
+        "system": system_prompt,
+        "messages": messages
+    }
     
     # Make the API request with retry logic
     max_retries = 3
@@ -167,6 +171,11 @@ IMPORTANT: Respond ONLY with the advice itself. Do not include any introductions
                 return None
     
     return None
+
+def generate_advice_with_claude(image_path, transcript_text, knowledge_text, api_key):
+    """Generate advice using Claude based on image, transcript, and knowledge."""
+    # For backward compatibility, call the new function with empty previous_advices
+    return generate_advice_with_claude_and_context(image_path, transcript_text, knowledge_text, [], api_key)
 
 def process_segments(knowledge_dir, transcript_dir):
     """Process all segments in the transcript directory."""
@@ -206,6 +215,9 @@ def process_segments(knowledge_dir, transcript_dir):
             segments = metadata.get("segments", [])
             print(f"Found {len(segments)} segments in metadata")
             
+            # Keep track of the last 10 advices
+            last_advices = []
+            
             # Process each segment
             for segment in segments:
                 segment_num = segment.get("segment")
@@ -221,7 +233,18 @@ def process_segments(knowledge_dir, transcript_dir):
                 advice_path = os.path.join(folder_path, advice_file)
                 
                 if os.path.exists(advice_path):
-                    print(f"  Advice for segment {segment_num} already exists, skipping...")
+                    print(f"  Advice for segment {segment_num} already exists, loading for context...")
+                    # Load existing advice for context
+                    try:
+                        with open(advice_path, 'r', encoding='utf-8') as f:
+                            existing_advice = f.read().strip()
+                            # Add to last advices with segment number
+                            last_advices.append(f"Segment {segment_num}: {existing_advice}")
+                            # Keep only the last 10
+                            if len(last_advices) > 10:
+                                last_advices.pop(0)
+                    except Exception as e:
+                        print(f"  Error loading existing advice: {str(e)}")
                     continue
                 
                 print(f"  Processing segment {segment_num}...")
@@ -229,8 +252,14 @@ def process_segments(knowledge_dir, transcript_dir):
                 # Get paths
                 frame_path = os.path.join(folder_path, frame_file)
                 
-                # Generate advice
-                advice = generate_advice_with_claude(frame_path, transcript, knowledge_text, api_key)
+                # Generate advice with context from previous advices
+                advice = generate_advice_with_claude_and_context(
+                    frame_path, 
+                    transcript, 
+                    knowledge_text, 
+                    last_advices,
+                    api_key
+                )
                 
                 if advice:
                     # Save advice
@@ -240,6 +269,12 @@ def process_segments(knowledge_dir, transcript_dir):
                     # Update metadata
                     segment["adviceFile"] = advice_file
                     segment["advice"] = advice
+                    
+                    # Add to last advices
+                    last_advices.append(f"Segment {segment_num}: {advice}")
+                    # Keep only the last 10
+                    if len(last_advices) > 10:
+                        last_advices.pop(0)
                     
                     print(f"  ✓ Saved advice to {advice_path}")
                 else:
