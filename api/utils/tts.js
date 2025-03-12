@@ -28,7 +28,7 @@ module.exports = async function handler(req, res) {
     const selectedVoiceId = voiceId || 'pNInz6obpgDQGcFmaJgB'; // Default ElevenLabs voice ID
     
     // Use default model if not provided
-    const selectedModel = model || 'eleven_multilingual_v2';
+    const selectedModel = model || 'eleven_flash_v2_5';
     
     // Get API key from environment variable
     const apiKey = process.env.ELEVENLABS_API_KEY;
