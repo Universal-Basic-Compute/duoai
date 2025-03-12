@@ -30,10 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
       let apiUrl;
       if (isElectron()) {
         // When running in Electron, use the full URL to the production API
-        apiUrl = 'https://duogaming.ai/api/utils/tts';
+        apiUrl = 'https://duogaming.ai/api/tts';
       } else {
         // When running in a browser, use a relative URL
-        apiUrl = '/api/utils/tts';
+        apiUrl = '/api/tts';
       }
       
       // Log the URL being used
@@ -69,10 +69,10 @@ document.addEventListener('DOMContentLoaded', () => {
       let apiUrl;
       if (isElectron()) {
         // When running in Electron, use the full URL to the production API
-        apiUrl = 'https://duogaming.ai/api/utils/stt';
+        apiUrl = 'https://duogaming.ai/api/stt';
       } else {
         // When running in a browser, use a relative URL
-        apiUrl = '/api/utils/stt';
+        apiUrl = '/api/stt';
       }
       
       // Log the URL being used
@@ -173,10 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
       let apiUrl;
       if (isElectron()) {
         // When running in Electron, use the full URL to the production API
-        apiUrl = 'https://duogaming.ai/api/utils/llm';
+        apiUrl = 'https://duogaming.ai/api/llm';
       } else {
         // When running in a browser, use a relative URL
-        apiUrl = '/api/utils/llm';
+        apiUrl = '/api/llm';
       }
       
       // Log the URL being used
