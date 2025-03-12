@@ -75,10 +75,11 @@ Analyze the game screenshot and transcript carefully. Then provide specific advi
 
 Your advice must:
 1. Address the player directly using "you" language
-2. Be specific to what's visible in the screenshot and mentioned in the transcript
-3. Be actionable - tell the player exactly what they should do
-4. Be strategic - explain why this is the best course of action
-5. Be concise - focus on the most important piece of advice
+2. Be specific to what's visible in the screenshot and mentioned in the transcript, if relevant
+3. Do not repeat previously shared advice
+4. Be actionable - tell the player exactly what they should do
+5. Be strategic - explain why this is the best course of action
+6. Be concise - focus on the most important piece of advice
 
 Format your response as a short paragraph or a few sentences. Do not use bullet points.
 
