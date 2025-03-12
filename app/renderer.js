@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
-      // Always use the full URL to the production API
-      const apiUrl = 'https://duogaming.ai/api/utils/tts';
+      // Use www subdomain explicitly
+      const apiUrl = 'https://www.duogaming.ai/api/utils/tts';
       
       // Log the URL being used
       console.log('Calling TTS API at:', apiUrl);
@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Speech-to-text function using ElevenLabs API
   async function speechToText(audioBase64) {
     try {
-      // Always use the full URL to the production API
-      const apiUrl = 'https://duogaming.ai/api/utils/stt';
+      // Use www subdomain explicitly
+      const apiUrl = 'https://www.duogaming.ai/api/utils/stt';
       
       // Log the URL being used
       console.log('Calling STT API at:', apiUrl);
@@ -155,8 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add this new function to call the LLM API
   async function callLLMApi(message) {
     try {
-      // Always use the full URL to the production API
-      const apiUrl = 'https://duogaming.ai/api/utils/llm';
+      // Use www subdomain explicitly
+      const apiUrl = 'https://www.duogaming.ai/api/utils/llm';
       
       // Log the URL being used
       console.log('Calling LLM API at:', apiUrl);
