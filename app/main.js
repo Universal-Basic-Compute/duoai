@@ -1,5 +1,24 @@
-const { app, BrowserWindow, Menu, MenuItem } = require('electron')
+const { app, BrowserWindow, Menu, MenuItem, ipcMain, desktopCapturer } = require('electron')
 const path = require('path')
+
+// Add IPC handler for screen capture
+ipcMain.handle('get-screen-sources', async () => {
+  try {
+    const sources = await desktopCapturer.getSources({ 
+      types: ['screen', 'window'],
+      thumbnailSize: { width: 1, height: 1 }
+    });
+    return sources.map(source => ({
+      id: source.id,
+      name: source.name,
+      displayId: source.display_id,
+      type: source.id.includes('screen') ? 'screen' : 'window'
+    }));
+  } catch (error) {
+    console.error('Error getting screen sources:', error);
+    return [];
+  }
+});
 
 function createWindow() {
   const mainWindow = new BrowserWindow({

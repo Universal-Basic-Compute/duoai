@@ -1,26 +1,14 @@
-const { contextBridge, desktopCapturer, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 // Expose protected methods that allow the renderer process to use
-// the desktopCapturer without exposing the entire Electron API
+// the ipcRenderer without exposing the entire object
 contextBridge.exposeInMainWorld('electronAPI', {
   getScreenSources: async () => {
     try {
-      console.log('Getting screen sources from preload script');
-      // Use the desktopCapturer directly in the preload script
-      const sources = await desktopCapturer.getSources({ 
-        types: ['screen', 'window'],
-        thumbnailSize: { width: 1, height: 1 } // Minimal thumbnails
-      });
-      console.log('Screen sources found:', sources.length);
-      // Return a simplified version of the sources to avoid exposing too much
-      return sources.map(source => ({
-        id: source.id,
-        name: source.name,
-        displayId: source.display_id,
-        type: source.id.includes('screen') ? 'screen' : 'window'
-      }));
+      console.log('Getting screen sources via IPC');
+      return await ipcRenderer.invoke('get-screen-sources');
     } catch (error) {
-      console.error('Error getting screen sources in preload:', error);
+      console.error('Error getting screen sources via IPC:', error);
       return [];
     }
   }
