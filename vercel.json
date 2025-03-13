@@ -12,6 +12,7 @@
     { "source": "/api/stt", "destination": "/api/utils/stt.js" },
     { "source": "/api/llm", "destination": "/api/utils/llm.js" },
     { "source": "/api/messages", "destination": "/api/messages.js" },
+    { "source": "/api/send-message", "destination": "/api/send-message.js" },
     { "source": "/api/utils/(.*)", "destination": "/api/utils/$1" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/website/$1" }

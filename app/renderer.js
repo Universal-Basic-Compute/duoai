@@ -173,31 +173,69 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Scroll to the bottom of the chat
       chatMessages.scrollTop = chatMessages.scrollHeight;
       
-      // Call the LLM API
-      callLLMApi(message)
-        .then(botResponse => {
-          // Remove loading indicator
+      // Call the send-message API
+      let apiUrl;
+      if (isElectron()) {
+        apiUrl = 'https://duogaming.ai/api/send-message';
+      } else {
+        apiUrl = '/api/send-message';
+      }
+      
+      fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          username: 'anonymous', // Replace with actual username if available
+          character: 'Zephyr'    // Replace with selected character if available
+        }),
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(data => {
+            throw new Error(data.message || `Error: ${response.status}`);
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Remove loading indicator
+        chatMessages.removeChild(loadingElement);
+        
+        // Add bot response to chat
+        addMessage(data.response, 'bot');
+        
+        // Update conversation history
+        conversationHistory.push({ role: 'user', content: message });
+        conversationHistory.push({ role: 'assistant', content: data.response });
+        
+        // Display rate limit information if needed
+        if (data.remaining <= 5) {
+          const limitMessage = `You have ${data.remaining} messages remaining today.`;
+          const limitElement = document.createElement('div');
+          limitElement.classList.add('message', 'system-message');
+          limitElement.textContent = limitMessage;
+          chatMessages.appendChild(limitElement);
+        }
+        
+        // Convert bot response to speech
+        return textToSpeech(data.response);
+      })
+      .then(audioUrl => {
+        const audio = new Audio(audioUrl);
+        audio.play();
+      })
+      .catch(error => {
+        // Remove loading indicator
+        if (loadingElement.parentNode) {
           chatMessages.removeChild(loadingElement);
-          
-          // Add bot response to chat
-          addMessage(botResponse, 'bot');
-          
-          // Convert bot response to speech
-          return textToSpeech(botResponse);
-        })
-        .then(audioUrl => {
-          const audio = new Audio(audioUrl);
-          audio.play();
-        })
-        .catch(error => {
-          // Remove loading indicator
-          if (loadingElement.parentNode) {
-            chatMessages.removeChild(loadingElement);
-          }
-          
-          console.error('Error:', error);
-          addMessage('Sorry, I encountered an error. Please try again.', 'bot');
-        });
+        }
+        
+        console.error('Error:', error);
+        addMessage(`Error: ${error.message}`, 'system-message');
+      });
     }
   }
 
@@ -213,75 +251,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // Function to call the LLM API
-  async function callLLMApi(message) {
-    try {
-      // Use different URLs based on environment
-      let apiUrl;
-      if (isElectron()) {
-        // When running in Electron, use the full URL to the production API
-        apiUrl = 'https://duogaming.ai/api/utils/llm';
-      } else {
-        // When running in a browser, use a relative URL
-        apiUrl = '/api/utils/llm';
-      }
-      
-      // Log the URL being used
-      console.log('Calling LLM API at:', apiUrl);
-      
-      // Prepare messages array with conversation history
-      const messages = [
-        {
-          role: 'system',
-          content: 'You are a helpful, friendly AI assistant. Provide concise and helpful responses.'
-        }
-      ];
-      
-      // Add conversation history
-      conversationHistory.forEach(msg => {
-        messages.push({
-          role: msg.role === 'user' ? 'user' : 'assistant',
-          content: msg.content
-        });
-      });
-      
-      // Add the new user message
-      messages.push({
-        role: 'user',
-        content: message
-      });
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ messages }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Handle the Anthropic API response format
-      if (data.content && Array.isArray(data.content) && data.content.length > 0) {
-        const botResponse = data.content[0].text;
-        
-        // Update conversation history with the new messages
-        conversationHistory.push({ role: 'user', content: message });
-        conversationHistory.push({ role: 'assistant', content: botResponse });
-        
-        return botResponse;
-      } else if (data.error) {
-        throw new Error(data.error);
-      } else {
-        return "I'm sorry, I couldn't generate a response at this time.";
-      }
-    } catch (error) {
-      console.error('Error calling LLM API:', error);
-      throw error;
-    }
-  }
 });
