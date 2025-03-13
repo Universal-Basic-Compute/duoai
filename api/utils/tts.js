@@ -25,7 +25,7 @@ module.exports = async function handler(req, res) {
     }
     
     // Use default voice ID if not provided
-    const selectedVoiceId = voiceId || 'pNInz6obpgDQGcFmaJgB'; // Default ElevenLabs voice ID
+    const selectedVoiceId = voiceId || 'IKne3meq5aSn9XLyUdCD'; // Default ElevenLabs voice ID
     
     // Use default model if not provided
     const selectedModel = model || 'eleven_flash_v2_5';
