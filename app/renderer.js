@@ -48,6 +48,105 @@ async function fetchMessages(username = 'anonymous', character = 'Zephyr', count
 // Variable to store conversation history
 let conversationHistory = [];
 
+// Variables for microphone recording
+let isRecording = false;
+let recordingInterval = null;
+let isWaitingForResponse = false;
+let isPlayingAudio = false;
+let mediaRecorder = null;
+let audioChunks = [];
+
+// Function to handle microphone recording and STT
+async function setupMicrophoneRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    console.error('Media devices API not supported in this browser');
+    return;
+  }
+  
+  try {
+    // Request microphone access
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    console.log('Microphone access granted');
+    
+    // Create media recorder
+    mediaRecorder = new MediaRecorder(stream);
+    
+    // Handle data available event
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data);
+      }
+    };
+    
+    // Handle recording stop event
+    mediaRecorder.onstop = async () => {
+      // Create audio blob from chunks
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      audioChunks = [];
+      
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
+      reader.onloadend = async () => {
+        const base64Audio = reader.result.split(',')[1];
+        
+        try {
+          // Call speech-to-text API
+          const transcription = await speechToText(base64Audio);
+          console.log('Transcription:', transcription);
+          
+          // If we got text, put it in the input field but don't send
+          if (transcription && transcription.trim()) {
+            const messageInput = document.getElementById('message-input');
+            messageInput.value = transcription;
+            messageInput.focus();
+          }
+        } catch (error) {
+          console.error('Error transcribing audio:', error);
+        }
+      };
+    };
+    
+    // Start recording cycle
+    startRecordingCycle();
+  } catch (error) {
+    console.error('Error accessing microphone:', error);
+  }
+}
+
+// Function to start/stop recording cycle
+function startRecordingCycle() {
+  if (recordingInterval) {
+    clearInterval(recordingInterval);
+  }
+  
+  recordingInterval = setInterval(() => {
+    // Don't record if waiting for response or playing audio
+    if (isWaitingForResponse || isPlayingAudio) {
+      console.log('Skipping recording: ' + 
+                 (isWaitingForResponse ? 'waiting for response' : 'playing audio'));
+      return;
+    }
+    
+    if (!isRecording) {
+      // Start recording
+      audioChunks = [];
+      mediaRecorder.start();
+      isRecording = true;
+      console.log('Started recording');
+      
+      // Stop after 5 seconds
+      setTimeout(() => {
+        if (mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          isRecording = false;
+          console.log('Stopped recording');
+        }
+      }, 5000);
+    }
+  }, 20000); // Check every 20 seconds
+}
+
 // Function to capture a screenshot of the entire screen
 async function captureScreenshot() {
   if (!isElectron()) {
@@ -185,6 +284,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     addMessage('Hello! How can I help you today?', 'bot');
   }
   
+  // Initialize microphone recording
+  setupMicrophoneRecording();
+  
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
     try {
@@ -288,6 +390,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Scroll to the bottom of the chat
       chatMessages.scrollTop = chatMessages.scrollHeight;
       
+      // Set waiting flag
+      isWaitingForResponse = true;
+      
       // Capture screenshot if in Electron
       let screenshot = null;
       if (isElectron()) {
@@ -348,11 +453,29 @@ document.addEventListener('DOMContentLoaded', async () => {
           chatMessages.appendChild(limitElement);
         }
         
+        // Reset waiting flag
+        isWaitingForResponse = false;
+        
+        // Set playing flag
+        isPlayingAudio = true;
+        
         // Convert bot response to speech
         return textToSpeech(data.response);
       })
       .then(audioUrl => {
         const audio = new Audio(audioUrl);
+        
+        // Handle audio playback events
+        audio.onended = () => {
+          console.log('Audio playback ended');
+          isPlayingAudio = false;
+        };
+        
+        audio.onerror = () => {
+          console.error('Audio playback error');
+          isPlayingAudio = false;
+        };
+        
         audio.play();
       })
       .catch(error => {
@@ -360,6 +483,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (loadingElement.parentNode) {
           chatMessages.removeChild(loadingElement);
         }
+        
+        // Reset flags
+        isWaitingForResponse = false;
+        isPlayingAudio = false;
         
         console.error('Error:', error);
         addMessage(`Error: ${error.message}`, 'system-message');
