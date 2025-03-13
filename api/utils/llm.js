@@ -55,21 +55,14 @@ module.exports = async function handler(req, res) {
           }
         }
         
-        // Get a random mode from the modes directory
-        const modesDir = path.join(process.cwd(), 'api', 'prompts', 'modes');
+        // Always use xhost mode
         let modePrompt = '';
         try {
-          // Read all files in the modes directory
-          const modeFiles = fs.readdirSync(modesDir);
-          if (modeFiles.length > 0) {
-            // Select a random mode file
-            const randomModeFile = modeFiles[Math.floor(Math.random() * modeFiles.length)];
-            const modePath = path.join(modesDir, randomModeFile);
-            modePrompt = fs.readFileSync(modePath, 'utf8');
-            console.log(`Using mode: ${randomModeFile}`);
-          }
+          const modePath = path.join(process.cwd(), 'api', 'prompts', 'modes', 'xhost.txt');
+          modePrompt = fs.readFileSync(modePath, 'utf8');
+          console.log('Using mode: xhost.txt');
         } catch (modeErr) {
-          console.warn('Could not load mode prompt:', modeErr.message);
+          console.warn('Could not load xhost mode prompt:', modeErr.message);
         }
         
         // Combine prompts
