@@ -5,7 +5,12 @@ const { contextBridge, desktopCapturer } = require('electron');
 contextBridge.exposeInMainWorld('electronAPI', {
   getScreenSources: async () => {
     try {
-      const sources = await desktopCapturer.getSources({ types: ['screen'] });
+      console.log('Getting screen sources from preload script');
+      const sources = await desktopCapturer.getSources({ 
+        types: ['screen', 'window'],
+        thumbnailSize: { width: 0, height: 0 } // Don't need thumbnails
+      });
+      console.log('Screen sources:', sources.map(s => s.id));
       return sources;
     } catch (error) {
       console.error('Error getting screen sources:', error);

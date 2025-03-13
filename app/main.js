@@ -8,9 +8,22 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
-      contextIsolation: true
+      contextIsolation: true,
+      // Add these permissions for screen capture
+      enableRemoteModule: false,
+      webSecurity: true
     }
   })
+
+  // Set permissions for media access
+  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === 'media') {
+      // Allow media access (microphone, camera, screen)
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
 
   mainWindow.loadFile('index.html')
   
@@ -38,6 +51,11 @@ function createWindow() {
     rightClickPosition = { x: params.x, y: params.y }
     contextMenu.popup()
   })
+  
+  // Open DevTools in development
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
 }
 
 app.whenReady().then(() => {

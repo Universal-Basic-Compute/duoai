@@ -56,21 +56,40 @@ async function captureScreenshot() {
   }
   
   try {
+    console.log('Starting screenshot capture process');
+    
+    // Check if electronAPI is available
+    if (!window.electronAPI || !window.electronAPI.getScreenSources) {
+      console.error('electronAPI.getScreenSources is not available');
+      return null;
+    }
+    
     // Access Electron's desktopCapturer through the preload script
+    console.log('Calling getScreenSources');
     const sources = await window.electronAPI.getScreenSources();
+    console.log('Got screen sources:', sources.length);
+    
+    if (!sources || sources.length === 0) {
+      console.error('No screen sources returned');
+      return null;
+    }
     
     // Find the screen source (usually the first one)
     const screenSource = sources.find(source => source.id.startsWith('screen'));
     
     if (!screenSource) {
-      console.error('No screen source found');
+      console.error('No screen source found in sources');
       return null;
     }
+    
+    console.log('Using screen source:', screenSource.id);
     
     // Create a video element to capture the stream
     const video = document.createElement('video');
     video.style.display = 'none';
     document.body.appendChild(video);
+    
+    console.log('Requesting media stream');
     
     // Get the stream for the screen
     const stream = await navigator.mediaDevices.getUserMedia({
@@ -83,36 +102,61 @@ async function captureScreenshot() {
       }
     });
     
+    console.log('Got media stream');
+    
     // Connect the stream to the video element
     video.srcObject = stream;
     video.onloadedmetadata = () => {
+      console.log('Video metadata loaded, playing video');
       video.play();
     };
     
     // Wait for the video to start playing
-    await new Promise(resolve => {
-      video.onplaying = resolve;
-      setTimeout(resolve, 1000); // Timeout in case onplaying doesn't fire
+    await new Promise((resolve, reject) => {
+      video.onplaying = () => {
+        console.log('Video is playing');
+        resolve();
+      };
+      video.onerror = (err) => {
+        console.error('Video error:', err);
+        reject(err);
+      };
+      // Timeout in case onplaying doesn't fire
+      setTimeout(() => {
+        console.log('Video play timeout, continuing anyway');
+        resolve();
+      }, 1000);
     });
+    
+    console.log('Creating canvas');
     
     // Create a canvas to draw the video frame
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || 1280;  // Default to 1280 if width is 0
+    canvas.height = video.videoHeight || 720; // Default to 720 if height is 0
+    
+    console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
     
     // Draw the current video frame to the canvas
     const ctx = canvas.getContext('2d');
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     
+    console.log('Getting image data');
+    
     // Get the image data as base64
-    const imageData = canvas.toDataURL('image/jpeg', 0.8);
+    const imageData = canvas.toDataURL('image/jpeg', 0.7); // Lower quality for smaller size
+    
+    console.log('Image data length:', imageData.length);
     
     // Clean up
     stream.getTracks().forEach(track => track.stop());
     document.body.removeChild(video);
     
     // Return the base64 image data (remove the data:image/jpeg;base64, prefix)
-    return imageData.split(',')[1];
+    const base64Data = imageData.split(',')[1];
+    console.log('Base64 data length:', base64Data.length);
+    
+    return base64Data;
   } catch (error) {
     console.error('Error capturing screenshot:', error);
     return null;
