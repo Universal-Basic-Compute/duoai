@@ -75,7 +75,7 @@ async function captureScreenshot() {
     }
     
     // Find the screen source (usually the first one)
-    const screenSource = sources.find(source => source.id.startsWith('screen'));
+    const screenSource = sources.find(source => source.type === 'screen');
     
     if (!screenSource) {
       console.error('No screen source found in sources');

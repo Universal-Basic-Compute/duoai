@@ -9,11 +9,21 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      // Add these permissions for screen capture
+      // These are important for screen capture
       enableRemoteModule: false,
       webSecurity: true
     }
   })
+
+  // Set permissions for media access
+  mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
+    if (permission === 'media') {
+      // Allow media access (microphone, camera, screen)
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
 
   // Set permissions for media access
   mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
