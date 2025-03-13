@@ -131,7 +131,8 @@ module.exports = async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       data: {
-        messages
+        messages,
+        character  // Pass the character name to the LLM API
       }
     });
     

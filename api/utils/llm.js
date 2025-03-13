@@ -19,7 +19,7 @@ module.exports = async function handler(req, res) {
 
   try {
     console.log('Processing LLM request');
-    const { prompt, system, messages, images } = req.body;
+    const { prompt, system, messages, images, character } = req.body;
     
     // Get API key from environment variable
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -35,13 +35,24 @@ module.exports = async function handler(req, res) {
         const basePromptPath = path.join(process.cwd(), 'api', 'prompts', 'base_prompt.txt');
         const basePrompt = fs.readFileSync(basePromptPath, 'utf8');
         
-        // Load character prompt (Zephyr)
-        const characterPromptPath = path.join(process.cwd(), 'api', 'prompts', 'characters', 'zephyr.txt');
+        // Load character prompt based on the character parameter or default to Zephyr
+        const characterName = character || 'zephyr';
+        const characterFileName = characterName.toLowerCase() + '.txt';
+        const characterPromptPath = path.join(process.cwd(), 'api', 'prompts', 'characters', characterFileName);
         let characterPrompt = '';
         try {
           characterPrompt = fs.readFileSync(characterPromptPath, 'utf8');
+          console.log(`Using character: ${characterName}`);
         } catch (charErr) {
-          console.warn('Could not load character prompt:', charErr.message);
+          console.warn(`Could not load character prompt for ${characterName}:`, charErr.message);
+          // Try to load the default character if the specified one doesn't exist
+          try {
+            const defaultCharacterPath = path.join(process.cwd(), 'api', 'prompts', 'characters', 'zephyr.txt');
+            characterPrompt = fs.readFileSync(defaultCharacterPath, 'utf8');
+            console.log('Falling back to default character: zephyr');
+          } catch (defaultErr) {
+            console.warn('Could not load default character prompt:', defaultErr.message);
+          }
         }
         
         // Get a random mode from the modes directory
