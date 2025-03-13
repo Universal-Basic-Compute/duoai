@@ -107,44 +107,49 @@ async function setupMicrophoneRecording() {
       };
     };
     
-    // Start recording cycle
-    startRecordingCycle();
+    // Start continuous recording
+    startContinuousRecording();
   } catch (error) {
     console.error('Error accessing microphone:', error);
   }
 }
 
-// Function to start/stop recording cycle
-function startRecordingCycle() {
+// Function to start continuous recording
+function startContinuousRecording() {
+  // Start recording immediately
+  audioChunks = [];
+  mediaRecorder.start();
+  isRecording = true;
+  console.log('Started continuous recording');
+  
+  // Set up interval to process audio chunks every 5 seconds
+  // but only when not waiting for response or playing audio
   if (recordingInterval) {
     clearInterval(recordingInterval);
   }
   
   recordingInterval = setInterval(() => {
-    // Don't record if waiting for response or playing audio
     if (isWaitingForResponse || isPlayingAudio) {
-      console.log('Skipping recording: ' + 
+      console.log('Skipping audio processing: ' + 
                  (isWaitingForResponse ? 'waiting for response' : 'playing audio'));
       return;
     }
     
-    if (!isRecording) {
-      // Start recording
-      audioChunks = [];
-      mediaRecorder.start();
-      isRecording = true;
-      console.log('Started recording');
+    if (isRecording && audioChunks.length > 0) {
+      // Stop current recording
+      mediaRecorder.stop();
+      isRecording = false;
+      console.log('Stopped recording for processing');
       
-      // Stop after 5 seconds
+      // Start a new recording after a short delay
       setTimeout(() => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.stop();
-          isRecording = false;
-          console.log('Stopped recording');
-        }
-      }, 5000);
+        audioChunks = [];
+        mediaRecorder.start();
+        isRecording = true;
+        console.log('Resumed continuous recording');
+      }, 500);
     }
-  }, 20000); // Check every 20 seconds
+  }, 5000); // Process audio every 5 seconds
 }
 
 // Function to capture a screenshot of the entire screen
