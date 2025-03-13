@@ -142,6 +142,8 @@ module.exports = async function handler(req, res) {
       }
     });
     
+    console.log('LLM API response status:', llmResponse.status);
+    
     // Extract bot response
     let botResponse = "I'm sorry, I couldn't generate a response at this time.";
     if (llmResponse.data.content && Array.isArray(llmResponse.data.content) && llmResponse.data.content.length > 0) {

@@ -113,11 +113,13 @@ module.exports = async function handler(req, res) {
         
         // Convert the content to array format if it's a string
         if (typeof lastMessage.content === 'string') {
-          lastMessage.content = [{ type: 'text', text: lastMessage.content }];
+          const textContent = lastMessage.content;
+          lastMessage.content = [{ type: 'text', text: textContent }];
         }
         
         // Add each image to the content array
         for (const imageData of images) {
+          console.log('Adding image to message, data length:', imageData.data.length);
           lastMessage.content.push({
             type: 'image',
             source: {
@@ -155,6 +157,22 @@ module.exports = async function handler(req, res) {
     } else {
       return res.status(400).json({ error: 'Either prompt or messages must be provided' });
     }
+
+    // Log payload structure for debugging
+    console.log('Payload structure:', JSON.stringify({
+      model: payload.model,
+      max_tokens: payload.max_tokens,
+      temperature: payload.temperature,
+      system: payload.system ? 'Present (length: ' + payload.system.length + ')' : 'Not present',
+      messages: payload.messages.map(m => ({
+        role: m.role,
+        content: Array.isArray(m.content) 
+          ? m.content.map(c => c.type === 'text' 
+              ? { type: 'text', length: c.text.length } 
+              : { type: c.type, source_type: c.source?.type, data_length: c.source?.data?.length || 0 })
+          : { type: 'string', length: m.content.length }
+      }))
+    }));
 
     // Make request to Anthropic API
     const response = await axios({

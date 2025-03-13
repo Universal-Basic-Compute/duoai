@@ -248,8 +248,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       let screenshot = null;
       if (isElectron()) {
         console.log('Capturing screenshot...');
-        screenshot = await captureScreenshot();
-        console.log('Screenshot captured:', screenshot ? 'success' : 'failed');
+        try {
+          screenshot = await captureScreenshot();
+          console.log('Screenshot captured:', screenshot ? `${screenshot.substring(0, 50)}...` : 'failed');
+        } catch (error) {
+          console.error('Error capturing screenshot:', error);
+        }
       }
       
       // Call the send-message API
