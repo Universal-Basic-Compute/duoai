@@ -78,11 +78,53 @@ async function setupMicrophoneRecording() {
       }
     };
     
+    // Function to detect silence in audio
+    async function detectSilence(audioBlob, silenceThreshold = 0.01) {
+      return new Promise((resolve) => {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const fileReader = new FileReader();
+        
+        fileReader.onload = function() {
+          const arrayBuffer = this.result;
+          
+          audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
+            const channelData = audioBuffer.getChannelData(0); // Get data from first channel
+            
+            // Calculate RMS (root mean square) to determine audio level
+            let sum = 0;
+            for (let i = 0; i < channelData.length; i++) {
+              sum += channelData[i] * channelData[i];
+            }
+            const rms = Math.sqrt(sum / channelData.length);
+            
+            console.log('Audio RMS level:', rms);
+            
+            // If RMS is below threshold, consider it silence
+            const isSilence = rms < silenceThreshold;
+            resolve(isSilence);
+          }, (err) => {
+            console.error('Error decoding audio data:', err);
+            resolve(false); // Assume not silence on error
+          });
+        };
+        
+        fileReader.readAsArrayBuffer(audioBlob);
+      });
+    }
+    
     // Handle recording stop event
     mediaRecorder.onstop = async () => {
       // Create audio blob from chunks
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       audioChunks = [];
+      
+      // Check if the audio is mostly silence
+      const isSilence = await detectSilence(audioBlob);
+      
+      if (isSilence) {
+        console.log('Detected silence, skipping transcription');
+        return;
+      }
       
       // Convert blob to base64
       const reader = new FileReader();
@@ -122,7 +164,7 @@ function startContinuousRecording() {
   isRecording = true;
   console.log('Started continuous recording');
   
-  // Set up interval to process audio chunks every 5 seconds
+  // Set up interval to process audio chunks every 10 seconds
   // but only when not waiting for response or playing audio
   if (recordingInterval) {
     clearInterval(recordingInterval);
@@ -149,7 +191,7 @@ function startContinuousRecording() {
         console.log('Resumed continuous recording');
       }, 500);
     }
-  }, 5000); // Process audio every 5 seconds
+  }, 10000); // Process audio every 10 seconds instead of 5
 }
 
 // Function to capture a screenshot of the entire screen
