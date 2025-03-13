@@ -20,7 +20,7 @@ module.exports = async function handler(req, res) {
     console.log('Processing send message request');
     
     // Extract parameters
-    const { message, username = 'anonymous', character = 'Zephyr' } = req.body;
+    const { message, username = 'anonymous', character = 'Zephyr', screenshot } = req.body;
     
     // Validate required parameters
     if (!message) {
@@ -132,7 +132,13 @@ module.exports = async function handler(req, res) {
       },
       data: {
         messages,
-        character  // Pass the character name to the LLM API
+        character,  // Pass the character name to the LLM API
+        images: screenshot ? [
+          {
+            data: screenshot,
+            media_type: 'image/jpeg'
+          }
+        ] : undefined
       }
     });
     

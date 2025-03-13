@@ -8,6 +8,7 @@
     { "source": "/api/utils/tts", "destination": "/api/utils/tts.js" },
     { "source": "/api/utils/stt", "destination": "/api/utils/stt.js" },
     { "source": "/api/utils/llm", "destination": "/api/utils/llm.js" },
+    { "source": "/api/utils/screenshot", "destination": "/api/utils/screenshot.js" },
     { "source": "/api/tts", "destination": "/api/utils/tts.js" },
     { "source": "/api/stt", "destination": "/api/utils/stt.js" },
     { "source": "/api/llm", "destination": "/api/utils/llm.js" },

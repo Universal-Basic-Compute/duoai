@@ -48,6 +48,77 @@ async function fetchMessages(username = 'anonymous', character = 'Zephyr', count
 // Variable to store conversation history
 let conversationHistory = [];
 
+// Function to capture a screenshot of the entire screen
+async function captureScreenshot() {
+  if (!isElectron()) {
+    console.log('Screenshot capture is only available in Electron');
+    return null;
+  }
+  
+  try {
+    // Access Electron's desktopCapturer through the preload script
+    const sources = await window.electronAPI.getScreenSources();
+    
+    // Find the screen source (usually the first one)
+    const screenSource = sources.find(source => source.id.startsWith('screen'));
+    
+    if (!screenSource) {
+      console.error('No screen source found');
+      return null;
+    }
+    
+    // Create a video element to capture the stream
+    const video = document.createElement('video');
+    video.style.display = 'none';
+    document.body.appendChild(video);
+    
+    // Get the stream for the screen
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        mandatory: {
+          chromeMediaSource: 'desktop',
+          chromeMediaSourceId: screenSource.id
+        }
+      }
+    });
+    
+    // Connect the stream to the video element
+    video.srcObject = stream;
+    video.onloadedmetadata = () => {
+      video.play();
+    };
+    
+    // Wait for the video to start playing
+    await new Promise(resolve => {
+      video.onplaying = resolve;
+      setTimeout(resolve, 1000); // Timeout in case onplaying doesn't fire
+    });
+    
+    // Create a canvas to draw the video frame
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    // Draw the current video frame to the canvas
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    // Get the image data as base64
+    const imageData = canvas.toDataURL('image/jpeg', 0.8);
+    
+    // Clean up
+    stream.getTracks().forEach(track => track.stop());
+    document.body.removeChild(video);
+    
+    // Return the base64 image data (remove the data:image/jpeg;base64, prefix)
+    return imageData.split(',')[1];
+  } catch (error) {
+    console.error('Error capturing screenshot:', error);
+    return null;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
@@ -155,7 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  function sendMessage() {
+  async function sendMessage() {
     const message = messageInput.value.trim();
     if (message) {
       // Add user message to chat
@@ -173,6 +244,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Scroll to the bottom of the chat
       chatMessages.scrollTop = chatMessages.scrollHeight;
       
+      // Capture screenshot if in Electron
+      let screenshot = null;
+      if (isElectron()) {
+        console.log('Capturing screenshot...');
+        screenshot = await captureScreenshot();
+        console.log('Screenshot captured:', screenshot ? 'success' : 'failed');
+      }
+      
       // Call the send-message API
       let apiUrl;
       if (isElectron()) {
@@ -189,7 +268,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify({
           message,
           username: 'anonymous', // Replace with actual username if available
-          character: 'Zephyr'    // Replace with selected character if available
+          character: 'Zephyr',   // Replace with selected character if available
+          screenshot: screenshot // Include the screenshot if available
         }),
       })
       .then(response => {
