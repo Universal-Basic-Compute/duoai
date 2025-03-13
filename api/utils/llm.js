@@ -74,7 +74,7 @@ module.exports = async function handler(req, res) {
 
     // Prepare the request payload
     const payload = {
-      model: "claude-3-5-haiku-latest",
+      model: "claude-3-7-sonnet-latest",
       max_tokens: 1000,
       temperature: 0.7,
     };
