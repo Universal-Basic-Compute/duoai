@@ -123,6 +123,14 @@ module.exports = async function handler(req, res) {
       }
     ];
     
+    // Log what we're sending to the LLM API
+    console.log('Sending to LLM API:', {
+      messageCount: messages.length,
+      character,
+      hasScreenshot: !!screenshot,
+      screenshotLength: screenshot ? screenshot.length : 0
+    });
+    
     // Call LLM API to generate response
     const llmResponse = await axios({
       method: 'POST',

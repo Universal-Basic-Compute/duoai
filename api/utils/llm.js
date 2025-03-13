@@ -105,29 +105,49 @@ module.exports = async function handler(req, res) {
       // Use only non-system messages in the messages array
       payload.messages = nonSystemMessages;
       
+      // Log if we have images
+      console.log('Request body contains images:', !!images);
+      if (images) {
+        console.log('Images count:', images.length);
+        console.log('First image data length:', images[0]?.data?.length || 0);
+      }
+      
       // Add images to the last user message if provided
-      if (images && Array.isArray(images) && images.length > 0 && 
-          nonSystemMessages.length > 0 && nonSystemMessages[nonSystemMessages.length - 1].role === 'user') {
+      if (images && Array.isArray(images) && images.length > 0) {
+        // Find the last user message
+        const lastUserMessageIndex = nonSystemMessages.findLastIndex(msg => msg.role === 'user');
         
-        const lastMessage = nonSystemMessages[nonSystemMessages.length - 1];
-        
-        // Convert the content to array format if it's a string
-        if (typeof lastMessage.content === 'string') {
-          const textContent = lastMessage.content;
-          lastMessage.content = [{ type: 'text', text: textContent }];
-        }
-        
-        // Add each image to the content array
-        for (const imageData of images) {
-          console.log('Adding image to message, data length:', imageData.data.length);
-          lastMessage.content.push({
-            type: 'image',
-            source: {
-              type: 'base64',
-              media_type: imageData.media_type || 'image/jpeg',
-              data: imageData.data
-            }
-          });
+        if (lastUserMessageIndex !== -1) {
+          const lastUserMessage = nonSystemMessages[lastUserMessageIndex];
+          
+          console.log('Found last user message at index:', lastUserMessageIndex);
+          console.log('Last user message content type:', typeof lastUserMessage.content);
+          
+          // Convert the content to array format if it's a string
+          if (typeof lastUserMessage.content === 'string') {
+            const textContent = lastUserMessage.content;
+            lastUserMessage.content = [{ type: 'text', text: textContent }];
+          }
+          
+          // Add each image to the content array
+          for (const imageData of images) {
+            console.log('Adding image to message, data length:', imageData.data.length);
+            lastUserMessage.content.push({
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: imageData.media_type || 'image/jpeg',
+                data: imageData.data
+              }
+            });
+          }
+          
+          console.log('Updated last user message content:', 
+            Array.isArray(lastUserMessage.content) 
+              ? `Array with ${lastUserMessage.content.length} items` 
+              : typeof lastUserMessage.content);
+        } else {
+          console.warn('No user message found to attach images to');
         }
       }
     } else if (prompt) {
@@ -171,7 +191,8 @@ module.exports = async function handler(req, res) {
               ? { type: 'text', length: c.text.length } 
               : { type: c.type, source_type: c.source?.type, data_length: c.source?.data?.length || 0 })
           : { type: 'string', length: m.content.length }
-      }))
+      })),
+      hasImages: !!images
     }));
 
     // Make request to Anthropic API
