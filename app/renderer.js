@@ -15,13 +15,60 @@ function isElectron() {
   return false;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+// Function to fetch messages from the API
+async function fetchMessages(username = 'anonymous', character = 'Zephyr', count = 20) {
+  try {
+    // Use different URLs based on environment
+    let apiUrl;
+    if (isElectron()) {
+      // When running in Electron, use the full URL to the production API
+      apiUrl = 'https://duogaming.ai/api/messages';
+    } else {
+      // When running in a browser, use a relative URL
+      apiUrl = '/api/messages';
+    }
+    
+    // Log the URL being used
+    console.log('Fetching messages from:', apiUrl);
+    
+    const response = await fetch(`${apiUrl}?username=${encodeURIComponent(username)}&character=${encodeURIComponent(character)}&count=${count}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.messages || [];
+  } catch (error) {
+    console.error('Error fetching messages:', error);
+    return [];
+  }
+}
+
+// Variable to store conversation history
+let conversationHistory = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
   const chatMessages = document.getElementById('chat-messages');
-
-  // Add a welcome message
-  addMessage('Hello! How can I help you today?', 'bot');
+  
+  // Fetch conversation history
+  conversationHistory = await fetchMessages();
+  
+  // Display conversation history in the chat
+  if (conversationHistory.length > 0) {
+    // Clear any default messages
+    chatMessages.innerHTML = '';
+    
+    // Add each message to the chat
+    conversationHistory.forEach(msg => {
+      addMessage(msg.content, msg.role === 'user' ? 'user' : 'bot');
+    });
+  } else {
+    // Add a welcome message if no history
+    addMessage('Hello! How can I help you today?', 'bot');
+  }
   
   // Text-to-speech function using ElevenLabs API
   async function textToSpeech(text, voiceId) {
@@ -166,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  // Add this new function to call the LLM API
+  // Function to call the LLM API
   async function callLLMApi(message) {
     try {
       // Use different URLs based on environment
@@ -182,23 +229,34 @@ document.addEventListener('DOMContentLoaded', () => {
       // Log the URL being used
       console.log('Calling LLM API at:', apiUrl);
       
+      // Prepare messages array with conversation history
+      const messages = [
+        {
+          role: 'system',
+          content: 'You are a helpful, friendly AI assistant. Provide concise and helpful responses.'
+        }
+      ];
+      
+      // Add conversation history
+      conversationHistory.forEach(msg => {
+        messages.push({
+          role: msg.role === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        });
+      });
+      
+      // Add the new user message
+      messages.push({
+        role: 'user',
+        content: message
+      });
+      
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a helpful, friendly AI assistant. Provide concise and helpful responses.'
-            },
-            {
-              role: 'user',
-              content: message
-            }
-          ]
-        }),
+        body: JSON.stringify({ messages }),
       });
       
       if (!response.ok) {
@@ -209,7 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Handle the Anthropic API response format
       if (data.content && Array.isArray(data.content) && data.content.length > 0) {
-        return data.content[0].text;
+        const botResponse = data.content[0].text;
+        
+        // Update conversation history with the new messages
+        conversationHistory.push({ role: 'user', content: message });
+        conversationHistory.push({ role: 'assistant', content: botResponse });
+        
+        return botResponse;
       } else if (data.error) {
         throw new Error(data.error);
       } else {
