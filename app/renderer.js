@@ -75,6 +75,8 @@ let isWaitingForResponse = false;
 let isPlayingAudio = false;
 let mediaRecorder = null;
 let audioChunks = [];
+let micEnabled = true;
+let micToggleBtn;
 
 // Speech-to-text function using ElevenLabs API
 async function speechToText(audioBase64) {
@@ -137,6 +139,12 @@ async function speechToText(audioBase64) {
 
 // Function to handle microphone recording and STT
 async function setupMicrophoneRecording() {
+  // Initialize mic toggle button
+  micToggleBtn = document.getElementById('mic-toggle-btn');
+  if (micToggleBtn) {
+    micToggleBtn.addEventListener('click', toggleMicrophone);
+  }
+  
   // Check if STT API is available
   let apiUrl = isElectron() ? 'https://duogaming.ai/api/utils/stt' : '/api/utils/stt';
   const isApiAvailable = await checkApiAvailability(apiUrl);
@@ -295,6 +303,12 @@ async function setupMicrophoneRecording() {
     
     // Handle recording stop event
     mediaRecorder.onstop = async () => {
+      // If microphone is disabled by user, don't process audio
+      if (!micEnabled && !isWaitingForResponse && !isPlayingAudio) {
+        console.log('Microphone disabled, not processing audio');
+        return;
+      }
+      
       // Create audio blob from chunks
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       audioChunks = [];
@@ -391,6 +405,61 @@ async function setupMicrophoneRecording() {
   }
 }
 
+// Function to toggle microphone
+function toggleMicrophone() {
+  if (!mediaRecorder) {
+    console.warn('Media recorder not initialized');
+    return;
+  }
+  
+  micEnabled = !micEnabled;
+  
+  // Update button appearance
+  if (micToggleBtn) {
+    if (micEnabled) {
+      micToggleBtn.classList.add('active');
+      micToggleBtn.classList.remove('disabled');
+      micToggleBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+    } else {
+      micToggleBtn.classList.remove('active');
+      micToggleBtn.classList.add('disabled');
+      micToggleBtn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+    }
+  }
+  
+  // Update status indicator
+  const statusDot = document.querySelector('.status-dot');
+  const statusText = document.querySelector('.status-indicator span');
+  
+  if (statusDot && statusText) {
+    if (micEnabled) {
+      statusDot.className = 'status-dot listening';
+      statusText.textContent = 'Listening...';
+    } else {
+      statusDot.className = 'status-dot offline';
+      statusText.textContent = 'Mic off';
+    }
+  }
+  
+  // Handle recording state
+  if (micEnabled) {
+    // Resume recording
+    if (mediaRecorder.state !== 'recording') {
+      audioChunks = [];
+      mediaRecorder.start();
+      isRecording = true;
+      console.log('Resumed recording after toggle');
+    }
+  } else {
+    // Pause recording
+    if (mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      isRecording = false;
+      console.log('Stopped recording due to toggle');
+    }
+  }
+}
+
 // Function to start continuous recording
 function startContinuousRecording() {
   if (!mediaRecorder) {
@@ -399,14 +468,19 @@ function startContinuousRecording() {
   }
 
   try {
-    // Start recording immediately
-    audioChunks = [];
-    if (mediaRecorder.state !== 'recording') {
-      mediaRecorder.start();
-      isRecording = true;
-      console.log('Started continuous recording');
+    // Only start recording if mic is enabled
+    if (micEnabled) {
+      // Start recording immediately
+      audioChunks = [];
+      if (mediaRecorder.state !== 'recording') {
+        mediaRecorder.start();
+        isRecording = true;
+        console.log('Started continuous recording');
+      } else {
+        console.log('Recorder is already recording');
+      }
     } else {
-      console.log('Recorder is already recording');
+      console.log('Microphone is disabled, not starting recording');
     }
     
     // Set up interval to process audio chunks every 10 seconds
@@ -422,30 +496,35 @@ function startContinuousRecording() {
         return;
       }
       
-      if (isRecording && mediaRecorder.state === 'recording') {
-        // Stop current recording
-        mediaRecorder.stop();
-        isRecording = false;
-        console.log('Stopped recording for processing');
-        
-        // Start a new recording after a short delay
-        setTimeout(() => {
+      // Only process if mic is enabled
+      if (micEnabled) {
+        if (isRecording && mediaRecorder.state === 'recording') {
+          // Stop current recording
+          mediaRecorder.stop();
+          isRecording = false;
+          console.log('Stopped recording for processing');
+          
+          // Start a new recording after a short delay
+          setTimeout(() => {
+            if (mediaRecorder.state !== 'recording' && micEnabled) {
+              audioChunks = [];
+              mediaRecorder.start();
+              isRecording = true;
+              console.log('Resumed continuous recording');
+            }
+          }, 500);
+        } else {
+          console.log('Cannot stop recording: not currently recording');
+          // Try to restart recording if it's not active
           if (mediaRecorder.state !== 'recording') {
             audioChunks = [];
             mediaRecorder.start();
             isRecording = true;
-            console.log('Resumed continuous recording');
+            console.log('Restarted continuous recording');
           }
-        }, 500);
-      } else {
-        console.log('Cannot stop recording: not currently recording');
-        // Try to restart recording if it's not active
-        if (mediaRecorder.state !== 'recording') {
-          audioChunks = [];
-          mediaRecorder.start();
-          isRecording = true;
-          console.log('Restarted continuous recording');
         }
+      } else {
+        console.log('Microphone is disabled, skipping recording cycle');
       }
     }, 10000); // Process audio every 10 seconds
   } catch (error) {
