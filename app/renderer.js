@@ -1,3 +1,7 @@
+
+// Define sendMessage as a global variable so it's accessible from mediaRecorder.onstop
+let sendMessage;
+
 // Function to detect if running in Electron environment
 function isElectron() {
   // Renderer process
@@ -579,17 +583,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
 
-  // Send message when button is clicked
-  sendButton.addEventListener('click', sendMessage);
-
-  // Send message when Enter key is pressed
-  messageInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  });
-
-  async function sendMessage() {
+  // Define the sendMessage function and assign it to the global variable
+  sendMessage = async function() {
     const message = messageInput.value.trim();
     if (message) {
       // Add user message to chat
@@ -709,7 +704,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         addMessage(`Error: ${error.message}`, 'system-message');
       });
     }
-  }
+  };
+
+  // Send message when button is clicked
+  sendButton.addEventListener('click', sendMessage);
+
+  // Send message when Enter key is pressed
+  messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
 
   function addMessage(text, sender) {
     const messageElement = document.createElement('div');
