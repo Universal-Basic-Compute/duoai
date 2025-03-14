@@ -56,6 +56,42 @@ let isPlayingAudio = false;
 let mediaRecorder = null;
 let audioChunks = [];
 
+// Speech-to-text function using ElevenLabs API
+async function speechToText(audioBase64) {
+  try {
+    // Use different URLs based on environment
+    let apiUrl;
+    if (isElectron()) {
+      // When running in Electron, use the full URL to the production API
+      apiUrl = 'https://duogaming.ai/api/utils/stt';
+    } else {
+      // When running in a browser, use a relative URL
+      apiUrl = '/api/utils/stt';
+    }
+    
+    // Log the URL being used
+    console.log('Calling STT API at:', apiUrl);
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ audio: audioBase64 }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.text;
+  } catch (error) {
+    console.error('Error calling STT API:', error);
+    throw error;
+  }
+}
+
 // Function to handle microphone recording and STT
 async function setupMicrophoneRecording() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -455,41 +491,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // Speech-to-text function using ElevenLabs API
-  async function speechToText(audioBase64) {
-    try {
-      // Use different URLs based on environment
-      let apiUrl;
-      if (isElectron()) {
-        // When running in Electron, use the full URL to the production API
-        apiUrl = 'https://duogaming.ai/api/utils/stt';
-      } else {
-        // When running in a browser, use a relative URL
-        apiUrl = '/api/utils/stt';
-      }
-      
-      // Log the URL being used
-      console.log('Calling STT API at:', apiUrl);
-      
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ audio: audioBase64 }),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      return data.text;
-    } catch (error) {
-      console.error('Error calling STT API:', error);
-      throw error;
-    }
-  }
 
   // Send message when button is clicked
   sendButton.addEventListener('click', sendMessage);
