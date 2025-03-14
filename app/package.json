@@ -10,7 +10,7 @@
     "build:mac": "electron-builder --mac",
     "build:linux": "electron-builder --linux",
     "build:custom": "node build.js",
-    "package:windows-store": "electron-windows-store --input-directory dist/win-unpacked --output-directory windows-store --package-version 1.0.0 --package-name DuoAI"
+    "package:windows-store": "electron-windows-store --input-directory dist/win-unpacked --output-directory windows-store --package-version 1.0.0 --package-name DuoAI --package-display-name 'DuoAI' --publisher-display-name 'DuoAI Technologies' --identity-name NicolasReynolds.DuoAI --publisher 'CN=CC08B55D-3547-454B-8E21-F0E3A810C73C'"
   },
   "keywords": [],
   "author": "Nicolas Reynolds",
@@ -18,7 +18,7 @@
   "description": "",
   "build": {
     "appId": "com.yourcompany.yourapp",
-    "productName": "Hello World Electron",
+    "productName": "DuoAI",
     "directories": {
       "output": "dist"
     },
@@ -38,7 +38,13 @@
     "win": {
       "target": ["nsis", "appx"],
       "icon": "build/icon.ico",
-      "publisherName": "Nicolas Reynolds"
+      "publisherName": "Nicolas Reynolds",
+      "appx": {
+        "identityName": "NicolasReynolds.DuoAI",
+        "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
+        "publisherDisplayName": "DuoAI Technologies",
+        "applicationId": "DuoAI"
+      }
     },
     "mac": {
       "target": [
