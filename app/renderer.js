@@ -649,4 +649,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       icon.classList.add('fa-chevron-left');
     }
   });
+  
+  // Add double-click handler to close the menu
+  document.addEventListener('dblclick', (event) => {
+    // If the menu is open (not collapsed) and not clicking on the menu tab itself
+    if (!appContainer.classList.contains('collapsed') && !menuTab.contains(event.target)) {
+      // Collapse the menu
+      appContainer.classList.add('collapsed');
+      
+      // Update the icon
+      const icon = menuTab.querySelector('i');
+      icon.classList.remove('fa-chevron-left');
+      icon.classList.add('fa-chevron-right');
+      
+      console.log('Menu collapsed via double-click');
+    }
+  });
 });

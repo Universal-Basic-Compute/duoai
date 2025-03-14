@@ -323,9 +323,26 @@ body {
 }
 
 /* Add subtle hover effects to messages */
+.message {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
 .message:hover {
-    transform: translateY(-2px);
-    transition: transform 0.3s ease;
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.user-message:hover {
+    box-shadow: 0 5px 15px rgba(126, 87, 194, 0.5);
+}
+
+.bot-message:hover {
+    box-shadow: 0 5px 15px rgba(30, 30, 36, 0.6);
+}
+
+.system-message:hover {
+    box-shadow: 0 5px 15px rgba(0, 230, 118, 0.3);
+    transform: translateY(-2px) scale(1.005); /* Slightly more subtle for system messages */
 }
 
 /* Add a subtle glow effect to the latest message */
