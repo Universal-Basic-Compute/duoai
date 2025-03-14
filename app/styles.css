@@ -44,7 +44,7 @@ body {
     height: 100vh;
     max-width: 350px;
     margin: 0;
-    padding: 10px;
+    padding: 10px 10px 0 10px; /* Reduced top padding */
     width: 100%;
     transition: transform 0.3s ease;
     transform: translateX(0);
@@ -82,62 +82,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* Header */
-.app-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 20px;
-}
-
-.app-logo {
-    display: flex;
-    align-items: center;
-}
-
-.app-logo h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-left: 10px;
-}
-
-.app-logo img {
-    height: 40px;
-    width: auto;
-}
-
-.app-controls {
-    display: flex;
-    gap: 15px;
-}
-
-.app-controls button {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.app-controls button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
-}
-
-.app-controls button i {
-    font-size: 1.2rem;
-}
+/* Header styles removed for cleaner interface */
 
 /* Chat container */
 .chat-container {
@@ -150,6 +95,8 @@ body {
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
+    margin-top: 10px; /* Reduced from 20px since header is gone */
+    height: calc(100% - 60px); /* Adjust based on status bar height only */
 }
 
 /* Chat messages */
