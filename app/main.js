@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, MenuItem, ipcMain, desktopCapturer } = require('electron')
+const { app, BrowserWindow, Menu, MenuItem, ipcMain, desktopCapturer, screen } = require('electron')
 const path = require('path')
 
 // Add IPC handler for screen capture
@@ -22,7 +22,7 @@ ipcMain.handle('get-screen-sources', async () => {
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
-    width: 800,
+    width: 350,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -33,6 +33,27 @@ function createWindow() {
       webSecurity: true
     }
   })
+
+  // Remove the default menu bar
+  mainWindow.setMenu(null)
+
+  // Get primary display dimensions
+  const primaryDisplay = screen.getPrimaryDisplay()
+  const { width, height } = primaryDisplay.workAreaSize
+
+  // Set window width to be narrower (350px)
+  const windowWidth = 350
+
+  // Position the window at the right edge of the screen
+  mainWindow.setBounds({
+    width: windowWidth,
+    height: height,
+    x: width - windowWidth,
+    y: 0
+  })
+
+  // Make the window always on top (optional)
+  mainWindow.setAlwaysOnTop(true, 'floating')
 
   // Set permissions for media access
   mainWindow.webContents.session.setPermissionRequestHandler((webContents, permission, callback) => {
