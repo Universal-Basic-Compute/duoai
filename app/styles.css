@@ -101,7 +101,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: rgba(15, 14, 23, 0.4); /* Reduced from 0.7 to 0.4 for more transparency */
+    background: rgba(15, 14, 23, 0.25); /* Reduced from 0.4 to 0.25 for more transparency */
     border-radius: 15px;
     border: 1px solid var(--border-color);
     overflow: hidden;
@@ -120,7 +120,7 @@ body {
     flex-direction: column;
     gap: 15px;
     scrollbar-width: thin;
-    scrollbar-color: var(--accent-color) var(--primary-bg);
+    scrollbar-color: rgba(126, 87, 194, 0.4) rgba(15, 14, 23, 0.1);
 }
 
 #chat-messages::-webkit-scrollbar {
@@ -128,11 +128,11 @@ body {
 }
 
 #chat-messages::-webkit-scrollbar-track {
-    background: var(--primary-bg);
+    background: rgba(15, 14, 23, 0.1); /* Almost transparent track */
 }
 
 #chat-messages::-webkit-scrollbar-thumb {
-    background-color: var(--accent-color);
+    background-color: rgba(126, 87, 194, 0.4); /* More transparent thumb */
     border-radius: 6px;
 }
 
@@ -253,7 +253,7 @@ body {
     font-size: 0.9rem;
     color: var(--text-color); /* Brighter text for better visibility */
     margin-top: 15px;
-    background: rgba(15, 14, 23, 0.4); /* Match chat container transparency */
+    background: rgba(15, 14, 23, 0.25); /* Match chat container transparency */
     border-radius: 15px;
     backdrop-filter: blur(8px); /* Match chat container blur */
     border: 1px solid var(--border-color);
