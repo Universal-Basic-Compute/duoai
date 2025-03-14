@@ -205,8 +205,8 @@ async function setupMicrophoneRecording() {
       setTimeout(startContinuousRecording, 2000);
     };
     
-    // Function to detect silence in audio
-    async function detectSilence(audioBlob, silenceThreshold = 0.01) {
+    // Function to detect silence and non-speech sounds in audio
+    async function detectSilence(audioBlob, silenceThreshold = 0.01, speechThreshold = 0.03) {
       return new Promise((resolve) => {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const fileReader = new FileReader();
@@ -216,6 +216,8 @@ async function setupMicrophoneRecording() {
           
           audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
             const channelData = audioBuffer.getChannelData(0); // Get data from first channel
+            const sampleRate = audioBuffer.sampleRate;
+            const duration = audioBuffer.duration;
             
             // Calculate RMS (root mean square) to determine audio level
             let sum = 0;
@@ -226,9 +228,61 @@ async function setupMicrophoneRecording() {
             
             console.log('Audio RMS level:', rms);
             
-            // If RMS is below threshold, consider it silence
+            // Check if the audio is too short to be meaningful speech
+            const isTooShort = duration < 0.5; // Less than 0.5 seconds
+            
+            // Check if RMS is below silence threshold
             const isSilence = rms < silenceThreshold;
-            resolve(isSilence);
+            
+            // Check for consistent audio patterns that might indicate breathing/background noise
+            // by analyzing the frequency of zero-crossings and amplitude variations
+            let zeroCrossings = 0;
+            let previousSample = 0;
+            let variationSum = 0;
+            
+            // Sample the audio at regular intervals to save processing time
+            const samplingRate = Math.floor(channelData.length / 100);
+            for (let i = 0; i < channelData.length; i += samplingRate) {
+              // Count zero crossings (when the signal changes from positive to negative or vice versa)
+              if ((previousSample < 0 && channelData[i] >= 0) || (previousSample >= 0 && channelData[i] < 0)) {
+                zeroCrossings++;
+              }
+              previousSample = channelData[i];
+              
+              // Calculate variation between consecutive samples
+              if (i > 0) {
+                variationSum += Math.abs(channelData[i] - channelData[i - samplingRate]);
+              }
+            }
+            
+            // Normalize zero crossings and variations to the audio length
+            const normalizedCrossings = zeroCrossings / (channelData.length / samplingRate);
+            const averageVariation = variationSum / (channelData.length / samplingRate);
+            
+            console.log('Normalized zero crossings:', normalizedCrossings);
+            console.log('Average variation:', averageVariation);
+            
+            // Breathing and background noise often have:
+            // 1. Low to medium RMS (above silence but below clear speech)
+            // 2. Low variation (relatively consistent sound)
+            // 3. Low to medium zero-crossing rate
+            const isLikelyNoise = (rms > silenceThreshold && rms < speechThreshold) && 
+                                  (averageVariation < 0.02) && 
+                                  (normalizedCrossings < 0.4 || normalizedCrossings > 0.8);
+            
+            // Determine if this audio should be ignored
+            const shouldIgnore = isSilence || isTooShort || isLikelyNoise;
+            
+            console.log('Audio analysis:', {
+              duration,
+              rms,
+              isSilence,
+              isTooShort,
+              isLikelyNoise,
+              shouldIgnore
+            });
+            
+            resolve(shouldIgnore);
           }, (err) => {
             console.error('Error decoding audio data:', err);
             resolve(false); // Assume not silence on error
@@ -248,11 +302,11 @@ async function setupMicrophoneRecording() {
       // Log the size of the audio blob
       console.log(`Audio blob size: ${audioBlob.size} bytes`);
       
-      // Check if the audio is mostly silence
-      const isSilence = await detectSilence(audioBlob);
+      // Check if the audio is mostly silence or non-speech sounds
+      const shouldIgnore = await detectSilence(audioBlob);
       
-      if (isSilence) {
-        console.log('Detected silence, skipping transcription');
+      if (shouldIgnore) {
+        console.log('Detected silence or non-speech audio, skipping transcription');
         return;
       }
       
