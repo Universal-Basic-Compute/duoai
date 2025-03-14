@@ -22,15 +22,16 @@ builder.build({
       "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
     ],
     win: {
+      target: ["nsis", "appx"],
       icon: "build/icon.ico",
       publisherName: "Nicolas Reynolds",
-      publisherDisplayName: "Nicolas Reynolds",
-      appx: {
-        identityName: "NicolasReynolds.DuoAI",
-        publisher: "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
-        publisherDisplayName: "DuoAI Technologies",
-        applicationId: "DuoAI"
-      }
+      publisherDisplayName: "Nicolas Reynolds"
+    },
+    appx: {
+      identityName: "NicolasReynolds.DuoAI",
+      publisher: "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
+      publisherDisplayName: "DuoAI Technologies",
+      applicationId: "DuoAI"
     },
     mac: {
       target: ["dmg"],
