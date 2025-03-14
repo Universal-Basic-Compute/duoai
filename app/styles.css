@@ -13,9 +13,9 @@
     --glow-color: rgba(126, 87, 194, 0.5);
     --card-bg: #1e1e24;
     --border-color: rgba(255, 255, 255, 0.1);
-    --user-message-bg: linear-gradient(135deg, rgba(126, 87, 194, 0.9), rgba(178, 69, 146, 0.8));
-    --bot-message-bg: linear-gradient(135deg, rgba(30, 30, 36, 0.9), rgba(42, 42, 58, 0.85));
-    --system-message-bg: linear-gradient(135deg, rgba(0, 230, 118, 0.3), rgba(0, 188, 212, 0.2));
+    --user-message-bg: linear-gradient(135deg, rgba(126, 87, 194, 0.95), rgba(178, 69, 146, 0.9));
+    --bot-message-bg: linear-gradient(135deg, rgba(30, 30, 36, 0.95), rgba(42, 42, 58, 0.9));
+    --system-message-bg: linear-gradient(135deg, rgba(0, 230, 118, 0.5), rgba(0, 188, 212, 0.4));
 }
 
 /* Draggable region for frameless window */
@@ -154,8 +154,8 @@ body {
     background: var(--user-message-bg);
     border-bottom-right-radius: 4px;
     color: var(--text-color);
-    box-shadow: 0 3px 12px rgba(126, 87, 194, 0.4);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 12px rgba(126, 87, 194, 0.5);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .bot-message {
@@ -163,8 +163,8 @@ body {
     background: var(--bot-message-bg);
     border-bottom-left-radius: 4px;
     color: var(--text-color);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .system-message {
@@ -176,8 +176,8 @@ body {
     border-radius: 12px;
     max-width: 90%;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 230, 118, 0.2);
-    border: 1px solid rgba(0, 230, 118, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 230, 118, 0.3);
+    border: 1px solid rgba(0, 230, 118, 0.2);
 }
 
 .loading {
