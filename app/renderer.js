@@ -65,17 +65,38 @@ async function setupMicrophoneRecording() {
   
   try {
     // Request microphone access
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      } 
+    });
     console.log('Microphone access granted');
     
-    // Create media recorder
-    mediaRecorder = new MediaRecorder(stream);
+    // Create media recorder with options
+    const options = { mimeType: 'audio/webm' };
+    try {
+      mediaRecorder = new MediaRecorder(stream, options);
+      console.log('MediaRecorder created with mime type:', options.mimeType);
+    } catch (e) {
+      console.warn('Failed to create MediaRecorder with specified options, trying default:', e);
+      mediaRecorder = new MediaRecorder(stream);
+    }
     
     // Handle data available event
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
         audioChunks.push(event.data);
+        console.log(`Received audio chunk: ${event.data.size} bytes`);
       }
+    };
+    
+    // Add error handler
+    mediaRecorder.onerror = (event) => {
+      console.error('MediaRecorder error:', event.error);
+      // Try to restart recording
+      setTimeout(startContinuousRecording, 2000);
     };
     
     // Function to detect silence in audio
@@ -137,11 +158,18 @@ async function setupMicrophoneRecording() {
           const transcription = await speechToText(base64Audio);
           console.log('Transcription:', transcription);
           
-          // If we got text, put it in the input field but don't send
+          // If we got text, put it in the input field
           if (transcription && transcription.trim()) {
             const messageInput = document.getElementById('message-input');
             messageInput.value = transcription;
             messageInput.focus();
+            
+            // Auto-send if more than 4 words
+            const wordCount = transcription.trim().split(/\s+/).length;
+            if (wordCount > 4) {
+              console.log(`Auto-sending message with ${wordCount} words`);
+              sendMessage();
+            }
           }
         } catch (error) {
           console.error('Error transcribing audio:', error);
@@ -151,47 +179,99 @@ async function setupMicrophoneRecording() {
     
     // Start continuous recording
     startContinuousRecording();
+    
+    // Add status indicator update
+    const statusDot = document.querySelector('.status-dot');
+    const statusText = document.querySelector('.status-indicator span');
+    if (statusDot && statusText) {
+      statusDot.className = 'status-dot listening';
+      statusText.textContent = 'Listening...';
+    }
+    
   } catch (error) {
     console.error('Error accessing microphone:', error);
+    
+    // Update status indicator to show error
+    const statusDot = document.querySelector('.status-dot');
+    const statusText = document.querySelector('.status-indicator span');
+    if (statusDot && statusText) {
+      statusDot.className = 'status-dot offline';
+      statusText.textContent = 'Microphone access denied';
+    }
+    
+    // Show error message in chat
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+      const errorMsg = document.createElement('div');
+      errorMsg.classList.add('message', 'system-message');
+      errorMsg.textContent = 'Microphone access is required for voice input. Please allow microphone access and reload the page.';
+      chatMessages.appendChild(errorMsg);
+    }
   }
 }
 
 // Function to start continuous recording
 function startContinuousRecording() {
-  // Start recording immediately
-  audioChunks = [];
-  mediaRecorder.start();
-  isRecording = true;
-  console.log('Started continuous recording');
-  
-  // Set up interval to process audio chunks every 10 seconds
-  // but only when not waiting for response or playing audio
-  if (recordingInterval) {
-    clearInterval(recordingInterval);
+  if (!mediaRecorder) {
+    console.error('Media recorder not initialized');
+    return;
   }
-  
-  recordingInterval = setInterval(() => {
-    if (isWaitingForResponse || isPlayingAudio) {
-      console.log('Skipping audio processing: ' + 
-                 (isWaitingForResponse ? 'waiting for response' : 'playing audio'));
-      return;
+
+  try {
+    // Start recording immediately
+    audioChunks = [];
+    if (mediaRecorder.state !== 'recording') {
+      mediaRecorder.start();
+      isRecording = true;
+      console.log('Started continuous recording');
+    } else {
+      console.log('Recorder is already recording');
     }
     
-    if (isRecording && audioChunks.length > 0) {
-      // Stop current recording
-      mediaRecorder.stop();
-      isRecording = false;
-      console.log('Stopped recording for processing');
-      
-      // Start a new recording after a short delay
-      setTimeout(() => {
-        audioChunks = [];
-        mediaRecorder.start();
-        isRecording = true;
-        console.log('Resumed continuous recording');
-      }, 500);
+    // Set up interval to process audio chunks every 10 seconds
+    // but only when not waiting for response or playing audio
+    if (recordingInterval) {
+      clearInterval(recordingInterval);
     }
-  }, 10000); // Process audio every 10 seconds instead of 5
+    
+    recordingInterval = setInterval(() => {
+      if (isWaitingForResponse || isPlayingAudio) {
+        console.log('Skipping audio processing: ' + 
+                   (isWaitingForResponse ? 'waiting for response' : 'playing audio'));
+        return;
+      }
+      
+      if (isRecording && mediaRecorder.state === 'recording') {
+        // Stop current recording
+        mediaRecorder.stop();
+        isRecording = false;
+        console.log('Stopped recording for processing');
+        
+        // Start a new recording after a short delay
+        setTimeout(() => {
+          if (mediaRecorder.state !== 'recording') {
+            audioChunks = [];
+            mediaRecorder.start();
+            isRecording = true;
+            console.log('Resumed continuous recording');
+          }
+        }, 500);
+      } else {
+        console.log('Cannot stop recording: not currently recording');
+        // Try to restart recording if it's not active
+        if (mediaRecorder.state !== 'recording') {
+          audioChunks = [];
+          mediaRecorder.start();
+          isRecording = true;
+          console.log('Restarted continuous recording');
+        }
+      }
+    }, 10000); // Process audio every 10 seconds
+  } catch (error) {
+    console.error('Error in continuous recording:', error);
+    // Try to recover by restarting in 5 seconds
+    setTimeout(startContinuousRecording, 5000);
+  }
 }
 
 // Function to capture a screenshot of the entire screen
