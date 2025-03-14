@@ -101,12 +101,12 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: rgba(15, 14, 23, 0.7); /* Slightly more opaque for readability */
+    background: rgba(15, 14, 23, 0.4); /* Reduced from 0.7 to 0.4 for more transparency */
     border-radius: 15px;
     border: 1px solid var(--border-color);
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px); /* Blur background for better readability */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* Slightly reduced shadow */
+    backdrop-filter: blur(8px); /* Slightly reduced blur for more transparency */
     margin-top: 10px; /* Reduced from 20px since header is gone */
     height: calc(100% - 60px); /* Adjust based on status bar height only */
 }
@@ -197,7 +197,7 @@ body {
     display: flex;
     align-items: center;
     padding: 15px;
-    background: rgba(30, 30, 36, 0.8);
+    background: rgba(30, 30, 36, 0.5); /* Reduced from 0.8 to 0.5 */
     border-top: 1px solid var(--border-color);
 }
 
@@ -253,9 +253,9 @@ body {
     font-size: 0.9rem;
     color: var(--text-color); /* Brighter text for better visibility */
     margin-top: 15px;
-    background: rgba(15, 14, 23, 0.7); /* Semi-transparent background */
+    background: rgba(15, 14, 23, 0.4); /* Match chat container transparency */
     border-radius: 15px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(8px); /* Match chat container blur */
     border: 1px solid var(--border-color);
 }
 
