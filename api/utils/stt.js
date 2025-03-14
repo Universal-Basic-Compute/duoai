@@ -34,15 +34,25 @@ module.exports = async function handler(req, res) {
     
     // Create form data
     const form = new formData();
-    form.append('audio', audioBuffer, {
-      filename: 'audio.mp3',
-      contentType: 'audio/mpeg',
+    
+    // Add required model_id parameter - use 'scribe_v1' as specified in the docs
+    form.append('model_id', 'scribe_v1');
+    
+    // Add the audio file with the correct field name 'file'
+    form.append('file', audioBuffer, {
+      filename: 'audio.webm',
+      contentType: 'audio/webm',
     });
     
     // Optional parameters
     if (req.body.language) {
-      form.append('language', req.body.language);
+      form.append('language_code', req.body.language);
     }
+    
+    // Add other optional parameters with default values
+    form.append('tag_audio_events', 'true');
+    form.append('diarize', 'false');
+    form.append('timestamps_granularity', 'word');
     
     // Make request to ElevenLabs Speech-to-Text API
     const response = await axios({
