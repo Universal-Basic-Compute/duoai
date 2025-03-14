@@ -15,6 +15,22 @@ function isElectron() {
   return false;
 }
 
+// Function to check if an API endpoint is available
+async function checkApiAvailability(apiUrl) {
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'OPTIONS',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    return response.ok;
+  } catch (error) {
+    console.error(`API at ${apiUrl} is not available:`, error);
+    return false;
+  }
+}
+
 // Function to fetch messages from the API
 async function fetchMessages(username = 'anonymous', character = 'Zephyr', count = 20) {
   try {
@@ -72,16 +88,39 @@ async function speechToText(audioBase64) {
     // Log the URL being used
     console.log('Calling STT API at:', apiUrl);
     
+    // Log the size of the audio data being sent
+    console.log('Audio data size:', audioBase64.length, 'bytes');
+    
+    // Check if audio data is too large
+    if (audioBase64.length > 10 * 1024 * 1024) { // 10MB limit
+      console.warn('Audio data exceeds 10MB, may cause issues with API');
+    }
+    
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ audio: audioBase64 }),
+      body: JSON.stringify({ 
+        audio: audioBase64,
+        // Add additional parameters that might be required by the API
+        format: 'webm', // Specify the audio format
+        language: 'en'  // Specify the language
+      }),
     });
     
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      // Get more detailed error information
+      let errorDetails = '';
+      try {
+        const errorData = await response.json();
+        errorDetails = JSON.stringify(errorData);
+      } catch (e) {
+        errorDetails = await response.text();
+      }
+      
+      console.error(`STT API error (${response.status}):`, errorDetails);
+      throw new Error(`API returned ${response.status}: ${errorDetails}`);
     }
     
     const data = await response.json();
@@ -94,6 +133,33 @@ async function speechToText(audioBase64) {
 
 // Function to handle microphone recording and STT
 async function setupMicrophoneRecording() {
+  // Check if STT API is available
+  let apiUrl = isElectron() ? 'https://duogaming.ai/api/utils/stt' : '/api/utils/stt';
+  const isApiAvailable = await checkApiAvailability(apiUrl);
+  
+  if (!isApiAvailable) {
+    console.warn('Speech-to-text API is not available. Voice input will be limited.');
+    
+    // Show warning in chat
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+      const warningMsg = document.createElement('div');
+      warningMsg.classList.add('message', 'system-message');
+      warningMsg.textContent = 'Speech-to-text service is currently unavailable. Voice input will not work.';
+      chatMessages.appendChild(warningMsg);
+    }
+    
+    // Update status indicator
+    const statusDot = document.querySelector('.status-dot');
+    const statusText = document.querySelector('.status-indicator span');
+    if (statusDot && statusText) {
+      statusDot.className = 'status-dot offline';
+      statusText.textContent = 'STT unavailable';
+    }
+    
+    return;
+  }
+
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     console.error('Media devices API not supported in this browser');
     return;
@@ -175,6 +241,9 @@ async function setupMicrophoneRecording() {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       audioChunks = [];
       
+      // Log the size of the audio blob
+      console.log(`Audio blob size: ${audioBlob.size} bytes`);
+      
       // Check if the audio is mostly silence
       const isSilence = await detectSilence(audioBlob);
       
@@ -187,29 +256,47 @@ async function setupMicrophoneRecording() {
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
       reader.onloadend = async () => {
-        const base64Audio = reader.result.split(',')[1];
-        
         try {
-          // Call speech-to-text API
-          const transcription = await speechToText(base64Audio);
-          console.log('Transcription:', transcription);
+          const base64Audio = reader.result.split(',')[1];
           
-          // If we got text, put it in the input field
-          if (transcription && transcription.trim()) {
-            const messageInput = document.getElementById('message-input');
-            messageInput.value = transcription;
-            messageInput.focus();
+          // Call speech-to-text API
+          try {
+            const transcription = await speechToText(base64Audio);
+            console.log('Transcription:', transcription);
             
-            // Auto-send if more than 4 words
-            const wordCount = transcription.trim().split(/\s+/).length;
-            if (wordCount > 4) {
-              console.log(`Auto-sending message with ${wordCount} words`);
-              sendMessage();
+            // If we got text, put it in the input field
+            if (transcription && transcription.trim()) {
+              const messageInput = document.getElementById('message-input');
+              messageInput.value = transcription;
+              messageInput.focus();
+              
+              // Auto-send if more than 4 words
+              const wordCount = transcription.trim().split(/\s+/).length;
+              if (wordCount > 4) {
+                console.log(`Auto-sending message with ${wordCount} words`);
+                sendMessage();
+              }
+            }
+          } catch (error) {
+            console.error('Error transcribing audio:', error);
+            
+            // Show a user-friendly error message in the chat
+            const chatMessages = document.getElementById('chat-messages');
+            if (chatMessages) {
+              const errorMsg = document.createElement('div');
+              errorMsg.classList.add('message', 'system-message');
+              errorMsg.textContent = 'Sorry, I had trouble understanding what you said. Please try again or type your message.';
+              chatMessages.appendChild(errorMsg);
+              chatMessages.scrollTop = chatMessages.scrollHeight;
             }
           }
         } catch (error) {
-          console.error('Error transcribing audio:', error);
+          console.error('Error processing audio data:', error);
         }
+      };
+      
+      reader.onerror = (error) => {
+        console.error('Error reading audio data:', error);
       };
     };
     
