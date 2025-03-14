@@ -393,6 +393,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
   const chatMessages = document.getElementById('chat-messages');
+  const menuTab = document.getElementById('menu-tab');
+  const appContainer = document.querySelector('.app-container');
   
   // Fetch conversation history
   conversationHistory = await fetchMessages();
@@ -633,4 +635,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
+  // Add slide menu functionality
+  menuTab.addEventListener('click', () => {
+    appContainer.classList.toggle('collapsed');
+    
+    // Change the icon based on the state
+    const icon = menuTab.querySelector('i');
+    if (appContainer.classList.contains('collapsed')) {
+      icon.classList.remove('fa-chevron-left');
+      icon.classList.add('fa-chevron-right');
+    } else {
+      icon.classList.remove('fa-chevron-right');
+      icon.classList.add('fa-chevron-left');
+    }
+  });
 });

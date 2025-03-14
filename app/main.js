@@ -52,7 +52,7 @@ function createWindow() {
     y: 0
   })
 
-  // Make the window always on top (optional)
+  // Make the window always on top
   mainWindow.setAlwaysOnTop(true, 'floating')
 
   // Set permissions for media access
