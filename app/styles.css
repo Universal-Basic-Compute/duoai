@@ -18,6 +18,17 @@
     --system-message-bg: rgba(0, 230, 118, 0.1);
 }
 
+/* Draggable region for frameless window */
+.draggable {
+    -webkit-app-region: drag;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    z-index: 1000;
+}
+
 /* Global styles */
 * {
     margin: 0;
@@ -27,7 +38,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, var(--primary-bg), var(--secondary-bg));
+    background: transparent; /* Change from gradient to transparent */
     color: var(--text-color);
     line-height: 1.6;
     height: 100vh;
@@ -48,6 +59,7 @@ body {
     width: 100%;
     transition: transform 0.3s ease;
     transform: translateX(0);
+    background: transparent; /* Make container background transparent */
 }
 
 .app-container.collapsed {
@@ -89,12 +101,12 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: rgba(15, 14, 23, 0.5);
+    background: rgba(15, 14, 23, 0.7); /* Slightly more opaque for readability */
     border-radius: 15px;
     border: 1px solid var(--border-color);
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px); /* Blur background for better readability */
     margin-top: 10px; /* Reduced from 20px since header is gone */
     height: calc(100% - 60px); /* Adjust based on status bar height only */
 }
@@ -231,10 +243,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 10px;
     font-size: 0.9rem;
-    color: var(--text-secondary);
+    color: var(--text-color); /* Brighter text for better visibility */
     margin-top: 15px;
+    background: rgba(15, 14, 23, 0.7); /* Semi-transparent background */
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--border-color);
 }
 
 .status-indicator {

@@ -24,6 +24,8 @@ function createWindow() {
   const mainWindow = new BrowserWindow({
     width: 350,
     height: 600,
+    frame: false, // Remove window frame (title bar)
+    transparent: true, // Make window background transparent
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
