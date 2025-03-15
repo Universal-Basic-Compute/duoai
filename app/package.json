@@ -17,7 +17,7 @@
   "license": "ISC",
   "description": "",
   "build": {
-    "appId": "com.yourcompany.yourapp",
+    "appId": "com.duoai.app",
     "productName": "DuoAI",
     "directories": {
       "output": "dist"
@@ -44,7 +44,10 @@
       "identityName": "NicolasReynolds.DuoAI",
       "publisher": "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
       "publisherDisplayName": "DuoAI Technologies",
-      "applicationId": "DuoAI"
+      "applicationId": "DuoAI",
+      "backgroundColor": "#7e57c2",
+      "displayName": "DuoAI",
+      "showNameOnTiles": true
     },
     "mac": {
       "target": [

@@ -31,7 +31,17 @@ builder.build({
       identityName: "NicolasReynolds.DuoAI",
       publisher: "CN=CC08B55D-3547-454B-8E21-F0E3A810C73C",
       publisherDisplayName: "DuoAI Technologies",
-      applicationId: "DuoAI"
+      applicationId: "DuoAI",
+      backgroundColor: "#7e57c2",
+      displayName: "DuoAI",
+      showNameOnTiles: true,
+      assets: {
+        "Square44x44Logo": "build/appx/Square44x44Logo.png",
+        "Square150x150Logo": "build/appx/Square150x150Logo.png",
+        "Wide310x150Logo": "build/appx/Wide310x150Logo.png",
+        "Square310x310Logo": "build/appx/Square310x310Logo.png",
+        "StoreLogo": "build/appx/StoreLogo.png"
+      }
     },
     mac: {
       target: ["dmg"],
