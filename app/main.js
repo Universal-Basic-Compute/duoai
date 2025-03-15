@@ -77,7 +77,28 @@ function createWindow() {
     }
   });
 
-  mainWindow.loadFile('index.html')
+  // Check if user is logged in
+  const userDataPath = app.getPath('userData');
+  const tokenPath = path.join(userDataPath, 'auth_token.json');
+
+  let isLoggedIn = false;
+  try {
+    if (fs.existsSync(tokenPath)) {
+      const tokenData = JSON.parse(fs.readFileSync(tokenPath, 'utf8'));
+      if (tokenData.token && tokenData.exp > Date.now() / 1000) {
+        isLoggedIn = true;
+      }
+    }
+  } catch (error) {
+    console.error('Error checking auth token:', error);
+  }
+
+  // Load the appropriate HTML file
+  if (isLoggedIn) {
+    mainWindow.loadFile('index.html');
+  } else {
+    mainWindow.loadFile('login.html');
+  }
   
   // Create a context menu
   const contextMenu = new Menu()

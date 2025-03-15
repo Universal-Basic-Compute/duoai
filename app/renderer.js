@@ -1,3 +1,51 @@
+// Authentication-related variables
+let authToken = localStorage.getItem('duoai_auth_token');
+let currentUsername = localStorage.getItem('duoai_username') || 'anonymous';
+
+// Function to check if user is authenticated
+function isAuthenticated() {
+  return !!authToken;
+}
+
+// Function to handle logout
+function logout() {
+  localStorage.removeItem('duoai_auth_token');
+  localStorage.removeItem('duoai_username');
+  authToken = null;
+  currentUsername = 'anonymous';
+  
+  // Redirect to login page
+  window.location.href = 'login.html';
+}
+
+// Function to verify token validity
+async function verifyToken() {
+  if (!authToken) return false;
+  
+  try {
+    // Use different URLs based on environment
+    let apiUrl;
+    if (isElectron()) {
+      apiUrl = 'https://duogaming.ai/api/verify-token';
+    } else {
+      apiUrl = '/api/verify-token';
+    }
+    
+    const response = await fetch(`${apiUrl}?token=${authToken}`);
+    const data = await response.json();
+    
+    if (!data.success) {
+      console.log('Token invalid or expired');
+      logout();
+      return false;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    return false;
+  }
+}
 
 // Define sendMessage as a global variable so it's accessible from mediaRecorder.onstop
 let sendMessage;
@@ -36,7 +84,7 @@ async function checkApiAvailability(apiUrl) {
 }
 
 // Function to fetch messages from the API
-async function fetchMessages(username = 'anonymous', character = 'Zephyr', count = 20) {
+async function fetchMessages(username = currentUsername, character = 'Zephyr', count = 20) {
   try {
     // Use different URLs based on environment
     let apiUrl;
@@ -51,7 +99,7 @@ async function fetchMessages(username = 'anonymous', character = 'Zephyr', count
     // Log the URL being used
     console.log('Fetching messages from:', apiUrl);
     
-    const response = await fetch(`${apiUrl}?username=${encodeURIComponent(username)}&character=${encodeURIComponent(character)}&count=${count}`);
+    const response = await fetch(`${apiUrl}?username=${encodeURIComponent(username)}&character=${encodeURIComponent(character)}&count=${count}&token=${authToken || ''}`);
     
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
@@ -650,11 +698,40 @@ async function captureScreenshot() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Check if user is authenticated
+  if (!isAuthenticated()) {
+    // Redirect to login page
+    window.location.href = 'login.html';
+    return;
+  }
+  
+  // Verify token validity
+  const isValid = await verifyToken();
+  if (!isValid) {
+    // Token is invalid, redirect to login page
+    window.location.href = 'login.html';
+    return;
+  }
+  
   const messageInput = document.getElementById('message-input');
   const sendButton = document.getElementById('send-button');
   const chatMessages = document.getElementById('chat-messages');
   const menuTab = document.getElementById('menu-tab');
   const appContainer = document.querySelector('.app-container');
+  
+  // Add user info to the UI
+  const userInfoElement = document.createElement('div');
+  userInfoElement.classList.add('user-info');
+  userInfoElement.innerHTML = `
+    <span class="username">${currentUsername}</span>
+    <button id="logout-btn" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i>
+    </button>
+  `;
+  document.querySelector('.status-bar').appendChild(userInfoElement);
+  
+  // Add logout button event listener
+  document.getElementById('logout-btn').addEventListener('click', logout);
   
   // Fetch conversation history
   conversationHistory = await fetchMessages();
@@ -765,9 +842,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         },
         body: JSON.stringify({
           message,
-          username: 'anonymous', // Replace with actual username if available
-          character: 'Zephyr',   // Replace with selected character if available
-          screenshot: screenshot // Include the screenshot if available
+          username: currentUsername,
+          character: document.getElementById('character-select').value,
+          screenshot: screenshot,
+          token: authToken // Include the auth token
         }),
       })
       .then(response => {
@@ -835,6 +913,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         console.error('Error:', error);
         addMessage(`Error: ${error.message}`, 'system-message');
+        
+        // If unauthorized, redirect to login
+        if (error.message.includes('401') || error.message.includes('unauthorized')) {
+          addMessage('Your session has expired. Please log in again.', 'system-message');
+          setTimeout(logout, 3000);
+        }
       });
     }
   };

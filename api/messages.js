@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { handleCors, validateMethod } = require('./utils/common');
+const { verifyToken } = require('./utils/auth');
 
 module.exports = async function handler(req, res) {
   console.log('Messages API handler called');
@@ -23,9 +24,21 @@ module.exports = async function handler(req, res) {
     const params = req.method === 'GET' ? req.query : req.body;
     
     // Extract parameters with defaults
-    const username = params.username || 'anonymous';
+    const token = params.token;
     const character = params.character || 'Zephyr';
     const count = parseInt(params.count || '10', 10);
+    
+    // Verify authentication token and get username
+    let username = 'anonymous';
+    if (token) {
+      const payload = verifyToken(token);
+      if (payload) {
+        username = payload.username;
+      }
+    } else if (params.username) {
+      // Allow explicit username for backward compatibility
+      username = params.username;
+    }
     
     // Validate count
     if (isNaN(count) || count < 1 || count > 100) {

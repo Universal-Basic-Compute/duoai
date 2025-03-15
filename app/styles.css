@@ -385,6 +385,34 @@ body {
     transform: translateY(-2px) scale(1.005); /* Slightly more subtle for system messages */
 }
 
+/* User info styles */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.username {
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.logout-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
 /* Add a subtle glow effect to the latest message */
 .message:last-child {
     animation: fadeInWithGlow 0.5s ease forwards;

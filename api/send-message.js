@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { handleCors, validateMethod } = require('./utils/common');
+const { verifyToken } = require('./utils/auth');
 
 module.exports = async function handler(req, res) {
   console.log('Send Message API handler called');
@@ -20,11 +21,20 @@ module.exports = async function handler(req, res) {
     console.log('Processing send message request');
     
     // Extract parameters
-    const { message, username = 'anonymous', character = 'Zephyr', screenshot } = req.body;
+    const { message, character = 'Zephyr', screenshot, token } = req.body;
     
     // Validate required parameters
     if (!message) {
       return res.status(400).json({ error: 'Message is required' });
+    }
+    
+    // Verify authentication token and get username
+    let username = 'anonymous';
+    if (token) {
+      const payload = verifyToken(token);
+      if (payload) {
+        username = payload.username;
+      }
     }
     
     // Get API keys from environment variables
