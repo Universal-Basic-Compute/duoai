@@ -12,6 +12,9 @@
     { "source": "/api/tts", "destination": "/api/utils/tts.js" },
     { "source": "/api/stt", "destination": "/api/utils/stt.js" },
     { "source": "/api/llm", "destination": "/api/utils/llm.js" },
+    { "source": "/api/login", "destination": "/api/login.js" },
+    { "source": "/api/register", "destination": "/api/register.js" },
+    { "source": "/api/verify-token", "destination": "/api/verify-token.js" },
     { "source": "/api/messages", "destination": "/api/messages.js" },
     { "source": "/api/send-message", "destination": "/api/send-message.js" },
     { "source": "/api/utils/(.*)", "destination": "/api/utils/$1" },
@@ -25,7 +28,7 @@
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
-        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
+        { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization" }
       ]
     }
   ]
