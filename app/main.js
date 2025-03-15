@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, MenuItem, ipcMain, desktopCapturer, screen } = require('electron')
 const path = require('path')
+const fs = require('fs')
 
 // Add IPC handler for screen capture
 ipcMain.handle('get-screen-sources', async () => {
